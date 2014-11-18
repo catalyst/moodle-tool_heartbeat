@@ -63,6 +63,21 @@ try {
 //     failed('memcache');
 // }
 
+try {
+    $cache = cache::make('tool_heartbeat', 'request');
+    $data = $cache->get('test');
+
+    $cache = cache::make('tool_heartbeat', 'application');
+    $data = $cache->get('test');
+
+    $cache = cache::make('tool_heartbeat', 'session');
+    $data = $cache->get('test');
+
+    $status .= "Caches OK<br>\n";
+} catch (Exception $e) {
+    failed('caches');
+}
+
 print $status;
 
 

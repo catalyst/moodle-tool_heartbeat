@@ -15,17 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * Cache definitions.
  *
- * @package    tool
- * @subpackage heartbeat
+ * @package    tool_hearbeat
  * @copyright  2014 Brendan Heywood <brendan@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2014111802; // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2014050800; // Requires this Moodle version
-$plugin->component = 'tool_heartbeat'; // Full name of the plugin (used for diagnostics)
-
+$definitions = array(
+    'request' => array(
+        'mode' => cache_store::MODE_REQUEST,
+    ),
+    'application' => array(
+        'mode' => cache_store::MODE_APPLICATION,
+    ),
+    'session' => array(
+        'mode' => cache_store::MODE_SESSION,
+    ),
+);
