@@ -45,6 +45,13 @@ if(file_exists($CFG->dataroot . "/elb.test")) {
     failed('sitedata');
 }
 
+global $DB;
+try {
+    $record = $DB->get_record('config', array('name' => 'version'));
+    $status .= "Database OK<br>\n";
+} catch (Exception $e) {
+    failed('database');
+}
 
 // This checks memcache connection
 // memcache details
