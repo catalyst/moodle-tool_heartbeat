@@ -24,7 +24,7 @@
 
 // Set this manually to true as needed
 if (false){
-    print "MAINTENANCE MODE";
+    print "Server is ALIVE";
     exit;
 }
 
