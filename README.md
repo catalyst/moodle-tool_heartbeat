@@ -1,4 +1,4 @@
-= A heartbeat for Moodle =
+# A heartbeat test page for Moodle
 
 Very simple, just performs a quick check of all critical service
 dependancies (filesystem, DB, caches, and sessions) and return OK
