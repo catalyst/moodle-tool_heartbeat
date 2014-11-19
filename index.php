@@ -35,6 +35,7 @@ if ($argv[0]){
     define('NO_MOODLE_COOKIES', true);
 }
 define('NO_UPGRADE_CHECK', true);
+define('ABORT_AFTER_CONFIG', true);
 
 require('../../../config.php');
 global $DB, $CFG;
@@ -56,14 +57,6 @@ if(file_exists($CFG->dataroot . "/elb.test")) {
 }
 
 
-try {
-    $record = $DB->get_record('config', array('name' => 'version'));
-    $status .= "database OK<br>\n";
-} catch (Exception $e) {
-    failed('database');
-}
-
-
 $session_handler = (property_exists($CFG, 'session_handler_class') && $CFG->session_handler_class == '\core\session\memcached');
 
 if ($session_handler){
@@ -75,25 +68,6 @@ if ($session_handler){
     } catch (Exception $e){
         failed('sessions memcache');
     }
-}
-
-
-try {
-    $cache = cache::make('tool_heartbeat', 'request');
-    $data = $cache->get('test');
-
-    $cache = cache::make('tool_heartbeat', 'application');
-    $data = $cache->get('test');
-
-    if (!$session_handler){
-        $cache = cache::make('tool_heartbeat', 'session');
-        $data = $cache->get('test');
-    }
-
-    $status .= "MUC Caches OK<br>\n";
-
-} catch (Exception $e) {
-    failed('MUC Caches');
 }
 
 
