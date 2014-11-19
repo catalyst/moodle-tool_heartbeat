@@ -17,8 +17,7 @@
 /**
  * Are you Ok? heartbeat for load balancers etc
  *
- * @package    tool
- * @subpackage heartbeat
+ * @package    tool_heartbeat
  * @copyright  2014 Brendan Heywood <brendan@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
