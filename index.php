@@ -24,7 +24,7 @@
 
 // Set this manually to true as needed
 if (false){
-    print "Server is in MAINTENACE";
+    print "Server is in MAINTENANCE";
     exit;
 }
 
