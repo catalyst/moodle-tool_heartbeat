@@ -24,7 +24,7 @@
 
 // Set this manually to true as needed
 if (false){
-    print "Server is ALIVE";
+    print "Server is in MAINTENACE";
     exit;
 }
 
@@ -46,7 +46,8 @@ function failed($reason) {
     //Status for ELB, will cause ELB to remove instance.
     header("HTTP/1.0 503 Service unavailable: failed $reason check");
     //Status for the humans
-    echo "FAILED HEALTH CHECK ($reason)";
+    print "Server is DOWN<br>\n";
+    echo "Failed: $reason";
     exit;
 }
 
@@ -70,6 +71,6 @@ if ($session_handler){
     }
 }
 
-
+print "Server is ALIVE<br>\n";
 print $status;
 
