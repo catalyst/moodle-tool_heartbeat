@@ -29,7 +29,7 @@ if (false){
 }
 
 
-if ($argv[0]){
+if (isset($argv) && $argv[0]){
     define('CLI_SCRIPT', true);
 } else {
     define('NO_MOODLE_COOKIES', true);
