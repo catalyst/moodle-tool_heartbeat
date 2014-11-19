@@ -23,10 +23,22 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define('NO_MOODLE_COOKIES', true);
+// Set this manually to true as needed
+if (false){
+    print "MAINTENANCE MODE";
+    exit;
+}
+
+
+if ($argv[0]){
+    define('CLI_SCRIPT', true);
+} else {
+    define('NO_MOODLE_COOKIES', true);
+}
 define('NO_UPGRADE_CHECK', true);
 
 require('../../../config.php');
+global $DB, $CFG;
 
 $status = "";
 
@@ -38,30 +50,34 @@ function failed($reason) {
     exit;
 }
 
-
 if(file_exists($CFG->dataroot . "/elb.test")) {
-    $status .= "Sitedata OK <br>\n";
+    $status .= "sitedata OK<br>\n";
 } else {
     failed('sitedata');
 }
 
-global $DB;
+
 try {
     $record = $DB->get_record('config', array('name' => 'version'));
-    $status .= "Database OK<br>\n";
+    $status .= "database OK<br>\n";
 } catch (Exception $e) {
     failed('database');
 }
 
-// This checks memcache connection
-// memcache details
-// $memcache_host = '138.77.0.107';
-// $memcache_port = '11211';
-// if(memcache_connect($memcache_host, $memcache_port, 3)) {
-//     $status .= "Memcache OK <br>\n";
-// } else {
-//     failed('memcache');
-// }
+
+$session_handler = (property_exists($CFG, 'session_handler_class') && $CFG->session_handler_class == '\core\session\memcached');
+
+if ($session_handler){
+
+    $memcache = explode(':', $CFG->session_memcached_save_path );
+    try {
+        memcache_connect($memcache[0], $memcache[1], 3);
+        $status .= "session memcache OK<br>\n";
+    } catch (Exception $e){
+        failed('sessions memcache');
+    }
+}
+
 
 try {
     $cache = cache::make('tool_heartbeat', 'request');
@@ -70,14 +86,17 @@ try {
     $cache = cache::make('tool_heartbeat', 'application');
     $data = $cache->get('test');
 
-    $cache = cache::make('tool_heartbeat', 'session');
-    $data = $cache->get('test');
+    if (!$session_handler){
+        $cache = cache::make('tool_heartbeat', 'session');
+        $data = $cache->get('test');
+    }
 
-    $status .= "Caches OK<br>\n";
+    $status .= "MUC Caches OK<br>\n";
+
 } catch (Exception $e) {
-    failed('caches');
+    failed('MUC Caches');
 }
 
-print $status;
 
+print $status;
 
