@@ -10,7 +10,11 @@ $currenttime = time();
 $difference = $currenttime - $lastcron;
 
 if( $difference > $cronmax ) {
-    printf ("MOODLE CRON ERROR RAN %d:%02d HOURS AGO (> $max)\n", floor($difference/60/60), floor($difference/60) % 60);
+    printf ("MOODLE CRON ERROR LAST RAN %d days %02d:%02d hours AGO (> $max hours)\n",
+        floor($difference/60/60/24),
+        floor($difference/60/60) % 24,
+        floor($difference/60) % 60
+    );
     exit(2);
 } else {
     print "MOODLE CRON OK\n";
