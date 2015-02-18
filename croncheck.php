@@ -16,6 +16,23 @@ if( $difference > $cronmax ) {
         floor($difference/60) % 60
     );
     exit(2);
+}
+
+$delay = '';
+$tasks = core\task\manager::get_all_scheduled_tasks();
+foreach ($tasks as $task) {
+    if ($task->get_disabled()) {
+        continue;
+    }
+    $faildelay = $task->get_fail_delay();
+    if ($faildelay == 0){
+        continue;
+    }
+    $delay .= "TASK: " . $task->get_name() . ' (' .get_class($task) . ") Delay: $faildelay\n";
+}
+if ($delay){
+    print "MOODLE CRON OK BUT WITH TASK FAIL DELAYS:\n$delay";
+    exit(2);
 } else {
     print "MOODLE CRON OK\n";
     exit(0);
