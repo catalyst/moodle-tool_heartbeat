@@ -153,7 +153,7 @@ if( $maxminsdelay > $options['delayerror'] ) {
     exit(2);
 
 } else if( $maxminsdelay > $options['delaywarn'] ) {
-    printf ( "WANRING: MOODLE CRON TASK FAIL DELAYS | Max delay = %02d:%02d ($maxminsdelay > {$options['delaywarn']} minutes) \n$delay",
+    printf ( "WARNING: MOODLE CRON TASK FAIL DELAYS | Max delay = %02d:%02d ($maxminsdelay > {$options['delaywarn']} minutes) \n$delay",
         floor($maxminsdelay/60) % 60,
         floor($maxminsdelay) % 60
     );
