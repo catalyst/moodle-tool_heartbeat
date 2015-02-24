@@ -5,7 +5,7 @@ require('../../../config.php');
 $max = optional_param('max', 6, PARAM_NUMBER);
 $cronmax = $max * 60 * 60;
 
-$lastcron = $DB->get_field_sql('SELECT MAX(lastcron) FROM {modules}');
+$lastcron = $DB->get_field_sql('SELECT MAX(lastruntime) FROM {task_scheduled}');
 $currenttime = time();
 $difference = $currenttime - $lastcron;
 
