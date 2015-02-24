@@ -110,20 +110,12 @@ $currenttime = time();
 $difference = $currenttime - $lastcron;
 
 if( $difference > $options['cronerror'] * 60 * 60 ) {
-    printf ("CRITICAL: MOODLE CRON ERROR | LAST RAN %d days %02d:%02d hours AGO (> {$options['cronerror']} hours)\n",
-        floor($difference/60/60/24),
-        floor($difference/60/60) % 24,
-        floor($difference/60) % 60
-    );
+    printf ("CRITICAL: Moodle cron ran > {$options['cronerror']} hours ago\n");
     exit(2);
 }
 
 if( $difference > $options['cronwarn'] * 60 * 60 ) {
-    printf ("WARNING: MOODLE CRON WARNING | LAST RAN %d days %02d:%02d hours AGO (> {$options['cronwarn']} hours)\n",
-        floor($difference/60/60/24),
-        floor($difference/60/60) % 24,
-        floor($difference/60) % 60
-    );
+    printf ("WARNING: Moodle cron ran > {$options['cronwarn']} hours ago\n");
     exit(1);
 }
 
@@ -146,17 +138,11 @@ foreach ($tasks as $task) {
 
 $maxminsdelay = $maxdelay / 60;
 if( $maxminsdelay > $options['delayerror'] ) {
-    printf ( "CRITICAL: MOODLE CRON TASK FAIL DELAYS | Max delay = %02d:%02d ($maxminsdelay > {$options['delayerror']} minutes) \n$delay",
-        floor($maxminsdelay/60) % 60,
-        floor($maxminsdelay) % 60
-    );
+    printf ( "CRITICAL: Moodle task faildelay > {$options['delayerror']} mins\n$delay");
     exit(2);
 
 } else if( $maxminsdelay > $options['delaywarn'] ) {
-    printf ( "WARNING: MOODLE CRON TASK FAIL DELAYS | Max delay = %02d:%02d ($maxminsdelay > {$options['delaywarn']} minutes) \n$delay",
-        floor($maxminsdelay/60) % 60,
-        floor($maxminsdelay) % 60
-    );
+    printf ( "WARNING: Moodle task faildelay > {$options['delaywarn']} mins\n$delay");
     exit(1);
 
 } else {
