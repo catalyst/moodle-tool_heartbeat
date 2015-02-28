@@ -22,14 +22,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Set this manually to true as needed
-if (false){
+// Set this manually to true as needed.
+if (false) {
     print "Server is in MAINTENANCE";
     exit;
 }
 
 
-if (isset($argv) && $argv[0]){
+if (isset($argv) && $argv[0]) {
     define('CLI_SCRIPT', true);
 } else {
     define('NO_MOODLE_COOKIES', true);
@@ -42,31 +42,36 @@ global $DB, $CFG;
 
 $status = "";
 
+/**
+ * Return an error that ELB will pick up
+ *
+ * @param string $reason
+ */
 function failed($reason) {
-    //Status for ELB, will cause ELB to remove instance.
+    // Status for ELB, will cause ELB to remove instance.
     header("HTTP/1.0 503 Service unavailable: failed $reason check");
-    //Status for the humans
+    // Status for the humans.
     print "Server is DOWN<br>\n";
     echo "Failed: $reason";
     exit;
 }
 
-if(file_exists($CFG->dataroot . "/elb.test")) {
+if (file_exists($CFG->dataroot . "/elb.test")) {
     $status .= "sitedata OK<br>\n";
 } else {
     failed('sitedata');
 }
 
 
-$session_handler = (property_exists($CFG, 'session_handler_class') && $CFG->session_handler_class == '\core\session\memcached');
+$sessionhandler = (property_exists($CFG, 'session_handler_class') && $CFG->session_handler_class == '\core\session\memcached');
 
-if ($session_handler){
+if ($sessionhandler) {
 
     $memcache = explode(':', $CFG->session_memcached_save_path );
     try {
         memcache_connect($memcache[0], $memcache[1], 3);
         $status .= "session memcache OK<br>\n";
-    } catch (Exception $e){
+    } catch (Exception $e) {
         failed('sessions memcache');
     }
 }

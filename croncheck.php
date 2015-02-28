@@ -32,39 +32,38 @@
 
 define('NO_UPGRADE_CHECK', true);
 
-$CRON_THRESHOLD  = 6;   // hours
-$CRON_WARN       = 2;   // hours
-$DELAY_THRESHOLD = 600; // minutes
-$DELAY_WARN      = 60;  // minutes
+$cronthreshold  = 6;   // Hours.
+$cronwarn       = 2;   // Hours.
+$delaythreshold = 600; // Minutes.
+$delaywarn      = 60;  // Minutes.
 
-$MOODLE_ROOT = '../../../';
+$dirroot = '../../../';
 
 
-// If run from the CLI
-if ($argv){
+if ($argv) {
+    // If run from the CLI.
     define('CLI_SCRIPT', true);
 
-    $last = $argv[sizeof($argv)-1];
+    $last = $argv[count($argv) - 1];
     if ($last && is_dir($last) ) {
-        $MOODLE_ROOT = array_pop($argv).'/';
+        $dirroot = array_pop($argv).'/';
         array_pop($_SERVER['argv']);
     }
 
 
-    require($MOODLE_ROOT.'config.php');
-    require_once($CFG->libdir.'/clilib.php');      // cli only functions
+    require($dirroot.'config.php');
+    require_once($CFG->libdir.'/clilib.php');
 
-    // now get cli options
     list($options, $unrecognized) = cli_get_params(
         array(
-            'help'=>false,
-            'cronwarn'   => $CRON_THRESHOLD,
-            'cronerror'  => $CRON_WARN,
-            'delaywarn'  => $DELAY_THRESHOLD,
-            'delayerror' => $DELAY_WARN
+            'help' => false,
+            'cronwarn'   => $cronthreshold,
+            'cronerror'  => $cronwarn,
+            'delaywarn'  => $delaythreshold,
+            'delayerror' => $delaywarn
         ),
         array(
-            'h'   =>'help'
+            'h'   => 'help'
         )
     );
 
@@ -74,16 +73,16 @@ if ($argv){
     }
 
     if ($options['help']) {
-    print "Check the moodle cron system for when it last ran and any task fail delays
+        print "Check the moodle cron system for when it last ran and any task fail delays
 
 croncheck.php [options] [moodle path]
 
 Options:
 -h, --help          Print out this help
-    --cronwarn=n    Threshold for no cron run error in hours (default $CRON_THRESHOLD)
-    --cronerror=n   Threshold for no cron run warn in hours (default $CRON_WARN)
-    --delaywarn=n   Threshold for fail delay cron error in minutes (default $DELAY_THRESHOLD)
-    --delayerror=n  Threshold for fail delay cron warn in minutes (default $DELAY_WARN)
+    --cronwarn=n    Threshold for no cron run error in hours (default $cronthreshold)
+    --cronerror=n   Threshold for no cron run warn in hours (default $cronwarn)
+    --delaywarn=n   Threshold for fail delay cron error in minutes (default $delaythreshold)
+    --delayerror=n  Threshold for fail delay cron warn in minutes (default $delaywarn)
 
 Example:
 \$sudo -u www-data /usr/bin/php admin/tool/heartbeat/croncheck.php
@@ -91,15 +90,15 @@ Example:
         die;
     }
 
-// If run from the web
 } else {
+    // If run from the web.
     define('NO_MOODLE_COOKIES', true);
-    require($MOODLE_ROOT.'config.php');
+    require($dirroot.'config.php');
     $options = array(
-        'cronerror'  => optional_param('cronerror',  $DEFAULT_THRESHOLD, PARAM_NUMBER),
-        'cronwarn'   => optional_param('cronwarn',   $DEFAULT_WARN,      PARAM_NUMBER),
-        'delayerror' => optional_param('delayerror', $DEFAULT_THRESHOLD, PARAM_NUMBER),
-        'delaywarn'  => optional_param('delaywarn',  $DEFAULT_WARN,      PARAM_NUMBER),
+        'cronerror'  => optional_param('cronerror',  $cronthreshold,  PARAM_NUMBER),
+        'cronwarn'   => optional_param('cronwarn',   $cronwarn,       PARAM_NUMBER),
+        'delayerror' => optional_param('delayerror', $delaythreshold, PARAM_NUMBER),
+        'delaywarn'  => optional_param('delaywarn',  $delaywarn,      PARAM_NUMBER),
     );
     header("Content-Type: text/plain");
 }
@@ -109,12 +108,12 @@ $lastcron = $DB->get_field_sql('SELECT MAX(lastruntime) FROM {task_scheduled}');
 $currenttime = time();
 $difference = $currenttime - $lastcron;
 
-if( $difference > $options['cronerror'] * 60 * 60 ) {
+if ( $difference > $options['cronerror'] * 60 * 60 ) {
     printf ("CRITICAL: Moodle cron ran > {$options['cronerror']} hours ago\n");
     exit(2);
 }
 
-if( $difference > $options['cronwarn'] * 60 * 60 ) {
+if ( $difference > $options['cronwarn'] * 60 * 60 ) {
     printf ("WARNING: Moodle cron ran > {$options['cronwarn']} hours ago\n");
     exit(1);
 }
@@ -127,21 +126,21 @@ foreach ($tasks as $task) {
         continue;
     }
     $faildelay = $task->get_fail_delay();
-    if ($faildelay == 0){
+    if ($faildelay == 0) {
         continue;
     }
-    if ($faildelay > $maxdelay){
+    if ($faildelay > $maxdelay) {
         $maxdelay = $faildelay;
     }
     $delay .= "TASK: " . $task->get_name() . ' (' .get_class($task) . ") Delay: $faildelay\n";
 }
 
 $maxminsdelay = $maxdelay / 60;
-if( $maxminsdelay > $options['delayerror'] ) {
+if ( $maxminsdelay > $options['delayerror'] ) {
     printf ( "CRITICAL: Moodle task faildelay > {$options['delayerror']} mins\n$delay");
     exit(2);
 
-} else if( $maxminsdelay > $options['delaywarn'] ) {
+} else if ( $maxminsdelay > $options['delaywarn'] ) {
     printf ( "WARNING: Moodle task faildelay > {$options['delaywarn']} mins\n$delay");
     exit(1);
 

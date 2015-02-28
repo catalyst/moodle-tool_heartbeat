@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2014111803; // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2014050800; // Requires this Moodle version
-$plugin->component = 'tool_heartbeat'; // Full name of the plugin (used for diagnostics)
+$plugin->version   = 2014111803;
+$plugin->requires  = 2014050800;
+$plugin->component = 'tool_heartbeat';
 
