@@ -56,10 +56,16 @@ function failed($reason) {
     exit;
 }
 
-if (file_exists($CFG->dataroot . "/elb.test")) {
+$testfile = $CFG->dataroot . "/tool_heartbeat.test";
+$size = file_put_contents($testfile, '1');
+if ($size !== 1){
+    failed('sitedata not writable');
+}
+
+if (file_exists($testfile)) {
     $status .= "sitedata OK<br>\n";
 } else {
-    failed('sitedata');
+    failed('sitedata not readable');
 }
 
 
