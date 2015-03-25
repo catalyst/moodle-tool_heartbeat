@@ -37,8 +37,8 @@ if (isset($argv) && $argv[0]) {
 define('NO_UPGRADE_CHECK', true);
 define('ABORT_AFTER_CONFIG', true);
 
-require('../../../config.php');
-global $DB, $CFG;
+require_once('../../../config.php');
+global $CFG;
 
 $status = "";
 
@@ -58,7 +58,7 @@ function failed($reason) {
 
 $testfile = $CFG->dataroot . "/tool_heartbeat.test";
 $size = file_put_contents($testfile, '1');
-if ($size !== 1){
+if ($size !== 1) {
     failed('sitedata not writable');
 }
 
@@ -79,6 +79,25 @@ if ($sessionhandler) {
         $status .= "session memcache OK<br>\n";
     } catch (Exception $e) {
         failed('sessions memcache');
+    }
+}
+
+// Optionally check database configuration and access (slower).
+if (true) {
+    try {
+        define('ABORT_AFTER_CONFIG_CANCEL', true);
+        require($CFG->dirroot . '/lib/setup.php');
+        global $DB;
+
+        // Try to get the first record from the user table.
+        $user = $DB->get_record_sql('SELECT id FROM {user} WHERE 0 < id ', null, IGNORE_MULTIPLE);
+        if ($user) {
+            $status .= "database OK<br>\n";
+        } else {
+            failed('no users in database');
+        }
+    } catch (Exception $e) {
+        failed('database error');
     }
 }
 
