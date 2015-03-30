@@ -41,3 +41,9 @@ see this for details:
 
 php croncheck.php -h
 
+# Installation
+
+Via the Moodle plugin directory:
+
+https://moodle.org/plugins/view/tool_heartbeat
+
