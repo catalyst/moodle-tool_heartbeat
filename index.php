@@ -29,10 +29,14 @@ if (false) {
 }
 
 
+$fullcheck = false;
+
 if (isset($argv) && $argv[0]) {
     define('CLI_SCRIPT', true);
+    $fullcheck = count($argv) > 1 && $argv[1] === 'fullcheck';
 } else {
     define('NO_MOODLE_COOKIES', true);
+    $fullcheck = isset($_GET['fullcheck']);
 }
 define('NO_UPGRADE_CHECK', true);
 define('ABORT_AFTER_CONFIG', true);
@@ -83,7 +87,7 @@ if ($sessionhandler) {
 }
 
 // Optionally check database configuration and access (slower).
-if (true) {
+if ($fullcheck) {
     try {
         define('ABORT_AFTER_CONFIG_CANCEL', true);
         require($CFG->dirroot . '/lib/setup.php');

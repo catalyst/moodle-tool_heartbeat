@@ -13,6 +13,15 @@ http://moodle.example.com/admin/tool/heartbeat/
 It will return a page with either a 200 or 503 response code and
 if it fails a string for why.
 
+By default it only performs a light check, in particular it does not
+check the moodle database. To do a full check add this query param:
+
+http://moodle.example.com/admin/tool/heartbeat/?fullcheck
+
+This check can also be run as a CLI:
+
+php index.php fullcheck
+
 # A nagios cron health checker
 
 A script croncheck is a nagios compliant checker to see if cron
