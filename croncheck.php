@@ -40,7 +40,7 @@ $delaywarn      = 60;  // Minutes.
 $dirroot = '../../../';
 
 
-if ($argv) {
+if (isset($argv)) {
     // If run from the CLI.
     define('CLI_SCRIPT', true);
 
