@@ -1,3 +1,7 @@
+<a href="https://travis-ci.org/brendanheywood/moodle-tool_heartbeat">
+<img src="https://travis-ci.org/brendanheywood/moodle-tool_heartbeat.svg?branch=master">
+</a>
+
 # A heartbeat test page for Moodle
 
 Very simple, just performs a quick check of all critical service
