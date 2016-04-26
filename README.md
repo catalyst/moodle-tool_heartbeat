@@ -24,7 +24,9 @@ http://moodle.example.com/admin/tool/heartbeat/?fullcheck
 
 This check can also be run as a CLI:
 
+```
 php index.php fullcheck
+```
 
 # A nagios cron health checker
 
@@ -38,12 +40,16 @@ http://moodle.example.com/admin/tool/heartbeat/croncheck.php
 Or can be run as a CLI in which case it will return in the format
 expected by Nagios:
 
+```
 sudo -u www-data php /var/www/moodle/admin/tool/heartbeat/croncheck.php
+```
 
 The various thresholds can be configured with query params or cli args
 see this for details:
 
+```
 php croncheck.php -h
+```
 
 # Installation
 
