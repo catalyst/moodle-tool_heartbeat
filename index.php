@@ -80,7 +80,7 @@ if ($sessionhandler) {
     $memcache = explode(':', $CFG->session_memcached_save_path );
     try {
         $md = new Memcached();
-        $md->connect($memcache[0], $memcache[1]);
+        $md->addServers(array($memcache[0], $memcache[1]));
         $status .= "session memcache OK<br>\n";
     } catch (Exception $e) {
         failed('sessions memcache');
