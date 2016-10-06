@@ -121,11 +121,15 @@ if ( $difference > $options['cronwarn'] * 60 * 60 ) {
 $delay = '';
 $maxdelay = 0;
 $tasks = core\task\manager::get_all_scheduled_tasks();
+$legacylastrun = null;
 foreach ($tasks as $task) {
     if ($task->get_disabled()) {
         continue;
     }
     $faildelay = $task->get_fail_delay();
+    if (get_class($task) == 'core\task\legacy_plugin_cron_task') {
+        $legacylastrun = $task->get_last_run_time();
+    }
     if ($faildelay == 0) {
         continue;
     }
@@ -133,6 +137,20 @@ foreach ($tasks as $task) {
         $maxdelay = $faildelay;
     }
     $delay .= "TASK: " . $task->get_name() . ' (' .get_class($task) . ") Delay: $faildelay\n";
+}
+
+if ( empty($legacylastrun) ) {
+    printf ( "WARNING: Moodle legacy task isn't running {$options['delaywarn']} mins\n$delay");
+    exit(1);
+}
+$minsincelegacylastrun = floor((time() - $legacylastrun) / 60);
+if ( $minsincelegacylastrun > 60 * 24) {
+    printf ( "CRITICAL: Moodle legacy task hasn't run in 24 hours\n");
+    exit(1);
+}
+if ( $minsincelegacylastrun > 5) {
+    printf ( "WARNING: Moodle legacy task hasn't run in 5 mins\n");
+    exit(1);
 }
 
 $maxminsdelay = $maxdelay / 60;
