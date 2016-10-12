@@ -108,6 +108,15 @@ $lastcron = $DB->get_field_sql('SELECT MAX(lastruntime) FROM {task_scheduled}');
 $currenttime = time();
 $difference = $currenttime - $lastcron;
 
+$testing = get_config('tool_heartbeat', 'testing');
+if ($testing == 'error') {
+    printf ("CRITICAL: Moodle this is a test\n");
+    exit(2);
+} else if ($testing == 'warn') {
+    printf ("WARNING: Moodle this is a test\n");
+    exit(1);
+}
+
 if ( $difference > $options['cronerror'] * 60 * 60 ) {
     printf ("CRITICAL: Moodle cron ran > {$options['cronerror']} hours ago\n");
     exit(2);

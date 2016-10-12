@@ -23,4 +23,9 @@
  */
 
 $string['pluginname'] = 'Heartbeat';
+$string['testing'] = 'Test heartbeat';
+$string['testingdesc'] = 'You can use this to temporarily fake a warn or error condition to test that your monitoring is correctly working end to end.';
+$string['normal'] = 'Normal monitoring';
+$string['testwarning'] = 'Fake a warning';
+$string['testerror'] = 'Fake a critical';
 
