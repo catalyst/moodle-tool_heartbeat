@@ -1,0 +1,31 @@
+#!/usr/bin/perl
+#
+# This is a very thin wrapper which calls the croncheck
+# (or any other url) via http and translates it's message
+# into a cli error code for consumption in nagios.
+
+use strict;
+use warnings;
+use LWP::Simple;
+
+if ($#ARGV != 0) {
+    print "You must provide a url\n";
+    exit(2);
+}
+
+my $url = $ARGV[0];
+
+my $content = get($url);
+
+my $code = 1;
+if ($content =~ /CRITICAL/) {
+    $code = 2;
+} elsif ($content =~ /WARNING/) {
+    $code = 1;
+} elsif ($content =~ /OK/) {
+    $code = 0;
+}
+
+print $content;
+exit $code;
+
