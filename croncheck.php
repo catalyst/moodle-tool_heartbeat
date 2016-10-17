@@ -103,6 +103,20 @@ Example:
     header("Content-Type: text/plain");
 }
 
+// Make sure varnish doesn't cache this. But it still might so go check it!
+header('Pragma: no-cache');
+header('Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate, proxy-revalidate');
+header('Expires: Tue, 04 Sep 2012 05:32:29 GMT');    printf ($msg);
+
+function send_warning($msg) {
+    printf ("WARNING: $msg");
+    exit(1);
+}
+
+function send_critical($msg) {
+    printf ("CRITICAL: $msg");
+    exit(2);
+}
 
 $lastcron = $DB->get_field_sql('SELECT MAX(lastruntime) FROM {task_scheduled}');
 $currenttime = time();
@@ -110,21 +124,17 @@ $difference = $currenttime - $lastcron;
 
 $testing = get_config('tool_heartbeat', 'testing');
 if ($testing == 'error') {
-    printf ("CRITICAL: Moodle this is a test\n");
-    exit(2);
+    send_critical("Moodle this is a test\n");
 } else if ($testing == 'warn') {
-    printf ("WARNING: Moodle this is a test\n");
-    exit(1);
+    send_warning("Moodle this is a test\n");
 }
 
 if ( $difference > $options['cronerror'] * 60 * 60 ) {
-    printf ("CRITICAL: Moodle cron ran > {$options['cronerror']} hours ago\n");
-    exit(2);
+    send_critical("Moodle cron ran > {$options['cronerror']} hours ago\n");
 }
 
 if ( $difference > $options['cronwarn'] * 60 * 60 ) {
-    printf ("WARNING: Moodle cron ran > {$options['cronwarn']} hours ago\n");
-    exit(1);
+    send_warning("Moodle cron ran > {$options['cronwarn']} hours ago\n");
 }
 
 $delay = '';
@@ -149,27 +159,22 @@ foreach ($tasks as $task) {
 }
 
 if ( empty($legacylastrun) ) {
-    printf ( "WARNING: Moodle legacy task isn't running {$options['delaywarn']} mins\n$delay");
-    exit(1);
+    send_warning("Moodle legacy task isn't running {$options['delaywarn']} mins\n$delay");
 }
 $minsincelegacylastrun = floor((time() - $legacylastrun) / 60);
 if ( $minsincelegacylastrun > 60 * 24) {
-    printf ( "CRITICAL: Moodle legacy task hasn't run in 24 hours\n");
-    exit(1);
+    send_critical("Moodle legacy task hasn't run in 24 hours\n");
 }
 if ( $minsincelegacylastrun > 5) {
-    printf ( "WARNING: Moodle legacy task hasn't run in 5 mins\n");
-    exit(1);
+    send_warning("Moodle legacy task hasn't run in 5 mins\n");
 }
 
 $maxminsdelay = $maxdelay / 60;
 if ( $maxminsdelay > $options['delayerror'] ) {
-    printf ( "CRITICAL: Moodle task faildelay > {$options['delayerror']} mins\n$delay");
-    exit(2);
+    send_critical("Moodle task faildelay > {$options['delayerror']} mins\n$delay");
 
 } else if ( $maxminsdelay > $options['delaywarn'] ) {
-    printf ( "WARNING: Moodle task faildelay > {$options['delaywarn']} mins\n$delay");
-    exit(1);
+    send_warning("Moodle task faildelay > {$options['delaywarn']} mins\n$delay");
 
 } else {
     print "OK: MOODLE CRON RUNNING\n";
