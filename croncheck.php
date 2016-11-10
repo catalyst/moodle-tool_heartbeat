@@ -106,7 +106,7 @@ Example:
 // Make sure varnish doesn't cache this. But it still might so go check it!
 header('Pragma: no-cache');
 header('Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate, proxy-revalidate');
-header('Expires: Tue, 04 Sep 2012 05:32:29 GMT');    printf ($msg);
+header('Expires: Tue, 04 Sep 2012 05:32:29 GMT');
 
 $format = '%b %d %H:%M:%S';
 
