@@ -108,13 +108,25 @@ header('Pragma: no-cache');
 header('Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate, proxy-revalidate');
 header('Expires: Tue, 04 Sep 2012 05:32:29 GMT');    printf ($msg);
 
+$format = '%b %d %H:%M:%S';
+
+$now = userdate(time(), $format);
+
+function send_good($msg) {
+    global $now;
+    printf ("OK: $msg (Checked $now)\n");
+    exit(0);
+}
+
 function send_warning($msg) {
-    printf ("WARNING: $msg");
+    global $now;
+    printf ("WARNING: $msg (Checked $now)\n");
     exit(1);
 }
 
 function send_critical($msg) {
-    printf ("CRITICAL: $msg");
+    global $now;
+    printf ("CRITICAL: $msg (Checked $now)\n");
     exit(2);
 }
 
@@ -129,12 +141,14 @@ if ($testing == 'error') {
     send_warning("Moodle this is a test\n");
 }
 
+$when = userdate($lastcron, $format);
+
 if ( $difference > $options['cronerror'] * 60 * 60 ) {
-    send_critical("Moodle cron ran > {$options['cronerror']} hours ago\n");
+    send_critical("Moodle cron ran > {$options['cronerror']} hours ago\nLast run at $when");
 }
 
 if ( $difference > $options['cronwarn'] * 60 * 60 ) {
-    send_warning("Moodle cron ran > {$options['cronwarn']} hours ago\n");
+    send_warning("Moodle cron ran > {$options['cronwarn']} hours ago\nLast run at $when");
 }
 
 $delay = '';
@@ -159,14 +173,16 @@ foreach ($tasks as $task) {
 }
 
 if ( empty($legacylastrun) ) {
-    send_warning("Moodle legacy task isn't running {$options['delaywarn']} mins\n$delay");
+    send_warning("Moodle legacy task isn't running\n");
 }
 $minsincelegacylastrun = floor((time() - $legacylastrun) / 60);
+$when = userdate($legacylastrun, $format);
+
 if ( $minsincelegacylastrun > 60 * 24) {
-    send_critical("Moodle legacy task hasn't run in 24 hours\n");
+    send_critical("Moodle legacy task hasn't run in 24 hours\nLast run at $when");
 }
 if ( $minsincelegacylastrun > 5) {
-    send_warning("Moodle legacy task hasn't run in 5 mins\n");
+    send_warning("Moodle legacy task hasn't run in 5 mins\nLast run at $when");
 }
 
 $maxminsdelay = $maxdelay / 60;
@@ -175,9 +191,7 @@ if ( $maxminsdelay > $options['delayerror'] ) {
 
 } else if ( $maxminsdelay > $options['delaywarn'] ) {
     send_warning("Moodle task faildelay > {$options['delaywarn']} mins\n$delay");
-
-} else {
-    print "OK: MOODLE CRON RUNNING\n";
-    exit(0);
 }
+
+send_good("MOODLE CRON RUNNING\n");
 
