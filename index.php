@@ -22,6 +22,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Make sure varnish doesn't cache this. But it still might so go check it!
+header('Pragma: no-cache');
+header('Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate, proxy-revalidate');
+header('Expires: Tue, 04 Sep 2012 05:32:29 GMT');
+
 // Set this manually to true as needed.
 if (false) {
     print "Server is in MAINTENANCE";
