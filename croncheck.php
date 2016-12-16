@@ -178,11 +178,11 @@ if ( empty($legacylastrun) ) {
 $minsincelegacylastrun = floor((time() - $legacylastrun) / 60);
 $when = userdate($legacylastrun, $format);
 
-if ( $minsincelegacylastrun > 60 * 24) {
-    send_critical("Moodle legacy task hasn't run in 24 hours\nLast run at $when");
+if ( $minsincelegacylastrun > 6 * 60) {
+    send_critical("Moodle legacy task hasn't run in 6 hours\nLast run at $when");
 }
-if ( $minsincelegacylastrun > 5) {
-    send_warning("Moodle legacy task hasn't run in 5 mins\nLast run at $when");
+if ( $minsincelegacylastrun > 2 * 60) {
+    send_warning("Moodle legacy task hasn't run in 2 hours\nLast run at $when");
 }
 
 $maxminsdelay = $maxdelay / 60;
