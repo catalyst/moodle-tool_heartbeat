@@ -44,8 +44,11 @@ if (isset($argv)) {
     define('CLI_SCRIPT', true);
 
     $last = $argv[count($argv) - 1];
+    if (preg_match("/(.*):(.+)/", $last, $matches)) {
+       $last = $matches[1];
+    }
     if ($last && is_dir($last) ) {
-        $dirroot = array_pop($argv).'/';
+        $dirroot = $last . '/';
         array_pop($_SERVER['argv']);
     }
 
@@ -99,12 +102,12 @@ Example:
         'delaywarn'  => optional_param('delaywarn',  $delaywarn,      PARAM_NUMBER),
     );
     header("Content-Type: text/plain");
-}
 
-// Make sure varnish doesn't cache this. But it still might so go check it!
-header('Pragma: no-cache');
-header('Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate, proxy-revalidate');
-header('Expires: Tue, 04 Sep 2012 05:32:29 GMT');
+    // Make sure varnish doesn't cache this. But it still might so go check it!
+    header('Pragma: no-cache');
+    header('Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate, proxy-revalidate');
+    header('Expires: Tue, 04 Sep 2012 05:32:29 GMT');
+}
 
 $format = '%b %d %H:%M:%S';
 
