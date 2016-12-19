@@ -45,7 +45,7 @@ if (isset($argv)) {
 
     $last = $argv[count($argv) - 1];
     if (preg_match("/(.*):(.+)/", $last, $matches)) {
-       $last = $matches[1];
+        $last = $matches[1];
     }
     if ($last && is_dir($last) ) {
         $dirroot = $last . '/';
