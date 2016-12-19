@@ -39,7 +39,6 @@ $delaywarn      = 60;  // Minutes.
 
 $dirroot = '../../../';
 
-
 if (isset($argv)) {
     // If run from the CLI.
     define('CLI_SCRIPT', true);
@@ -49,7 +48,6 @@ if (isset($argv)) {
         $dirroot = array_pop($argv).'/';
         array_pop($_SERVER['argv']);
     }
-
 
     require($dirroot.'config.php');
     require_once($CFG->libdir.'/clilib.php');
@@ -128,6 +126,23 @@ function send_critical($msg) {
     global $now;
     printf ("CRITICAL: $msg (Checked $now)\n");
     exit(2);
+}
+
+if ($CFG->branch < 27) {
+
+    $lastcron = $DB->get_field_sql('SELECT MAX(lastcron) FROM {modules}');
+    $currenttime = time();
+    $difference = $currenttime - $lastcron;
+
+    if ( $difference > $options['cronerror'] * 60 * 60 ) {
+        send_critical("Moodle cron ran > {$options['cronerror']} hours ago\nLast run at $when");
+    }
+
+    if ( $difference > $options['cronwarn'] * 60 * 60 ) {
+        send_warning("Moodle cron ran > {$options['cronwarn']} hours ago\nLast run at $when");
+    }
+
+    send_good("MOODLE CRON RUNNING\n");
 }
 
 $lastcron = $DB->get_field_sql('SELECT MAX(lastruntime) FROM {task_scheduled}');
