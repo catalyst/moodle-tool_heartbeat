@@ -26,6 +26,8 @@ $string['pluginname'] = 'Heartbeat';
 $string['testing'] = 'Test heartbeat';
 $string['testingdesc'] = 'You can use this to temporarily fake a warn or error condition to test that your monitoring is correctly working end to end.';
 $string['normal'] = 'Normal monitoring';
+$string['progress'] = 'Progress bar test';
+$string['progresshelp'] = 'This tests that all the various output buffers in the entire stack are corrent including but not limited to php, ob, gzip/deflat, varnish, nginx etc';
 $string['testwarning'] = 'Fake a warning';
 $string['testerror'] = 'Fake a critical';
 
