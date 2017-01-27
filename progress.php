@@ -26,16 +26,15 @@ define('NO_OUTPUT_BUFFERING', true); // progress bar is used here
 require(__DIR__ . '/../../../config.php');
 
 $syscontext = context_system::instance();
--$PAGE->set_url('/admin/tool/heartbeat/progress.php');
+$PAGE->set_url('/admin/tool/heartbeat/progress.php');
 $PAGE->set_context($syscontext);
-$PAGE->set_cacheable(false);    // progress bar is used here
+$PAGE->set_cacheable(false);
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('progress', 'tool_heartbeat'));
 echo get_string('progresshelp', 'tool_heartbeat');
 $progressbar = new progress_bar();
 $progressbar->create();
 
-// tool_customlang_utils::checkout($lng, $progressbar);
 $progressbar->update_full(0, '0%');
 sleep(1);
 $progressbar->update_full(25, '25%');
