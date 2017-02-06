@@ -46,13 +46,11 @@ if (isset($argv) && $argv[0]) {
 define('NO_UPGRADE_CHECK', true);
 define('ABORT_AFTER_CONFIG', true);
 
-$configfile = '../../../config.php';
-
 /**
  * Checks if the command line maintenance mode has been enabled. Skip the config bootstrapping.
  *
  * @param string $configfile The relative path for config.php
- * @return bool|string False if not found, or the $CFG->dataroot path if found.
+ * @return bool True if climaintenance.html is found.
  */
 function checkclimaintenance($configfile) {
     $content = file_get_contents($configfile);
@@ -63,29 +61,27 @@ function checkclimaintenance($configfile) {
     $lines = explode(PHP_EOL, $content);
     foreach ($lines as $line) {
         $line = trim($line);
-        $re = '/^\$CFG->dataroot\s+=\s+["\'](.*)["\'];/';  // Lines starting with $CFG->dataroot
+        $re = '/^\$CFG->dataroot\s+=\s+["\'](.*?)["\'];/';  // Lines starting with $CFG->dataroot
         preg_match($re, $line, $matches);
         if (!empty($matches) && count($matches) == 2) {
             $climaintenance = $matches[1] . '/climaintenance.html';
 
             if (file_exists($climaintenance)) {
-                return $matches[1];
+                return true;
             }
         }
     }
+
     return false;
 }
 
-$climaintenaceon = checkclimaintenance($configfile);
-if ($climaintenaceon === false) {
-    require_once('../../../config.php');
-    global $CFG;
-} else {
-    $CFG = new stdClass();
-    $CFG->dataroot = $climaintenaceon;
-    // Cannot fullcheck with cli maintenance enabled.
-    $fullcheck = false;
+if (checkclimaintenance('../../../config.php') === true) {
+    print "Server is in MAINTENANCE<br>\n";
+    exit;
 }
+
+require_once('../../../config.php');
+global $CFG;
 
 $status = "";
 
@@ -148,10 +144,6 @@ if ($fullcheck) {
     }
 }
 
-if ($climaintenaceon) {
-    print "Server is in MAINTENANCE<br>\n";
-} else {
-    print "Server is ALIVE<br>\n";
-}
+print "Server is ALIVE<br>\n";
 print $status;
 
