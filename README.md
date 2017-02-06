@@ -28,6 +28,28 @@ This check can also be run as a CLI:
 php index.php fullcheck
 ```
 
+## Example return values for heartbeat
+Example for when the server is healthy.
+```
+(HTTP 200)
+Server is ALIVE
+sitedata OK
+```
+
+Example for when the server is in command line maintenace mode.
+```
+(HTTP 200)
+Server is in MAINTENANCE
+sitedata OK
+```
+
+Example for when the server is not healthy.
+```
+(HTTP 503)
+Server is DOWN
+Failed: database error
+```
+
 # A nagios cron health checker
 
 A script croncheck is a nagios compliant checker to see if cron
