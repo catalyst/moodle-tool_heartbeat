@@ -58,17 +58,13 @@ function checkclimaintenance($configfile) {
     $content = preg_replace("/;/", ";\n", $content);      // Split up statements, replace ';' with ';\n'
     $content = preg_replace("/^[\s]+/m", "", $content);   // Removes all initial whitespace and newlines.
 
-    $lines = explode(PHP_EOL, $content);
-    foreach ($lines as $line) {
-        $line = trim($line);
-        $re = '/^\$CFG->dataroot\s+=\s+["\'](.*?)["\'];/';  // Lines starting with $CFG->dataroot
-        preg_match($re, $line, $matches);
-        if (!empty($matches) && count($matches) == 2) {
-            $climaintenance = $matches[1] . '/climaintenance.html';
+    $re = '/^\$CFG->dataroot\s+=\s+["\'](.*?)["\'];/m';  // Lines starting with $CFG->dataroot
+    preg_match($re, $content, $matches);
+    if (!empty($matches)) {
+        $climaintenance = $matches[count($matches)-1] . '/climaintenance.html';
 
-            if (file_exists($climaintenance)) {
-                return true;
-            }
+        if (file_exists($climaintenance)) {
+            return true;
         }
     }
 
