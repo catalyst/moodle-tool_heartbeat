@@ -61,7 +61,7 @@ function checkclimaintenance($configfile) {
     $re = '/^\$CFG->dataroot\s+=\s+["\'](.*?)["\'];/m';  // Lines starting with $CFG->dataroot
     preg_match($re, $content, $matches);
     if (!empty($matches)) {
-        $climaintenance = $matches[count($matches)-1] . '/climaintenance.html';
+        $climaintenance = $matches[count($matches) - 1] . '/climaintenance.html';
 
         if (file_exists($climaintenance)) {
             return true;
