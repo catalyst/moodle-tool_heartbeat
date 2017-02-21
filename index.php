@@ -54,9 +54,9 @@ define('ABORT_AFTER_CONFIG', true);
  */
 function checkclimaintenance($configfile) {
     $content = file_get_contents($configfile);
-    $content = preg_replace("/\/\//", "\n//", $content);  // Set comments to be on newlines, replace '//' with '\n//'
-    $content = preg_replace("/;/", ";\n", $content);      // Split up statements, replace ';' with ';\n'
-    $content = preg_replace("/^[\s]+/m", "", $content);   // Removes all initial whitespace and newlines.
+    $content = preg_replace("/[^!:]\/\//", "\n//", $content);  // Set comments to be on newlines, replace '//' with '\n//', where // does not start with :
+    $content = preg_replace("/;/", ";\n", $content);           // Split up statements, replace ';' with ';\n'
+    $content = preg_replace("/^[\s]+/m", "", $content);        // Removes all initial whitespace and newlines.
 
     $re = '/^\$CFG->dataroot\s+=\s+["\'](.*?)["\'];/m';  // Lines starting with $CFG->dataroot
     preg_match($re, $content, $matches);
