@@ -52,11 +52,11 @@ define('ABORT_AFTER_CONFIG', true);
  * @param string $configfile The relative path for config.php
  * @return bool True if climaintenance.html is found.
  */
-function checkclimaintenance($configfile) {
+function check_climaintenance($configfile) {
     $content = file_get_contents($configfile);
-    $content = preg_replace("/[^!:]\/\//", "\n//", $content);  // Set comments to be on newlines, replace '//' with '\n//', where // does not start with :
-    $content = preg_replace("/;/", ";\n", $content);           // Split up statements, replace ';' with ';\n'
-    $content = preg_replace("/^[\s]+/m", "", $content);        // Removes all initial whitespace and newlines.
+    $content = preg_replace("#[^!:]//#", "\n//", $content);  // Set comments to be on newlines, replace '//' with '\n//', where // does not start with :
+    $content = preg_replace("/;/", ";\n", $content);         // Split up statements, replace ';' with ';\n'
+    $content = preg_replace("/^[\s]+/m", "", $content);      // Removes all initial whitespace and newlines.
 
     $re = '/^\$CFG->dataroot\s+=\s+["\'](.*?)["\'];/m';  // Lines starting with $CFG->dataroot
     preg_match($re, $content, $matches);
@@ -71,12 +71,12 @@ function checkclimaintenance($configfile) {
     return false;
 }
 
-if (checkclimaintenance('../../../config.php') === true) {
+if (check_climaintenance(__DIR__ . '/../../../config.php') === true) {
     print "Server is in MAINTENANCE<br>\n";
     exit;
 }
 
-require_once('../../../config.php');
+require_once(__DIR__ . '/../../../config.php');
 global $CFG;
 
 $status = "";
