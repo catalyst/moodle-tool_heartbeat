@@ -131,6 +131,10 @@ function send_critical($msg) {
     exit(2);
 }
 
+if (moodle_needs_upgrading()) {
+    send_critical("Moodle upgrade pending, cron execution suspended");
+}
+
 if ($CFG->branch < 27) {
 
     $lastcron = $DB->get_field_sql('SELECT MAX(lastcron) FROM {modules}');

@@ -18,14 +18,14 @@
  * Version details.
  *
  * @package    tool_heartbeat
- * @copyright  2014 Brendan Heywood <brendan@catalyst-au.net>
+ * @copyright  2017 Brendan Heywood <brendan@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017012700;
-$plugin->release   = 2017012700; // Match release exactly to version.
+$plugin->version   = 2017030700;
+$plugin->release   = 2017030700; // Match release exactly to version.
 $plugin->requires  = 2012120311; // Deep support going back to 2.4
 $plugin->component = 'tool_heartbeat';
 $plugin->maturity  = MATURITY_STABLE;
