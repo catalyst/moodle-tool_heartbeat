@@ -158,9 +158,9 @@ $difference = $currenttime - $lastcron;
 
 $testing = get_config('tool_heartbeat', 'testing');
 if ($testing == 'error') {
-    send_critical("Moodle this is a test\n");
+    send_critical("Moodle this is a test $CFG->wwwroot/admin/settings.php?section=tool_heartbeat\n");
 } else if ($testing == 'warn') {
-    send_warning("Moodle this is a test\n");
+    send_warning("Moodle this is a test $CFG->wwwroot/admin/settings.php?section=tool_heartbeat\n");
 }
 
 $when = userdate($lastcron, $format);

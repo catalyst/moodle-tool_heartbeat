@@ -39,7 +39,7 @@ if ($hassiteconfig) {
         $settings->add(new admin_setting_configselect('tool_heartbeat/testing',
                         new lang_string('testing',        'tool_heartbeat'),
                         new lang_string('testingdesc',    'tool_heartbeat'),
-                        '',
+                        'error',
                         $options));
     }
 }
