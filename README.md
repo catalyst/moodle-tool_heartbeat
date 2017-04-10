@@ -4,8 +4,11 @@
 
 # A heartbeat test page for Moodle
 
-Very simple, just performs a quick check of all critical service
-dependancies (filesystem, DB, caches, and sessions) and return OK
+
+
+A very simple plugin which just performs a quick check of all
+critical service dependancies (filesystem, DB, caches, and
+sessions) and return OK
 
 Use from a load balancer to tell whether a node is OK
 
@@ -51,6 +54,12 @@ Failed: database error
 ```
 
 # A nagios cron health checker
+
+NOTE: Ideally this plugin should be redundant and most of it's
+functionality built into core as a new API, enabling each plugin
+to delare it's own extra health checks. See:
+
+https://tracker.moodle.org/browse/MDL-47271
 
 A script croncheck is a nagios compliant checker to see if cron
 or any individual tasks are failing, with configurable thresholds
