@@ -1,4 +1,3 @@
-
 language: php
 
 notifications:
@@ -13,43 +12,34 @@ cache:
     - $HOME/.composer/cache
 
 php:
- - 5.6
+  - 5.6
+  - 7.0
 
 env:
- matrix:
-  - DB=pgsql MOODLE_BRANCH=MOODLE_27_STABLE
-  - DB=pgsql MOODLE_BRANCH=MOODLE_28_STABLE
-  - DB=pgsql MOODLE_BRANCH=MOODLE_29_STABLE
-  - DB=pgsql MOODLE_BRANCH=MOODLE_30_STABLE
-  - DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE
-  - DB=pgsql MOODLE_BRANCH=MOODLE_32_STABLE
-  - DB=pgsql MOODLE_BRANCH=master
-  - DB=mysqli MOODLE_BRANCH=MOODLE_27_STABLE
-  - DB=mysqli MOODLE_BRANCH=MOODLE_28_STABLE
-  - DB=mysqli MOODLE_BRANCH=MOODLE_29_STABLE
-  - DB=mysqli MOODLE_BRANCH=MOODLE_30_STABLE
-  - DB=mysqli MOODLE_BRANCH=MOODLE_31_STABLE
-  - DB=mysqli MOODLE_BRANCH=MOODLE_32_STABLE
-  - DB=mysqli MOODLE_BRANCH=master
+  global:
+    - DB=pgsql
+  matrix:
+    - MOODLE_BRANCH=MOODLE_30_STABLE
+    - MOODLE_BRANCH=MOODLE_31_STABLE
+    - MOODLE_BRANCH=MOODLE_32_STABLE
+    - MOODLE_BRANCH=MOODLE_33_STABLE
+    - MOODLE_BRANCH=master
 
 matrix:
   include:
-    - php: 7.0
-      env: DB=pgsql MOODLE_BRANCH=MOODLE_30_STABLE
-    - php: 7.0
-      env: DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE
-    - php: 7.0
-      env: DB=pgsql MOODLE_BRANCH=MOODLE_32_STABLE
-    - php: 7.0
-      env: DB=pgsql MOODLE_BRANCH=master
-    - php: 7.0
-      env: DB=mysqli MOODLE_BRANCH=MOODLE_30_STABLE
-    - php: 7.0
-      env: DB=mysqli MOODLE_BRANCH=MOODLE_31_STABLE
-    - php: 7.0
-      env: DB=mysqli MOODLE_BRANCH=MOODLE_32_STABLE
+    # Test older Moodles only with PHP 5.6
+    - php: 5.6
+      env: MOODLE_BRANCH=MOODLE_27_STABLE
+    - php: 5.6
+      env: MOODLE_BRANCH=MOODLE_28_STABLE
+    - php: 5.6
+      env: MOODLE_BRANCH=MOODLE_29_STABLE
+    # Test with MySQL
     - php: 7.0
       env: DB=mysqli MOODLE_BRANCH=master
+    # Test with PHP 7.1
+    - php: 7.1
+      env: MOODLE_BRANCH=master
 
 before_install:
   - cd ../..
@@ -58,16 +48,16 @@ before_install:
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 install:
-  - moodle-plugin-ci install
+  - moodle-plugin-ci install -vvv
 
 script:
+  - moodle-plugin-ci validate
   - moodle-plugin-ci phplint
   - moodle-plugin-ci phpcpd
   - moodle-plugin-ci phpmd
   - moodle-plugin-ci codechecker
-# - moodle-plugin-ci csslint    # No CSS
+  - moodle-plugin-ci csslint
   - moodle-plugin-ci shifter
-# - moodle-plugin-ci jshint     # No JS
-# - moodle-plugin-ci phpunit    # No tests yet
-# - moodle-plugin-ci behat      # No tests yet
-
+  - moodle-plugin-ci jshint
+  - moodle-plugin-ci phpunit
+  - moodle-plugin-ci behat
