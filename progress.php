@@ -34,6 +34,7 @@ echo $OUTPUT->heading(get_string('progress', 'tool_heartbeat'));
 echo get_string('progresshelp', 'tool_heartbeat');
 $progressbar = new progress_bar();
 $progressbar->create();
+echo $OUTPUT->footer();
 
 $progressbar->update_full(0, '0%');
 sleep(1);
@@ -45,4 +46,3 @@ $progressbar->update_full(75, '75%');
 sleep(1);
 $progressbar->update_full(100, '100%');
 
-echo $OUTPUT->footer();
