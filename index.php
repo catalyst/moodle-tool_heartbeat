@@ -107,18 +107,33 @@ if (file_exists($testfile)) {
     failed('sitedata not readable');
 }
 
+$sessionhandler = (property_exists($CFG, 'session_handler_class') && $CFG->session_handler_class === '\core\session\memcached');
+$savepath = property_exists($CFG, 'session_memcached_save_path');
 
-$sessionhandler = (property_exists($CFG, 'session_handler_class') && $CFG->session_handler_class == '\core\session\memcached');
-
-if ($sessionhandler) {
-
-    $memcache = explode(':', $CFG->session_memcached_save_path );
+if ($sessionhandler && $savepath) {
+    require_once($CFG->libdir . '/classes/session/util.php');
+    $servers = \core\session\util::connection_string_to_memcache_servers($CFG->session_memcached_save_path);
     try {
-        memcache_connect($memcache[0], $memcache[1], 3);
-        $status .= "session memcache OK<br>\n";
+        $memcached = new \Memcached();
+        $memcached->addServers($servers);
+        $stats = $memcached->getStats();
+        $memcached->quit();
+
+        $addr = $servers[0][0];
+        $port = $servers[0][1];
+
+        if ($stats[$addr . ':' . $port]['uptime'] > 0) {
+            $status .= "session memcached OK<br>\n";
+        } else {
+            failed('sessions memcached');
+        }
+
     } catch (Exception $e) {
-        failed('sessions memcache');
+        failed('sessions memcached');
+    } catch (Throwable $e) {
+        failed('sessions memcached');
     }
+
 }
 
 // Optionally check database configuration and access (slower).
@@ -136,6 +151,8 @@ if ($fullcheck) {
             failed('no users in database');
         }
     } catch (Exception $e) {
+        failed('database error');
+    } catch (Throwable $e) {
         failed('database error');
     }
 }
