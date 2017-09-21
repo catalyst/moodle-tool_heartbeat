@@ -21,7 +21,7 @@
  * @copyright  2017 Rossco Hellmans <rossco@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-//apache_setenv('no-gzip', '1');
+
 define('NO_OUTPUT_BUFFERING', true); // progress bar is used here
 
 require(__DIR__ . '/../../../config.php');
@@ -50,7 +50,7 @@ echo $help;
 
 $string = '';
 
-for ($i = 0; $i < $remainingsize; $i = $i + 2) { 
+for ($i = 0; $i < $remainingsize; $i = $i + 2) {
     $string .= '. ';
 
     if ($i % 10240 === 0) {
