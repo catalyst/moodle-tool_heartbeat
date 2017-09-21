@@ -15,14 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Performs a progress bar test
+ * Performs a compression test
  *
  * @package    tool_heartbeat
  * @copyright  2017 Rossco Hellmans <rossco@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-define('NO_OUTPUT_BUFFERING', true); // progress bar is used here
 
 require(__DIR__ . '/../../../config.php');
 
@@ -35,32 +33,17 @@ $ttfb = optional_param('ttfb', 1, PARAM_INT);
 // Default fixed size is 50KB.
 $fixedsize = optional_param('fixedsize', 51200, PARAM_INT);
 
+// Max fixed size is 500KB in case of a ddos vector.
+if ($fixedsize > 512000) {
+    $fixedsize = 512000;
+}
+
 sleep($ttfb);
-
-$header = $OUTPUT->header();
-$heading = $OUTPUT->heading(get_string('compresscheck', 'tool_heartbeat'));
-$help = get_string('compresscheckhelp', 'tool_heartbeat');
-$footer = $OUTPUT->footer();
-
-$remainingsize = $fixedsize - strlen($header) - strlen($heading) - strlen($help) - strlen($footer);
-
-echo $header;
-echo $heading;
-echo $help;
 
 $string = '';
 
-for ($i = 0; $i < $remainingsize; $i = $i + 2) {
-    $string .= '. ';
-
-    if ($i % 10240 === 0) {
-        sleep(1);
-        echo $string;
-        $string = '';
-    }
+for ($i = 0; $i < $fixedsize; $i++) {
+    $string .= '.';
 }
 
-sleep(1);
 echo $string;
-
-echo $footer;
