@@ -36,13 +36,10 @@ $progressbar = new progress_bar();
 $progressbar->create();
 echo $OUTPUT->footer();
 
+$total = 3; // Total should be 5 seconds;
 $progressbar->update_full(0, '0%');
-sleep(1);
-$progressbar->update_full(25, '25%');
-sleep(1);
-$progressbar->update_full(50, '50%');
-sleep(1);
-$progressbar->update_full(75, '75%');
-sleep(1);
-$progressbar->update_full(100, '100%');
+for ($c = 1; $c <= 100; $c++) {
+    usleep($total * 1000000 / 100);
+    $progressbar->update_full($c, $c . '%');
+}
 
