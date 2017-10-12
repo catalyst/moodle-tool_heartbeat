@@ -30,9 +30,9 @@ $PAGE->set_context($syscontext);
 $PAGE->set_cacheable(false);
 
 $curl = curl_init();
-curl_setopt($curl, CURLOPT_HEADER, FALSE);
-curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-curl_setopt($curl, CURLOPT_FRESH_CONNECT, TRUE);
+curl_setopt($curl, CURLOPT_HEADER, false);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);
 curl_setopt($curl, CURLOPT_ENCODING, 'gzip');
 
 $url = new moodle_url('/admin/tool/heartbeat/progress.php');
