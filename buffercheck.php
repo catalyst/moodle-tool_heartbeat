@@ -22,12 +22,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+define('NO_MOODLE_COOKIES', true);
 require(__DIR__ . '/../../../config.php');
 
-$syscontext = context_system::instance();
-$PAGE->set_url('/admin/tool/heartbeat/buffercheck.php');
-$PAGE->set_context($syscontext);
-$PAGE->set_cacheable(false);
+header("Content-Type: text/plain");
+
+// Make sure varnish doesn't cache this. But it still might so go check it!
+header('Pragma: no-cache');
+header('Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate, proxy-revalidate');
+header('Expires: Tue, 04 Sep 2012 05:32:29 GMT');
 
 $curl = curl_init();
 curl_setopt($curl, CURLOPT_HEADER, false);
@@ -40,13 +43,16 @@ curl_setopt($curl, CURLOPT_URL, $url);
 $response = curl_exec($curl);
 $info = curl_getinfo($curl);
 
+
 $pass = true;
 
+$output = '';
+
 if ($info['http_code'] === 200 && $info['starttransfer_time'] < 1 && $info['total_time'] > 2) {
-    echo nl2br("OK: Progress bar is working\n");
+    $output .= "OK: Progress bar is working\n";
 } else {
     $pass = false;
-    echo nl2br("WARNING: Progress bar is not working\n");
+    $output .= "WARNING: Progress bar is not working\n";
 }
 
 $url = new moodle_url('/admin/tool/heartbeat/compresscheck.php');
@@ -56,10 +62,10 @@ $datalength = strlen($response);
 $info = curl_getinfo($curl);
 
 if ($info['http_code'] === 200 && $info['size_download'] < $datalength && $info['starttransfer_time'] > 1) {
-    echo nl2br("OK: Compression is working\n");
+    $output .= "OK: Compression is working\n";
 } else {
     $pass = false;
-    echo nl2br("WARNING: Compression is not working\n");
+    $output .= "WARNING: Compression is not working\n";
 }
 
 curl_close($curl);
@@ -73,10 +79,10 @@ foreach ($files as $file) {
     $contents = file_get_contents($file);
     $lines = explode("\n", $contents);
     if (in_array("define('NO_OUTPUT_BUFFERING', true);", $lines)) {
-        echo nl2br("OK: NO_OUTPUT_BUFFERING exists in $file\n");
+        $output .= "OK: NO_OUTPUT_BUFFERING exists in $file\n";
     } else {
         $pass = false;
-        echo nl2br("WARNING: NO_OUTPUT_BUFFERING is missing in $file\n");
+        $output .= "WARNING: NO_OUTPUT_BUFFERING is missing in $file\n";
     }
 }
 
@@ -84,14 +90,20 @@ $file = $CFG->libdir.'/setuplib.php';
 $contents = file_get_contents($file);
 $lines = explode("\n", $contents);
 if (in_array("    header('X-Accel-Buffering: no');", $lines)) {
-    echo nl2br("OK: X-Accel-Buffering: no exists in $file\n");
+    $output .= "OK: X-Accel-Buffering: exists in $file\n";
 } else {
     $pass = false;
-    echo nl2br("WARNING: X-Accel-Buffering: no is missing in $file\n");
+    $output .= "WARNING: X-Accel-Buffering: is missing in $file\n";
 }
 
+
 if ($pass) {
+    echo "OK: All tests passed\n";
+    echo $output;
     exit(0);
 } else {
+    echo "Fail: not all tests passed\n";
+    echo $output;
     exit(1);
 }
+
