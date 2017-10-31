@@ -15,18 +15,36 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * Upload speed check
  *
  * @package    tool_heartbeat
  * @copyright  2017 Brendan Heywood <brendan@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * This is an upload handler which accepts data and then reports on how long
+ * it took. It can be used standalone or in conjunction with:
+ *
+ * php cli/testupload.php
+ *
  */
 
-defined('MOODLE_INTERNAL') || die();
+$starttime = microtime(true);
 
-$plugin->version   = 2017103100;
-$plugin->release   = 2017103100; // Match release exactly to version.
-$plugin->requires  = 2012120311; // Deep support going back to 2.4
-$plugin->component = 'tool_heartbeat';
-$plugin->maturity  = MATURITY_STABLE;
+$putdata = fopen("php://input", "r");
+$totalbytes = 0;
+while ($data = fread($putdata, 1024 * 4)) {
+    $size = strlen($data);
+    $totalbytes += $size;
+}
+fclose($putdata);
+
+$endtime = microtime(true);
+
+$duration = $endtime - $starttime; // In seconds.
+
+printf("Size = %.1fMB, Time = %.3fs,  %.1fMbps ",
+    $totalbytes / 1024 / 1024,
+    $duration,
+    $totalbytes * 8 / $duration / 1000 / 1000
+);
 
