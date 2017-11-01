@@ -1,5 +1,5 @@
-<a href="https://travis-ci.org/brendanheywood/moodle-tool_heartbeat">
-<img src="https://travis-ci.org/brendanheywood/moodle-tool_heartbeat.svg?branch=master">
+<a href="https://travis-ci.org/catalyst/moodle-tool_heartbeat">
+<img src="https://travis-ci.org/catalyst/moodle-tool_heartbeat.svg?branch=master">
 </a>
 
 # A heartbeat test page for Moodle
