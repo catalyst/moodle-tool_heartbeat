@@ -38,22 +38,9 @@ curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);
 curl_setopt($curl, CURLOPT_ENCODING, 'gzip');
 
-$url = new moodle_url('/admin/tool/heartbeat/progress.php');
-curl_setopt($curl, CURLOPT_URL, $url);
-$response = curl_exec($curl);
-$info = curl_getinfo($curl);
-
-
 $pass = true;
 
 $output = '';
-
-if ($info['http_code'] === 200 && $info['starttransfer_time'] < 1 && $info['total_time'] > 2) {
-    $output .= "OK: Progress bar is working\n";
-} else {
-    $pass = false;
-    $output .= "WARNING: Progress bar is not working\n";
-}
 
 $url = new moodle_url('/admin/tool/heartbeat/compresscheck.php');
 curl_setopt($curl, CURLOPT_URL, $url);
@@ -61,14 +48,26 @@ $response = curl_exec($curl);
 $datalength = strlen($response);
 $info = curl_getinfo($curl);
 
-if ($info['http_code'] === 200 && $info['size_download'] < $datalength && $info['starttransfer_time'] > 1) {
-    $output .= "OK: Compression is working\n";
+if ($response !== false) {
+    if ($info['http_code'] === 200 && $info['size_download'] < $datalength && $info['starttransfer_time'] > 1) {
+        $output .= "OK: Compression is working\n";
+    } else {
+        $pass = false;
+        $output .= "WARNING: Compression is not working\n";
+    }
 } else {
     $pass = false;
     $output .= "WARNING: Compression is not working\n";
-}
 
-curl_close($curl);
+    $err = curl_error($curl);
+    $errno = curl_errno($curl);
+
+    if ($err) {
+        $output .= "Curl failed with the following error: ($errno) $err";
+    } else {
+        $output .= "Curl failed and no error was returned";
+    }
+}
 
 $files = [
     $CFG->dirroot . '/backup/backup.php',
@@ -96,6 +95,39 @@ if (in_array("    header('X-Accel-Buffering: no');", $lines)) {
     $output .= "WARNING: X-Accel-Buffering: is missing in $file\n";
 }
 
+$url = new moodle_url('/admin/tool/heartbeat/progress.php');
+// Fake a curl domain error.
+// $url = 'http://404.php.net/';
+// Fake a curl timeout error.
+// $url = 'http://blackhole.webpagetest.org/';
+curl_setopt($curl, CURLOPT_URL, $url);
+$response = curl_exec($curl);
+$info     = curl_getinfo($curl);
+
+if ($response !== false) {
+    if ($info['http_code'] === 200 && $info['starttransfer_time'] < 2 && $info['total_time'] > 8) {
+        $output .= "OK: Progress bar is working";
+    } else {
+        $pass = false;
+        $output .= "WARNING: Progress bar is not working";
+    }
+
+    $output .= " Debugging:: URL: {$info['url']} HTTP code: {$info['http_code']} Total time: {$info['total_time']} TTFB: {$info['starttransfer_time']}\n";
+} else {
+    $pass = false;
+    $output .= "WARNING: Progress bar is not working\n";
+
+    $err = curl_error($curl);
+    $errno = curl_errno($curl);
+
+    if ($err) {
+        $output .= "Curl failed with the following error: ($errno) $err";
+    } else {
+        $output .= "Curl failed and no error was returned";
+    }
+}
+
+curl_close($curl);
 
 if ($pass) {
     echo "OK: All tests passed\n";
