@@ -36,7 +36,12 @@ $progressbar = new progress_bar();
 $progressbar->create();
 echo $OUTPUT->footer();
 
-$total = 3; // Total should be 5 seconds;
+// Total should be 10 seconds. This has been tuned a few times and the
+// story here is there is an intermittent slowness somewhere in the stack
+// which means that a small percentage of checks have a long TTFB and
+// so icinga / gocd checks fail. This is likely to be an issue in the
+// stack and not the test, so we have just added more margin here.
+$total = 10;
 $progressbar->update_full(0, '0%');
 for ($c = 1; $c <= 100; $c++) {
     usleep($total * 1000000 / 100);
