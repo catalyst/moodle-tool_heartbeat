@@ -34,14 +34,18 @@ use core_privacy\local\request\context;
 class provider implements
     \core_privacy\local\metadata\null_provider {
 
+    use \core_privacy\local\legacy_polyfill;
 
     /**
      * Get the language string identifier with the component's language
      * file to explain why this plugin stores no data.
      *
+     * This function is compatible with old php version. (Diff is the underscore '_' in the beginning)
+     * But the get_reason is still available because of the trait legacy_polyfill.
+     *
      * @return  string
      */
-    public static function get_reason(): string {
+    public static function _get_reason() {
         return 'privacy:no_data_reason';
     }
 }
