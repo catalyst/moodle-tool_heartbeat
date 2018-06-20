@@ -31,3 +31,7 @@ $string['progresshelp'] = 'This tests that all the various output buffers in the
 $string['testwarning'] = 'Fake a warning';
 $string['testerror'] = 'Fake a critical';
 
+/*
+ * Privacy provider (GDPR)
+ */
+$string["privacy:no_data_reason"] = "The 'Heartbeat' plugins doesn't store data by itself. It just access to data from other plugins";
