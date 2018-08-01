@@ -34,4 +34,4 @@ $string['testerror'] = 'Fake a critical';
 /*
  * Privacy provider (GDPR)
  */
-$string["privacy:no_data_reason"] = "The 'Heartbeat' plugins doesn't store data by itself. It just access to data from other plugins";
+$string["privacy:no_data_reason"] = "The Heartbeat plugin does not store any personal data.";
