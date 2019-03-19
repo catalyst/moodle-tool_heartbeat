@@ -32,10 +32,12 @@
 
 define('NO_UPGRADE_CHECK', true);
 
-$cronthreshold  = 6;   // Hours.
-$cronwarn       = 2;   // Hours.
-$delaythreshold = 600; // Minutes.
-$delaywarn      = 60;  // Minutes.
+$cronthreshold   = 6;   // Hours.
+$cronwarn        = 2;   // Hours.
+$delaythreshold  = 600; // Minutes.
+$delaywarn       = 60;  // Minutes.
+$legacythreshold = 60 * 6; // Minute.
+$legacywarn      = 60 * 2; // Minutes.
 
 $dirroot = '../../../';
 
@@ -58,10 +60,12 @@ if (isset($argv)) {
     list($options, $unrecognized) = cli_get_params(
         array(
             'help' => false,
-            'cronwarn'   => $cronthreshold,
-            'cronerror'  => $cronwarn,
-            'delaywarn'  => $delaythreshold,
-            'delayerror' => $delaywarn
+            'cronwarn'    => $cronwarn,
+            'cronerror'   => $cronthreshold,
+            'delaywarn'   => $delaywarn,
+            'delayerror'  => $delaythreshold,
+            'legacywarn'  => $legacywarn,
+            'legacyerror' => $legacythreshold,
         ),
         array(
             'h'   => 'help'
@@ -80,10 +84,12 @@ croncheck.php [options] [moodle path]
 
 Options:
 -h, --help          Print out this help
-    --cronwarn=n    Threshold for no cron run error in hours (default $cronthreshold)
-    --cronerror=n   Threshold for no cron run warn in hours (default $cronwarn)
-    --delaywarn=n   Threshold for fail delay cron error in minutes (default $delaythreshold)
-    --delayerror=n  Threshold for fail delay cron warn in minutes (default $delaywarn)
+    --cronwarn=n    Threshold for no cron run error in hours (default $cronwarn)
+    --cronerror=n   Threshold for no cron run warn in hours (default $cronthreshold)
+    --delaywarn=n   Threshold for fail delay cron error in minutes (default $delaywarn)
+    --delayerror=n  Threshold for fail delay cron warn in minutes (default $delaythreshold)
+    --legacywarn=n  Threshold for legacy cron warn in minutes (default $legacywarn)
+    --legacyerror=n Threshold for legacy cron error in minutes (default $legacythreshold)
 
 Example:
 \$sudo -u www-data /usr/bin/php admin/tool/heartbeat/croncheck.php
@@ -96,10 +102,12 @@ Example:
     define('NO_MOODLE_COOKIES', true);
     require($dirroot.'config.php');
     $options = array(
-        'cronerror'  => optional_param('cronerror',  $cronthreshold,  PARAM_NUMBER),
-        'cronwarn'   => optional_param('cronwarn',   $cronwarn,       PARAM_NUMBER),
-        'delayerror' => optional_param('delayerror', $delaythreshold, PARAM_NUMBER),
-        'delaywarn'  => optional_param('delaywarn',  $delaywarn,      PARAM_NUMBER),
+        'cronerror'   => optional_param('cronerror',   $cronthreshold,   PARAM_NUMBER),
+        'cronwarn'    => optional_param('cronwarn',    $cronwarn,        PARAM_NUMBER),
+        'delayerror'  => optional_param('delayerror',  $delaythreshold,  PARAM_NUMBER),
+        'delaywarn'   => optional_param('delaywarn',   $delaywarn,       PARAM_NUMBER),
+        'legacyerror' => optional_param('legacyerror', $legacythreshold, PARAM_NUMBER),
+        'legacywarn'  => optional_param('legacywarn',  $legacywarn,      PARAM_NUMBER),
     );
     header("Content-Type: text/plain");
 
@@ -195,16 +203,16 @@ foreach ($tasks as $task) {
 }
 
 if ( empty($legacylastrun) ) {
-    send_warning("Moodle legacy task isn't running\n");
+    send_warning("Moodle legacy task isn't running (ie disabled)\n");
 }
-$minsincelegacylastrun = floor((time() - $legacylastrun) / 60);
+$minsincelegacylastrun = floor((time() - $legacylastrun) / 60); // In minutes.
 $when = userdate($legacylastrun, $format);
 
-if ( $minsincelegacylastrun > 6 * 60) {
-    send_critical("Moodle legacy task hasn't run in 6 hours\nLast run at $when");
+if ( $minsincelegacylastrun > $options['legacyerror']) {
+    send_critical("Moodle legacy task last run $minsincelegacylastrun mins ago > {$options['legacyerror']} mins\nLast run at $when");
 }
-if ( $minsincelegacylastrun > 2 * 60) {
-    send_warning("Moodle legacy task hasn't run in 2 hours\nLast run at $when");
+if ( $minsincelegacylastrun > $options['legacywarn']) {
+    send_warning("Moodle legacy task last run $minsincelegacylastrun mins ago > {$options['legacywarn']} mins\nLast run at $when");
 }
 
 $maxminsdelay = $maxdelay / 60;
