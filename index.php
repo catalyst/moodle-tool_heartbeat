@@ -95,6 +95,54 @@ function failed($reason) {
     exit;
 }
 
+// CATALYST CUSTOM: Monitor for unoconv
+$unoconv = false;
+if (defined('CLI_SCRIPT') && CLI_SCRIPT) {
+    $unoconv = count($argv) > 1 && $argv[1] === 'unoconv';
+} else {
+    $unoconv = isset($_GET['unoconv']);
+}
+if ($unoconv) {
+    try {
+        define('ABORT_AFTER_CONFIG_CANCEL', true);
+        require($CFG->dirroot . '/lib/setup.php');
+        global $DB;
+        if (empty($CFG->queuesize)) {
+            $CFG->queuesize = 2000;
+        }
+        if (empty($CFG->queuehungtime)) {
+            $CFG->queuehungtime = 3600;
+        }
+
+        // First, length of queue of pending items as far as Moodle knows.
+        $count = $DB->count_records('file_conversion', ['converter' => 'unoconv', 'status' => 0]);
+        if ($count > $CFG->queuesize) {
+            failed('unoconv queue: ' . $count . ' pending items');
+        }
+
+        // Secondly items that are hanging around.
+        $values = [
+            'converter = ?' => 'unoconv',
+            'status = ?' => 1,
+            'timemodified < ?' => time() - $CFG->queuehungtime,
+        ];
+        $criteria = array_keys($values);
+        $params = array_values($values);
+        $count = $DB->count_records_select('file_conversion', implode(' AND ', $criteria), $params);
+        if ($count > 0) {
+            failed('unoconv queue - ' . $count . ' items pending for more than ' . (round($queuehungtime / 60)) . ' minutes');
+        }
+
+        echo 'Success, unoconv queue is sane.';
+        exit;
+    } catch (Exception $e) {
+        failed('database error');
+    } catch (Throwable $e) {
+        failed('database error');
+    }
+}
+// END CATALYST CUSTOM: unoconv
+
 $testfile = $CFG->dataroot . "/tool_heartbeat.test";
 $size = file_put_contents($testfile, '1');
 if ($size !== 1) {
