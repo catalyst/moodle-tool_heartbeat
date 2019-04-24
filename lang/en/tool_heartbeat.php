@@ -25,13 +25,23 @@
 $string['pluginname'] = 'Heartbeat';
 $string['errorlog'] = 'Error log period';
 $string['errorlogdesc'] = 'To help ensure that all web server logging is working we can emit an intermittent message to the error_log. Set this to 0 to turn it off.';
-$string['testing'] = 'Test heartbeat';
-$string['testingdesc'] = 'You can use this to temporarily fake a warn or error condition to test that your monitoring is correctly working end to end.';
 $string['normal'] = 'Normal monitoring';
 $string['progress'] = 'Progress bar test';
 $string['progresshelp'] = 'This tests that all the various output buffers in the entire stack are corrent including but not limited to php, ob, gzip/deflat, varnish, nginx etc';
-$string['testwarning'] = 'Fake a warning';
+$string['testabort'] = 'Test abort';
+$string['testaborthelp'] = '<p>This tests wether the whole stack is correctly passing a request cancel signal from the browser to php through whatever layers are in the middle, such as load balancers, cdn\'s, caches, php-fm etc.</p>
+<p>It works in 2 stages:<p>
+<ol>
+<li>Stage one takes 10 seconds and renders a progress bar</ii>
+<li>In javascript the progress bar page is aborted after 1 second</li>
+<li>If the abort works fully the process is killed which unlocks the session and the page reloads quickly showing where the progress bar had gotten to.</li>
+<li>If the abort did not work it will continue as an orphaned process holding the session lock until it times out after 5 seconds</li>
+</ol>
+';
 $string['testerror'] = 'Fake a critical';
+$string['testwarning'] = 'Fake a warning';
+$string['testing'] = 'Test heartbeat';
+$string['testingdesc'] = 'You can use this to temporarily fake a warn or error condition to test that your monitoring is correctly working end to end.';
 $string['allowedips'] = 'Allowed IPs Config';
 $string['allowedipstitle'] = 'IP Blocking Configuration';
 $string['allowedipsdescription'] = 'Box to enter safe IP addresses for the heartbeat to respond to.';
