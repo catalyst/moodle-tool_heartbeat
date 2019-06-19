@@ -85,6 +85,7 @@ global $CFG;
 
 $status = "";
 
+
 /**
  * Return an error that ELB will pick up
  *
@@ -114,6 +115,13 @@ if (file_exists($testfile)) {
 define('ABORT_AFTER_CONFIG_CANCEL', true);
 require($CFG->dirroot . '/lib/setup.php');
 require_once($CFG->libdir.'/filelib.php');
+
+//IP Locking, check for remote IP in validated list, if not, exit
+$allowedips = get_config('tool_heartbeat','ipconfig');
+if ((!(remoteip_in_list($allowedips))) && (trim($allowedips) !== '')){
+    print "IP is not in validated range";
+    exit;
+}
 
 if ($fullcheck || $checksession) {
     $c = new curl(array('cache' => false, 'cookie' => true));
