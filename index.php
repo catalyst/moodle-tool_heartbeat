@@ -118,13 +118,6 @@ define('ABORT_AFTER_CONFIG_CANCEL', true);
 require($CFG->dirroot . '/lib/setup.php');
 require_once($CFG->libdir.'/filelib.php');
 
-/*//IP Locking, check for remote IP in validated list, if not, exit
-$allowedips = get_config('tool_heartbeat','ipconfig');
-if ((!(remoteip_in_list($allowedips))) && (trim($allowedips) !== '')){
-    header("HTTP/1.0 403 Forbidden");
-    exit;
-}*/
-
 // IP Locking, check for remote IP in validated list, if not, exit
 $allowedips = get_config('tool_heartbeat','ipconfig');
 if (!(validate_IP_against_config($allowedips))){

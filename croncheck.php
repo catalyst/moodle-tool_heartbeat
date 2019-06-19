@@ -32,6 +32,8 @@
 
 define('NO_UPGRADE_CHECK', true);
 
+include('iplock.php');
+
 $cronthreshold   = 6;   // Hours.
 $cronwarn        = 2;   // Hours.
 $delaythreshold  = 600; // Minutes.
@@ -115,6 +117,12 @@ Example:
     header('Pragma: no-cache');
     header('Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate, proxy-revalidate');
     header('Expires: Tue, 04 Sep 2012 05:32:29 GMT');
+}
+
+// IP Locking, check for remote IP in validated list, make sure not run from CLI, if not, exit    $allowedips = get_config('tool_heartbeat','ipconfig');
+if ((!(validate_IP_against_config($allowedips))) && !(isset($argv))){
+    header("HTTP/1.0 403 Forbidden");
+    exit;
 }
 
 $format = '%b %d %H:%M:%S';
