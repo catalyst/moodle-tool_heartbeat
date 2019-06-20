@@ -24,13 +24,16 @@
 
 /**
  * Validates any remote IP connected to a page calling this script, and checks
- * against current configs in plugin settings.
+ * against current configs in plugin settings. Requires config.php to be loaded before including this script
  *
  * @param string List of IPs to validate remote IP against
  * @return null Returns to calling class if remote IP is in safe list, or safe list is empty
  *
  */
+// @codingStandardsIgnoreStart
+// Ignore required to skip codechecker error for no config.php load in class
 function validate_ip_against_config($iplist) {
+// @codingStandardsIgnoreEnd
     // Validate remote IP against safe list.
     if (remoteip_in_list($iplist)) {
         return;
@@ -38,7 +41,10 @@ function validate_ip_against_config($iplist) {
         return;
     } else {
         header("HTTP/1.0 403 Forbidden");
+        print('<h1> IP FORBIDDEN </h1>');
         exit;
     }
 }
+
+validate_ip_against_config(get_config('tool_heartbeat', 'allowedips'));
 

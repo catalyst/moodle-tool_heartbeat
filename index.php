@@ -27,9 +27,8 @@ if (isset($argv)) {
 } else {
     define('CLI_SCRIPT', false);
 }
-//@codingStandardsIgnoreEnd
+// @codingStandardsIgnoreEnd
 require_once(__DIR__ . '/../../../config.php');
-require_once('iplock.php');
 
 // Make sure varnish doesn't cache this. But it still might so go check it!
 header('Pragma: no-cache');
@@ -41,8 +40,6 @@ if (false) {
     print "Server is in MAINTENANCE";
     exit;
 }
-
-
 
 
 $fullcheck = false;
@@ -95,7 +92,6 @@ global $CFG;
 
 $status = "";
 
-
 /**
  * Return an error that ELB will pick up
  *
@@ -108,6 +104,11 @@ function failed($reason) {
     print "Server is DOWN<br>\n";
     echo "Failed: $reason";
     exit;
+}
+
+// IP Locking, check for CLI, check for remote IP in validated list, if not, exit.
+if (!(isset($argv))) {
+    require_once('iplock.php');
 }
 
 $testfile = $CFG->dataroot . "/tool_heartbeat.test";
@@ -125,15 +126,6 @@ if (file_exists($testfile)) {
 define('ABORT_AFTER_CONFIG_CANCEL', true);
 require($CFG->dirroot . '/lib/setup.php');
 require_once($CFG->libdir.'/filelib.php');
-
-// IP Locking, make sure execution isnt from CLI, check for remote IP in validated list, if not, exit.
-if (!(isset($argv))) {
-    $iplist = get_config('tool_heartbeat', 'allowedips');
-    // Make sure $iplist is set to actual data, not a  false bool return
-    if ($iplist !== false) {
-        validate_ip_against_config($iplist);
-    }
-}
 
 if ($fullcheck || $checksession) {
     $c = new curl(array('cache' => false, 'cookie' => true));

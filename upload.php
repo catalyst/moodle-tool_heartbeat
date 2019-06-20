@@ -35,23 +35,12 @@ if (isset($argv)) {
     define('CLI_SCRIPT', false);
 }
 // @codingStandardsIgnoreEnd
-// Add requirement for IP validation
+// CLI Check is required for using config.php.
+// Add requirements for IP validation, only loaded if not CLI.
 require('../../../config.php');
-require_once('iplock.php');
-
-
-// Check for CLI execution, if not, get config and execute IP validation.
 if (!(isset($argv))) {
-    // Load current plugin configuration.
-
-    $allowedips = get_config('tool_heartbeat', 'allowedips');
-
-    // Make sure $iplist is set to actual data, not a  false bool return
-    if ($allowedips !== false) {
-        validate_ip_against_config($allowedips);
-    }
+    require_once('iplock.php');
 }
-
 
 $starttime = microtime(true);
 

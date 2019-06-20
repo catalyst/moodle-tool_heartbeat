@@ -32,14 +32,14 @@
 
 define('NO_UPGRADE_CHECK', true);
 // @codingStandardsIgnoreStart
+// Ignore required to check for CLI before requiring config.php
 if (isset($argv)) {
     define('CLI_SCRIPT', true);
 } else {
     define('CLI_SCRIPT', false);
 }
-//@codingStandardsIgnoreEnd
+// @codingStandardsIgnoreEnd
 require('../../../config.php');
-require_once('iplock.php');
 
 $cronthreshold   = 6;   // Hours.
 $cronwarn        = 2;   // Hours.
@@ -47,6 +47,7 @@ $delaythreshold  = 600; // Minutes.
 $delaywarn       = 60;  // Minutes.
 $legacythreshold = 60 * 6; // Minute.
 $legacywarn      = 60 * 2; // Minutes.
+
 
 
 if (isset($argv)) {
@@ -107,6 +108,8 @@ Example:
 } else {
     // If run from the web.
     define('NO_MOODLE_COOKIES', true);
+    // Add requirement for IP validation
+    require('iplock.php');
     $options = array(
         'cronerror'   => optional_param('cronerror',   $cronthreshold,   PARAM_NUMBER),
         'cronwarn'    => optional_param('cronwarn',    $cronwarn,        PARAM_NUMBER),
@@ -121,15 +124,6 @@ Example:
     header('Pragma: no-cache');
     header('Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate, proxy-revalidate');
     header('Expires: Tue, 04 Sep 2012 05:32:29 GMT');
-}
-
-// IP Locking, check for remote IP in validated list, make sure not run from CLI, if not, exit    $allowedips = get_config('tool_heartbeat','ipconfig');
-if (!(isset($argv))) {
-    $iplist = get_config('tool_heartbeat', 'allowedips');
-    // Make sure $iplist is set to actual data, not a  false bool return
-    if ($iplist !== false) {
-        validate_ip_against_config($iplist);
-    }
 }
 
 $format = '%b %d %H:%M:%S';
