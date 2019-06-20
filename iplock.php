@@ -28,7 +28,7 @@
  *
  * @param string List of IPs to validate remote IP against
  * @return null Returns to calling class if remote IP is in safe list, or safe list is empty
- *  
+ *
  */
 function validate_ip_against_config($iplist) {
     // Validate remote IP against safe list.
