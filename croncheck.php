@@ -31,6 +31,13 @@
  */
 
 define('NO_UPGRADE_CHECK', true);
+// @codingStandardsIgnoreStart
+if (isset($argv)) {
+    define('CLI_SCRIPT', true);
+} else {
+    define('CLI_SCRIPT', false);
+}
+//@codingStandardsIgnoreEnd
 require('../../../config.php');
 require_once('iplock.php');
 

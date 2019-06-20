@@ -21,7 +21,13 @@
  * @copyright  2014 Brendan Heywood <brendan@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+// @codingStandardsIgnoreStart
+if (isset($argv)) {
+    define('CLI_SCRIPT', true);
+} else {
+    define('CLI_SCRIPT', false);
+}
+//@codingStandardsIgnoreEnd
 require_once(__DIR__ . '/../../../config.php');
 require_once('iplock.php');
 

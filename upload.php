@@ -27,7 +27,14 @@
  * php cli/testupload.php
  *
  */
-
+// Ignore required to check for CLI before assigning value to CLI_SCRIPT
+// @codingStandardsIgnoreStart
+if (isset($argv)) {
+    define('CLI_SCRIPT', true);
+} else {
+    define('CLI_SCRIPT', false);
+}
+// @codingStandardsIgnoreEnd
 // Add requirement for IP validation
 require('../../../config.php');
 require_once('iplock.php');
@@ -36,6 +43,7 @@ require_once('iplock.php');
 // Check for CLI execution, if not, get config and execute IP validation.
 if (!(isset($argv))) {
     // Load current plugin configuration.
+
     $allowedips = get_config('tool_heartbeat', 'allowedips');
 
     // Make sure $iplist is set to actual data, not a  false bool return
