@@ -27,20 +27,9 @@
  * php cli/testupload.php
  *
  */
-// Ignore required to check for CLI before assigning value to CLI_SCRIPT
-// @codingStandardsIgnoreStart
-if (isset($argv)) {
-    define('CLI_SCRIPT', true);
-} else {
-    define('CLI_SCRIPT', false);
-}
-// @codingStandardsIgnoreEnd
-// CLI Check is required for using config.php.
-// Add requirements for IP validation, only loaded if not CLI.
+// Add requirements for IP validation.
 require('../../../config.php');
-if (!(isset($argv))) {
-    require_once('iplock.php');
-}
+require_once('iplock.php');
 
 $starttime = microtime(true);
 
