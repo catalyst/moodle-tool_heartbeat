@@ -41,6 +41,29 @@ if ($hassiteconfig) {
                         new lang_string('testingdesc',    'tool_heartbeat'),
                         'error',
                         $options));
+
+        // Current IP validation against list for description.
+        $allowedips = get_config('tool_heartbeat', 'allowedips');
+        $description = '';
+        if (trim($allowedips) == '') {
+            $message = 'allowedipsempty';
+            $type = 'notifymessage';
+        } else if (remoteip_in_list($allowedips)) {
+            $message = 'allowedipshasmyip';
+            $type = 'notifysuccess';
+        } else {
+            $message = 'allowedipshasntmyip';
+            $type = 'notifyerror';
+        };
+        $description .= $OUTPUT->notification(get_string($message, 'tool_heartbeat', ['ip' => getremoteaddr()]), $type);
+
+
+        // IP entry box for blocking.
+        $iplist = new admin_setting_configiplist('tool_heartbeat/allowedips',
+                    new lang_string('allowedipstitle', 'tool_heartbeat'),
+                    (new lang_string('allowedipsdescription', 'tool_heartbeat').$description),
+                    ''  );
+        $settings->add($iplist);
     }
 }
 

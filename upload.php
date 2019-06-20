@@ -27,9 +27,10 @@
  * php cli/testupload.php
  *
  */
-
+// @codingStandardsIgnoreStart
+// Ignore Statement to skip codechecker needing require config.php first.
 $starttime = microtime(true);
-
+// @codingStandardsIgnoreEnd
 $putdata = fopen("php://input", "r");
 $totalbytes = 0;
 while ($data = fread($putdata, 1024 * 4)) {

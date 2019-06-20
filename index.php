@@ -21,6 +21,14 @@
  * @copyright  2014 Brendan Heywood <brendan@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+// @codingStandardsIgnoreStart
+if (isset($argv)) {
+    define('CLI_SCRIPT', true);
+} else {
+    define('CLI_SCRIPT', false);
+}
+// @codingStandardsIgnoreEnd
+require_once(__DIR__ . '/../../../config.php');
 
 // Make sure varnish doesn't cache this. But it still might so go check it!
 header('Pragma: no-cache');
@@ -80,7 +88,6 @@ if (check_climaintenance(__DIR__ . '/../../../config.php') === true) {
     exit;
 }
 
-require_once(__DIR__ . '/../../../config.php');
 global $CFG;
 
 $status = "";
@@ -97,6 +104,11 @@ function failed($reason) {
     print "Server is DOWN<br>\n";
     echo "Failed: $reason";
     exit;
+}
+
+// IP Locking, check for CLI, check for remote IP in validated list, if not, exit.
+if (!(isset($argv))) {
+    require_once('iplock.php');
 }
 
 $testfile = $CFG->dataroot . "/tool_heartbeat.test";
