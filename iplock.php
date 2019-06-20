@@ -25,18 +25,21 @@
 /**
  * Validates any remote IP connected to a page calling this script, and checks
  * against current configs in plugin settings.
- * 
- * @param string list of safe IP addresses to validate the remote IP against.
- * @return bool returns true if remote IP matches against the safe list, or the safe list is empty
- * 
+ *
+ * @param String List of IPs to validate remote IP against
+ * @return Null No return data, returns to calling class to continue, exits if evaluated to true;
+ *
  */
 
-function validate_IP_against_config($iplist) {
-    if (remoteip_in_list($iplist)){
-        return true;
-    } else if (trim($iplist) == ''){
-        return true;
+function validate_ip_against_config($iplist) {
+    // Validate remote IP against safe list.
+    if (remoteip_in_list($iplist)) {
+        return;
+    } else if (trim($iplist) == '') {
+        return;
     } else {
-        return false;
+        header("HTTP/1.0 403 Forbidden");
+        exit;
     }
 }
+

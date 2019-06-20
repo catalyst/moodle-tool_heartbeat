@@ -31,7 +31,6 @@
  */
 
 define('NO_UPGRADE_CHECK', true);
-require_once('iplock.php');
 
 $cronthreshold   = 6;   // Hours.
 $cronwarn        = 2;   // Hours.
@@ -102,6 +101,7 @@ Example:
     // If run from the web.
     define('NO_MOODLE_COOKIES', true);
     require($dirroot.'config.php');
+    require_once('iplock.php');
     $options = array(
         'cronerror'   => optional_param('cronerror',   $cronthreshold,   PARAM_NUMBER),
         'cronwarn'    => optional_param('cronwarn',    $cronwarn,        PARAM_NUMBER),
@@ -119,11 +119,11 @@ Example:
 }
 
 // IP Locking, check for remote IP in validated list, make sure not run from CLI, if not, exit    $allowedips = get_config('tool_heartbeat','ipconfig');
-if (!(isset($argv))){
-    $iplist = get_config('tool_heartbeat','allowedips');
+if (!(isset($argv))) {
+    $iplist = get_config('tool_heartbeat', 'allowedips');
     // Make sure $iplist is set to actual data, not a  false bool return
-    if ($iplist !== false){
-        validate_IP_against_config($iplist);
+    if ($iplist !== false) {
+        validate_ip_against_config($iplist);
     }
 }
 
