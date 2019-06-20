@@ -22,6 +22,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require_once(__DIR__ . '/../../../config.php');
+require_once('iplock.php');
+
 // Make sure varnish doesn't cache this. But it still might so go check it!
 header('Pragma: no-cache');
 header('Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate, proxy-revalidate');
@@ -33,7 +36,7 @@ if (false) {
     exit;
 }
 
-require_once('iplock.php');
+
 
 
 $fullcheck = false;
@@ -82,7 +85,6 @@ if (check_climaintenance(__DIR__ . '/../../../config.php') === true) {
     exit;
 }
 
-require_once(__DIR__ . '/../../../config.php');
 global $CFG;
 
 $status = "";

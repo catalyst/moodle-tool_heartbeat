@@ -26,11 +26,10 @@
  * Validates any remote IP connected to a page calling this script, and checks
  * against current configs in plugin settings.
  *
- * @param String List of IPs to validate remote IP against
- * @return Null No return data, returns to calling class to continue, exits if evaluated to true;
- *
+ * @param string List of IPs to validate remote IP against
+ * @return null Returns to calling class if remote IP is in safe list, or safe list is empty
+ *  
  */
-
 function validate_ip_against_config($iplist) {
     // Validate remote IP against safe list.
     if (remoteip_in_list($iplist)) {

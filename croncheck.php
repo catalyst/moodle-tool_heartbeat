@@ -31,6 +31,8 @@
  */
 
 define('NO_UPGRADE_CHECK', true);
+require('../../../config.php');
+require_once('iplock.php');
 
 $cronthreshold   = 6;   // Hours.
 $cronwarn        = 2;   // Hours.
@@ -39,7 +41,6 @@ $delaywarn       = 60;  // Minutes.
 $legacythreshold = 60 * 6; // Minute.
 $legacywarn      = 60 * 2; // Minutes.
 
-$dirroot = '../../../';
 
 if (isset($argv)) {
     // If run from the CLI.
@@ -54,7 +55,6 @@ if (isset($argv)) {
         array_pop($_SERVER['argv']);
     }
 
-    require($dirroot.'config.php');
     require_once($CFG->libdir.'/clilib.php');
 
     list($options, $unrecognized) = cli_get_params(
@@ -100,8 +100,6 @@ Example:
 } else {
     // If run from the web.
     define('NO_MOODLE_COOKIES', true);
-    require($dirroot.'config.php');
-    require_once('iplock.php');
     $options = array(
         'cronerror'   => optional_param('cronerror',   $cronthreshold,   PARAM_NUMBER),
         'cronwarn'    => optional_param('cronwarn',    $cronwarn,        PARAM_NUMBER),
