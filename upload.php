@@ -28,18 +28,22 @@
  *
  */
 
- // Get plugin config for IP validating
-$dirroot = '../../../';
-require($dirroot.'config.php');
+// Add requirement for IP validation
+require_once('iplock.php');
 
-include('iplock.php');
+//Check for CLI execution, if not, get config and execute IP validation
+if (!(isset($argv))){
+    // Load current plugin configuration.
+    $dirroot = '../../../';
+    require($dirroot.'config.php');
 
-// IP Locking, check for remote IP in validated list, make sure not run from CLI, if not, exit    $allowedips = get_config('tool_heartbeat','ipconfig');
-$allowedips = get_config('tool_heartbeat','ipconfig');
-if ((!(validate_IP_against_config($allowedips))) && !(isset($argv))){
-    header("HTTP/1.0 403 Forbidden");
-    exit;
+    $allowedips = get_config('tool_heartbeat', 'allowedips');
+    // Make sure $iplist is set to actual data, not a  false bool return
+    if ($iplist !== false){
+        validate_IP_against_config($allowedips);
+    }
 }
+
 
 $starttime = microtime(true);
 

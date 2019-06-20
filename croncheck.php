@@ -31,8 +31,7 @@
  */
 
 define('NO_UPGRADE_CHECK', true);
-
-include('iplock.php');
+require_once('iplock.php');
 
 $cronthreshold   = 6;   // Hours.
 $cronwarn        = 2;   // Hours.
@@ -120,10 +119,12 @@ Example:
 }
 
 // IP Locking, check for remote IP in validated list, make sure not run from CLI, if not, exit    $allowedips = get_config('tool_heartbeat','ipconfig');
-$allowedips = get_config('tool_heartbeat','ipconfig');
-if ((!(validate_IP_against_config($allowedips))) && !(isset($argv))){
-    header("HTTP/1.0 403 Forbidden");
-    exit;
+if (!(isset($argv))){
+    $iplist = get_config('tool_heartbeat','allowedips');
+    // Make sure $iplist is set to actual data, not a  false bool return
+    if ($iplist !== false){
+        validate_IP_against_config($iplist);
+    }
 }
 
 $format = '%b %d %H:%M:%S';

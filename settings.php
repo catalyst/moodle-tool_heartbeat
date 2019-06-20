@@ -43,7 +43,7 @@ if ($hassiteconfig) {
                         $options));
         
         //Current IP validation against list for description
-        $allowedips = get_config('tool_heartbeat','ipconfig');
+        $allowedips = get_config('tool_heartbeat','allowedips');
         $description = '';
         if (trim($allowedips) == '') {
             $message = 'allowedipsempty';
@@ -59,7 +59,7 @@ if ($hassiteconfig) {
 
 
         //IP entry box for blocking
-        $iplist = new admin_setting_configiplist('tool_heartbeat/ipconfig', 
+        $iplist = new admin_setting_configiplist('tool_heartbeat/allowedips', 
                     new lang_string('ipconfigtitle', 'tool_heartbeat'),
                     (new lang_string('ipdescription', 'tool_heartbeat').$description),
                     ''  );
