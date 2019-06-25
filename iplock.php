@@ -35,6 +35,9 @@
 // Ignore required to skip codechecker error for no config.php load in class
 function validate($iplist, $icinga) {
 // @codingStandardsIgnoreEnd
+
+    // Require library for icinga responses
+    require_once('icinga.php');
     // Validate remote IP against safe list.
     if (remoteip_in_list($iplist)) {
         return;
@@ -42,8 +45,8 @@ function validate($iplist, $icinga) {
         return;
     } else {
         if ($icinga) {
-            printf('UNKNOWN: Failed IP check from '.getremoteaddr());
-            exit;
+            $msg = 'Failed IP check from '.getremoteaddr();
+            send_unknown($msg);
         } else {
             header("HTTP/1.0 403 Forbidden");
             print('<h1> IP FORBIDDEN </h1>');

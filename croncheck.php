@@ -40,6 +40,7 @@ if (isset($argv)) {
 }
 // @codingStandardsIgnoreEnd
 require('../../../config.php');
+require_once('icinga.php');
 
 $cronthreshold   = 6;   // Hours.
 $cronwarn        = 2;   // Hours.
@@ -130,24 +131,6 @@ Example:
 $format = '%b %d %H:%M:%S';
 
 $now = userdate(time(), $format);
-
-function send_good($msg) {
-    global $now;
-    printf ("OK: $msg (Checked $now)\n");
-    exit(0);
-}
-
-function send_warning($msg) {
-    global $now;
-    printf ("WARNING: $msg (Checked $now)\n");
-    exit(1);
-}
-
-function send_critical($msg) {
-    global $now;
-    printf ("CRITICAL: $msg (Checked $now)\n");
-    exit(2);
-}
 
 if (moodle_needs_upgrading()) {
     send_critical("Moodle upgrade pending, cron execution suspended");
