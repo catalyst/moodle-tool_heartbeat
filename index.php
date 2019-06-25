@@ -109,7 +109,6 @@ function failed($reason) {
 // IP Locking, check for CLI, check for remote IP in validated list, if not, exit.
 if (!(isset($argv))) {
     require_once('iplock.php');
-    //validate_ip_against_config();
 }
 
 $testfile = $CFG->dataroot . "/tool_heartbeat.test";
