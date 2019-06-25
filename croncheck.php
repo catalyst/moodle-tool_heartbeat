@@ -110,6 +110,7 @@ Example:
     define('NO_MOODLE_COOKIES', true);
     // Add requirement for IP validation
     require('iplock.php');
+    validate_ip_against_config(true);
     $options = array(
         'cronerror'   => optional_param('cronerror',   $cronthreshold,   PARAM_NUMBER),
         'cronwarn'    => optional_param('cronwarn',    $cronwarn,        PARAM_NUMBER),
