@@ -48,7 +48,7 @@ function validate($iplist, $icinga) {
             header("HTTP/1.0 403 Forbidden");
             print('<h1> IP FORBIDDEN </h1>');
             exit;
-        } 
+        }
     }
 }
 
