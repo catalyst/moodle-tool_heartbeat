@@ -40,7 +40,7 @@ if (isset($argv)) {
 }
 // @codingStandardsIgnoreEnd
 require('../../../config.php');
-require_once('icinga.php');
+require_once('nagios.php');
 
 $cronthreshold   = 6;   // Hours.
 $cronwarn        = 2;   // Hours.
