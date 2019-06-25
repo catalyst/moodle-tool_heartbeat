@@ -27,13 +27,12 @@
  * against current configs in plugin settings. Requires config.php to be loaded before including this script
  *
  * @param string  $iplist List of IPs to validate remote IP against
- * @param bool $icinga Specifies whether the validation should return an Icinga response, true for icinga, false for HTTP
  * @return null Returns to calling class if remote IP is in safe list, or safe list is empty
  *
  */
 // @codingStandardsIgnoreStart
 // Ignore required to skip codechecker error for no config.php load in class
-function validate($iplist, $icinga) {
+function validate_ip_against_config($iplist) {
 // @codingStandardsIgnoreEnd
 
     // Require library for icinga responses
@@ -44,24 +43,10 @@ function validate($iplist, $icinga) {
     } else if (trim($iplist) == '') {
         return;
     } else {
-        if ($icinga) {
-            $msg = 'Failed IP check from '.getremoteaddr();
-            send_unknown($msg);
-        } else {
-            header("HTTP/1.0 403 Forbidden");
-            print('<h1> IP FORBIDDEN </h1>');
-            exit;
-        }
+        $msg = 'Failed IP check from '.getremoteaddr();
+        send_unknown($msg);
     }
 }
 
-/**
- * Wrapper function for easy access to the validation, outside functions should call here.
- *
- * @param bool Specifies whether the validation should return an Icinga response, true for icinga, false for HTTP, defaults to false
- *
- */
-function validate_ip_against_config($icinga = false) {
-    validate(get_config('tool_heartbeat', 'allowedips'), $icinga);
-}
+validate_ip_against_config(get_config('tool_heartbeat', 'allowedips'));
 
