@@ -17,7 +17,7 @@
 /**
  * Are you Ok? heartbeat for load balancers
  *
- * Returns a status code that can be read by Nagios, used for automated monitoring
+ * Returns a Nagios status code, used for automated monitoring
  *
  * Numeric value:   |   Status  |   Description
  * 0                |    OK     |   The plugin was able to check the service and it appeared to be functioning properly.
