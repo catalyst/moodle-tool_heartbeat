@@ -26,7 +26,7 @@
  * Validates any remote IP connected to a page calling this script, and checks
  * against current configs in plugin settings. Requires config.php to be loaded before including this script
  *
- * @param string List of IPs to validate remote IP against
+ * @param string  $iplist List of IPs to validate remote IP against
  * @return null Returns to calling class if remote IP is in safe list, or safe list is empty
  *
  */
@@ -34,15 +34,17 @@
 // Ignore required to skip codechecker error for no config.php load in class
 function validate_ip_against_config($iplist) {
 // @codingStandardsIgnoreEnd
+
+    // Require library for nagios responses
+    require_once('nagios.php');
     // Validate remote IP against safe list.
     if (remoteip_in_list($iplist)) {
         return;
     } else if (trim($iplist) == '') {
         return;
     } else {
-        header("HTTP/1.0 403 Forbidden");
-        print('<h1> IP FORBIDDEN </h1>');
-        exit;
+        $msg = 'Failed IP check from '.getremoteaddr();
+        send_unknown($msg);
     }
 }
 
