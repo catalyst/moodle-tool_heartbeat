@@ -36,9 +36,9 @@ $format = '%b %d %H:%M:%S';
 $now = userdate(time(), $format);
 
 /**
- * Sends a good Icinga response, with message.
+ * Sends a good Nagios response, with message.
  *
- * @param string  $msg the message to append the Icinga response.
+ * @param string  $msg the message to append the Nagios response.
  */
 
 function send_good($msg) {
@@ -48,9 +48,9 @@ function send_good($msg) {
 }
 
 /**
- * Sends a warning Icinga response, with message.
+ * Sends a warning Nagios response, with message.
  *
- * @param string  $msg the message to append the Icinga response.
+ * @param string  $msg the message to append the Nagios response.
  */
 
 function send_warning($msg) {
@@ -60,9 +60,9 @@ function send_warning($msg) {
 }
 
 /**
- * Sends a critical Icinga response, with message.
+ * Sends a critical Nagios response, with message.
  *
- * @param string  $msg the message to append the Icinga response.
+ * @param string  $msg the message to append the Nagios response.
  */
 
 function send_critical($msg) {
@@ -72,9 +72,9 @@ function send_critical($msg) {
 }
 
 /**
- * Sends an unknown Icinga response, with message.
+ * Sends an unknown Nagios response, with message.
  *
- * @param string  $msg the message to append the Icinga response.
+ * @param string  $msg the message to append the Nagios response.
  */
 
 function send_unknown($msg) {
