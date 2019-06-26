@@ -127,10 +127,6 @@ Example:
     header('Expires: Tue, 04 Sep 2012 05:32:29 GMT');
 }
 
-/*$format = '%b %d %H:%M:%S';
-
-$now = userdate(time(), $format);*/
-
 if (moodle_needs_upgrading()) {
     send_critical("Moodle upgrade pending, cron execution suspended");
 }
