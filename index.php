@@ -119,6 +119,7 @@ if ($size !== 1) {
 
 if (file_exists($testfile)) {
     $status .= "sitedata OK<br>\n";
+    unlink($testfile);
 } else {
     failed('sitedata not readable');
 }
