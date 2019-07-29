@@ -31,16 +31,6 @@
  */
 
 define('NO_UPGRADE_CHECK', true);
-// @codingStandardsIgnoreStart
-// Ignore required to check for CLI before requiring config.php
-if (isset($argv)) {
-    define('CLI_SCRIPT', true);
-} else {
-    define('CLI_SCRIPT', false);
-}
-// @codingStandardsIgnoreEnd
-require('../../../config.php');
-require_once('nagios.php');
 
 $cronthreshold   = 6;   // Hours.
 $cronwarn        = 2;   // Hours.
@@ -49,7 +39,7 @@ $delaywarn       = 60;  // Minutes.
 $legacythreshold = 60 * 6; // Minute.
 $legacywarn      = 60 * 2; // Minutes.
 
-
+$dirroot = '../../../';
 
 if (isset($argv)) {
     // If run from the CLI.
@@ -64,6 +54,8 @@ if (isset($argv)) {
         array_pop($_SERVER['argv']);
     }
 
+    require($dirroot.'config.php');
+    require_once(__DIR__.'/nagios.php');
     require_once($CFG->libdir.'/clilib.php');
 
     list($options, $unrecognized) = cli_get_params(
@@ -110,7 +102,9 @@ Example:
     // If run from the web.
     define('NO_MOODLE_COOKIES', true);
     // Add requirement for IP validation
-    require('iplock.php');
+    require($dirroot.'config.php');
+    require_once(__DIR__.'/nagios.php');
+    require_once(__DIR__.'/iplock.php');
     $options = array(
         'cronerror'   => optional_param('cronerror',   $cronthreshold,   PARAM_NUMBER),
         'cronwarn'    => optional_param('cronwarn',    $cronwarn,        PARAM_NUMBER),
