@@ -53,8 +53,6 @@ $legacywarn      = 60 * 2; // Minutes.
 
 if (isset($argv)) {
     // If run from the CLI.
-    define('CLI_SCRIPT', true);
-
     $last = $argv[count($argv) - 1];
     if (preg_match("/(.*):(.+)/", $last, $matches)) {
         $last = $matches[1];
@@ -108,7 +106,9 @@ Example:
 
 } else {
     // If run from the web.
-    define('NO_MOODLE_COOKIES', true);
+    // Check if NO_MOODLE_COOKIES already defined
+    defined('NO_MOODLE_COOKIES') or define('NO_MOODLE_COOKIES', true);
+
     // Add requirement for IP validation
     require('iplock.php');
     $options = array(

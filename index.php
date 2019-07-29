@@ -46,10 +46,9 @@ $fullcheck = false;
 $checksession = false;
 
 if (isset($argv) && $argv[0]) {
-    define('CLI_SCRIPT', true);
     $fullcheck = count($argv) > 1 && $argv[1] === 'fullcheck';
 } else {
-    define('NO_MOODLE_COOKIES', true);
+    defined('NO_MOODLE_COOKIES') or define('NO_MOODLE_COOKIES', true);
     $fullcheck = isset($_GET['fullcheck']);
 }
 if (!defined(CLI_SCRIPT)) {
@@ -124,7 +123,7 @@ if (file_exists($testfile)) {
 }
 
 define('ABORT_AFTER_CONFIG_CANCEL', true);
-require($CFG->dirroot . '/lib/setup.php');
+require_once($CFG->dirroot . '/lib/setup.php');
 require_once($CFG->libdir.'/filelib.php');
 
 if ($fullcheck || $checksession) {
