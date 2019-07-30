@@ -168,7 +168,6 @@ if ($fullcheck) {
     }
 }
 
-print "Server is ALIVE<br>\n";
 print $status;
 send_good('Server is ALIVE');
 
