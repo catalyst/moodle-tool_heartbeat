@@ -82,6 +82,30 @@ see this for details:
 php croncheck.php -h
 ```
 
+# A login failure detection script
+
+The script loginchecker is a nagios compliant checker to monitor the number of
+failed login attempts on a Moodle site as a security intrusion detection
+mechanic, with configurable thresholds.
+
+This script can be either run from the web:
+
+http://moodle.example.com/admin/tool/heartbeat/loginchecker.php
+
+Or can be run as a CLI in which case it will return in the format
+expected by Nagios:
+
+```
+sudo -u www-data php /var/www/moodle/admin/tool/heartbeat/loginchecker.php
+```
+
+The various thresholds can be configured with query params or cli args
+see this for details:
+
+```
+php loginchecker.php -h
+```
+
 # Installation
 
 Via the Moodle plugin directory:
