@@ -98,7 +98,7 @@ if ($fullcheck || $checksession) {
     if ($sessioncheck = json_decode($response)) {
         if ($sessioncheck->success == 'pass') {
             if ($sessioncheck->latency > 5) {
-                echo "Session latency outside of acceptable range: {$sessioncheck->latency} seconds.";
+                echo "Session latency outside of acceptable range: {$sessioncheck->latency} seconds.<br>\n";
                 send_warning($sessiondriver . ' session');
             }
             $status .= "Session check OK, Session Handler: " . $sessiondriver . "<br>\n";
@@ -107,11 +107,11 @@ if ($fullcheck || $checksession) {
                 . "Request host: {$sessioncheck->requesthost}, "
                 . "Response host: {$sessioncheck->responsehost}, "
                 . "Latency (seconds): {$sessioncheck->latency}, "
-                . "Session Handler: " . $sessiondriver);
+                . "Session Handler: " . $sessiondriver) . "<br>\n";
             send_critical($sessiondriver . ' session');
         }
     } else {
-        echo 'Session check could not be conducted, error connecting to session check URL';
+        echo "Session check could not be conducted, error connecting to session check URL<br>\n";
         send_warning($sessiondriver . ' session');
     }
 }
