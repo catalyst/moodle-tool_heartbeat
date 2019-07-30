@@ -24,7 +24,7 @@
 
 use core\session\manager;
 
-require_once(__DIR__ . '/lib.php');
+require_once(__DIR__ . '/locallib.php');
 
 // Make sure varnish doesn't cache this. But it still might so go check it!
 header('Pragma: no-cache');
@@ -53,14 +53,15 @@ if (!defined(CLI_SCRIPT)) {
     $checksession = isset($_GET['checksession']);
 }
 define('NO_UPGRADE_CHECK', true);
-define('ABORT_AFTER_CONFIG', true);
 
 if (check_climaintenance(__DIR__ . '/../../../config.php') === true) {
     print "Server is in MAINTENANCE<br>\n";
     exit;
 }
 
+define('ABORT_AFTER_CONFIG_CANCEL', true);
 require_once(__DIR__ . '/../../../config.php');
+require_once(__DIR__ . '/nagios.php');
 
 global $CFG;
 
@@ -70,18 +71,14 @@ $status = "";
 $testfile = $CFG->dataroot . "/tool_heartbeat.test";
 $size = file_put_contents($testfile, '1');
 if ($size !== 1) {
-    failed('sitedata not writable');
+    send_critical('sitedata not writable');
 }
 
 if (file_exists($testfile)) {
     $status .= "sitedata OK<br>\n";
 } else {
-    failed('sitedata not readable');
+    send_critical('sitedata not readable');
 }
-
-define('ABORT_AFTER_CONFIG_CANCEL', true);
-require($CFG->dirroot . '/lib/setup.php');
-require_once($CFG->libdir.'/filelib.php');
 
 // IP Locking, check for CLI, check for remote IP in validated list, if not, exit.
 if (!(isset($argv))) {
@@ -92,6 +89,9 @@ $sessionclass = manager::get_handler_class();
 $sessionclasspatharray = explode('\\', $sessionclass);
 $sessiondriver = end($sessionclasspatharray);
 
+// Require the filelib to bootstrap curl.
+require_once($CFG->libdir . '/filelib.php');
+
 if ($fullcheck || $checksession) {
     $c = new curl(array('cache' => false, 'cookie' => true));
     $response = $c->get(new moodle_url('/admin/tool/heartbeat/sessionone.php'));
@@ -99,7 +99,7 @@ if ($fullcheck || $checksession) {
         if ($sessioncheck->success == 'pass') {
             if ($sessioncheck->latency > 5) {
                 echo "Session latency outside of acceptable range: {$sessioncheck->latency} seconds.";
-                failed($sessiondriver . ' session');
+                send_warning($sessiondriver . ' session');
             }
             $status .= "Session check OK, Session Handler: " . $sessiondriver . "<br>\n";
         } else {
@@ -108,11 +108,11 @@ if ($fullcheck || $checksession) {
                 . "Response host: {$sessioncheck->responsehost}, "
                 . "Latency (seconds): {$sessioncheck->latency}, "
                 . "Session Handler: " . $sessiondriver);
-            failed($sessiondriver . ' session');
+            send_critical($sessiondriver . ' session');
         }
     } else {
         echo 'Session check could not be conducted, error connecting to session check URL';
-        failed($sessiondriver . ' session');
+        send_warning($sessiondriver . ' session');
     }
 }
 
@@ -121,7 +121,7 @@ if ($sessiondriver == 'redis') {
     if (tool_heartbeat_redis_check()) {
         $status .= "Redis check OKAY</br>\n";
     } else {
-        failed($sessiondriver . ' session');
+        send_warning($sessiondriver . ' session');
     }
 }
 
@@ -140,12 +140,12 @@ if ($sessiondriver == 'memcached' && property_exists($CFG, 'session_memcached_sa
         if ($stats[$addr . ':' . $port]['uptime'] > 0) {
             $status .= "session memcached OK<br>\n";
         } else {
-            failed('sessions memcached');
+            send_warning('sessions memcached');
         }
     } catch (Exception $e) {
-        failed('sessions memcached');
+        send_warning('sessions memcached');
     } catch (Throwable $e) {
-        failed('sessions memcached');
+        send_warning('sessions memcached');
     }
 
 }
@@ -159,15 +159,16 @@ if ($fullcheck) {
         if ($user) {
             $status .= "database OK<br>\n";
         } else {
-            failed('no users in database');
+            send_critical('no users in database');
         }
     } catch (Exception $e) {
-        failed('database error');
+        send_critical('database error');
     } catch (Throwable $e) {
-        failed('database error');
+        send_critical('database error');
     }
 }
 
 print "Server is ALIVE<br>\n";
 print $status;
+send_good('Server is ALIVE');
 

@@ -25,20 +25,6 @@ use core\session\util;
  */
 
 /**
- * Return an error that ELB will pick up
- *
- * @param string $reason
- */
-function failed($reason) {
-    // Status for ELB, will cause ELB to remove instance.
-    header("HTTP/1.0 503 Service unavailable: failed $reason check");
-    // Status for the humans.
-    print "Server is DOWN<br>\n";
-    echo "Failed: $reason";
-    exit;
-}
-
-/**
  * Checks if the command line maintenance mode has been enabled. Skip the config bootstrapping.
  *
  * @param string $configfile The relative path for config.php
