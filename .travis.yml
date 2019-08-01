@@ -16,7 +16,10 @@ php:
   - 7.1
 
 addons:
-  postgresql: "9.4"
+  postgresql: "9.6"
+
+services:
+  - mysql
 
 env:
   global:
