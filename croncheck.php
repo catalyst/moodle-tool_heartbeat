@@ -38,6 +38,7 @@ $delaythreshold  = 600; // Minutes.
 $delaywarn       = 60;  // Minutes.
 $legacythreshold = 60 * 6; // Minute.
 $legacywarn      = 60 * 2; // Minutes.
+$upgradepending  = 15;  // Minutes.
 
 $dirroot = __DIR__ . '/../../../';
 
@@ -67,6 +68,7 @@ if (isset($argv)) {
             'delayerror'  => $delaythreshold,
             'legacywarn'  => $legacywarn,
             'legacyerror' => $legacythreshold,
+            'upgradepending' => $upgradepending,
         ),
         array(
             'h'   => 'help'
@@ -91,6 +93,7 @@ Options:
     --delayerror=n  Threshold for fail delay cron warn in minutes (default $delaythreshold)
     --legacywarn=n  Threshold for legacy cron warn in minutes (default $legacywarn)
     --legacyerror=n Threshold for legacy cron error in minutes (default $legacythreshold)
+    --upgradepending=n Threshold for upgrade pending error in minutes (default $upgradepending)
 
 Example:
 \$sudo -u www-data /usr/bin/php admin/tool/heartbeat/croncheck.php
@@ -112,6 +115,7 @@ Example:
         'delaywarn'   => optional_param('delaywarn',   $delaywarn,       PARAM_NUMBER),
         'legacyerror' => optional_param('legacyerror', $legacythreshold, PARAM_NUMBER),
         'legacywarn'  => optional_param('legacywarn',  $legacywarn,      PARAM_NUMBER),
+        'upgradepending'  => optional_param('upgradepending',  $upgradepending,      PARAM_NUMBER),
     );
     header("Content-Type: text/plain");
 
@@ -122,7 +126,17 @@ Example:
 }
 
 if (moodle_needs_upgrading()) {
-    send_critical("Moodle upgrade pending, cron execution suspended");
+    $lastupgradepending = get_config('tool_hearbeat', 'last_moodle_needs_upgrading');
+    if (!empty($lastupgradepending)) {
+        $difference = time() - $lastupgradepending;
+        if ($difference > $options['upgradepending'] * 60) {
+            send_critical("Moodle upgrade pending, cron execution suspended");
+        }
+    } else {
+        set_config('last_moodle_needs_upgrading', time(), 'tool_hearbeat');
+    }
+} else {
+    set_config('last_moodle_needs_upgrading', null, 'tool_hearbeat');
 }
 
 if ($CFG->branch < 27) {
