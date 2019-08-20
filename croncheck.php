@@ -39,7 +39,7 @@ $delaywarn       = 60;  // Minutes.
 $legacythreshold = 60 * 6; // Minute.
 $legacywarn      = 60 * 2; // Minutes.
 
-$dirroot = '../../../';
+$dirroot = __DIR__ . '/../../../';
 
 if (isset($argv)) {
     // If run from the CLI.

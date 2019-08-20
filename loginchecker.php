@@ -80,7 +80,8 @@ if (isset($argv)) {
 } else {
     // If run from the web.
     require_once(__DIR__ . '/../../../config.php');
-    require_once('nagios.php');
+    require_once(__DIR__.'/nagios.php');
+    require_once(__DIR__.'/iplock.php');
 
     $options['critthresh'] = optional_param('critthresh', 500, PARAM_INT);
     $options['warnthresh'] = optional_param('warnthresh', 10, PARAM_INT);
