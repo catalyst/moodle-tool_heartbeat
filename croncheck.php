@@ -121,8 +121,40 @@ Example:
     header('Expires: Tue, 04 Sep 2012 05:32:29 GMT');
 }
 
+if (isset($CFG->adminsetuppending)) {
+    send_critical("Admin setup pending, please set up admin account");
+}
+
 if (moodle_needs_upgrading()) {
-    send_critical("Moodle upgrade pending, cron execution suspended");
+    $upgraderunning = get_config(null, 'upgraderunning');
+    $initialinstall = during_initial_install();
+
+    $difference = format_time((time() > $upgraderunning ? (time() - $upgraderunning) : 300));
+
+    if (!$upgraderunning) {
+        send_critical("Moodle upgrade pending and is not running, cron execution suspended");
+    }
+
+    if ($upgraderunning >= time()) {
+        // Before the expected finish time.
+        if (!empty($initialinstall)) {
+            send_critical("Moodle installation is running, ETA > $difference, cron execution suspended");
+        } else {
+            send_critical("Moolde upgrade is running, ETA > $difference, cron execution suspended");
+        }
+    }
+
+    /*
+     * After the expected finish time (timeout or other interruption)
+     * The "core_shutdown_manager::register_function('upgrade_finished_handler');" already handle these cases
+     * and unset config 'upgraderunning'
+     * The below critical ones can happen if core_shutdown_manager fails to run the handler function.
+     */
+    if (!empty($initialinstall)) {
+        send_critical("Moodle installation is running, overdue by $difference ");
+    } else {
+        send_critical("Moodle upgrade is running, overdue by $difference ");
+    }
 }
 
 // We want to periodically emit an error_log which we will detect elsewhere to
