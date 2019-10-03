@@ -107,6 +107,25 @@ The various thresholds can be configured with query params or cli args see this 
 php loginchecker.php -h
 ```
 
+## Objectfs checking
+
+The script objectfscheck.php is a checker to monitor Objectfs status.
+
+This script can be either run from the web:
+
+http://moodle.example.com/admin/tool/heartbeat/objectfscheck.php
+
+Or can be run as a CLI in which case it will return in the format expected by Nagios:
+
+```
+sudo -u www-data php /var/www/moodle/admin/tool/heartbeat/objectfscheck.php
+```
+
+The various thresholds can be configured with query params or cli args see this for details:
+
+```
+php objectfscheck.php -h
+
 # Branches
 
 The master branch is always stable and should retain very deep support for old Totara's and Moodle's back to Moodle 2.7
