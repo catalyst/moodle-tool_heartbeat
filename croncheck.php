@@ -31,16 +31,6 @@
  */
 
 define('NO_UPGRADE_CHECK', true);
-// @codingStandardsIgnoreStart
-// Ignore required to check for CLI before requiring config.php
-if (isset($argv)) {
-    define('CLI_SCRIPT', true);
-} else {
-    define('CLI_SCRIPT', false);
-}
-// @codingStandardsIgnoreEnd
-require('../../../config.php');
-require_once('nagios.php');
 
 $cronthreshold   = 6;   // Hours.
 $cronwarn        = 2;   // Hours.
@@ -49,7 +39,7 @@ $delaywarn       = 60;  // Minutes.
 $legacythreshold = 60 * 6; // Minute.
 $legacywarn      = 60 * 2; // Minutes.
 
-
+$dirroot = __DIR__ . '/../../../';
 
 if (isset($argv)) {
     // If run from the CLI.
@@ -64,6 +54,8 @@ if (isset($argv)) {
         array_pop($_SERVER['argv']);
     }
 
+    require($dirroot.'config.php');
+    require_once(__DIR__.'/nagios.php');
     require_once($CFG->libdir.'/clilib.php');
 
     list($options, $unrecognized) = cli_get_params(
@@ -110,7 +102,9 @@ Example:
     // If run from the web.
     define('NO_MOODLE_COOKIES', true);
     // Add requirement for IP validation
-    require('iplock.php');
+    require($dirroot.'config.php');
+    require_once(__DIR__.'/nagios.php');
+    require_once(__DIR__.'/iplock.php');
     $options = array(
         'cronerror'   => optional_param('cronerror',   $cronthreshold,   PARAM_NUMBER),
         'cronwarn'    => optional_param('cronwarn',    $cronwarn,        PARAM_NUMBER),
@@ -127,8 +121,54 @@ Example:
     header('Expires: Tue, 04 Sep 2012 05:32:29 GMT');
 }
 
+if (isset($CFG->adminsetuppending)) {
+    send_critical("Admin setup pending, please set up admin account");
+}
+
 if (moodle_needs_upgrading()) {
-    send_critical("Moodle upgrade pending, cron execution suspended");
+    $upgraderunning = get_config(null, 'upgraderunning');
+    $initialinstall = during_initial_install();
+
+    $difference = format_time((time() > $upgraderunning ? (time() - $upgraderunning) : 300));
+
+    if (!$upgraderunning) {
+        send_critical("Moodle upgrade pending and is not running, cron execution suspended");
+    }
+
+    if ($upgraderunning >= time()) {
+        // Before the expected finish time.
+        if (!empty($initialinstall)) {
+            send_critical("Moodle installation is running, ETA > $difference, cron execution suspended");
+        } else {
+            send_critical("Moolde upgrade is running, ETA > $difference, cron execution suspended");
+        }
+    }
+
+    /*
+     * After the expected finish time (timeout or other interruption)
+     * The "core_shutdown_manager::register_function('upgrade_finished_handler');" already handle these cases
+     * and unset config 'upgraderunning'
+     * The below critical ones can happen if core_shutdown_manager fails to run the handler function.
+     */
+    if (!empty($initialinstall)) {
+        send_critical("Moodle installation is running, overdue by $difference ");
+    } else {
+        send_critical("Moodle upgrade is running, overdue by $difference ");
+    }
+}
+
+// We want to periodically emit an error_log which we will detect elsewhere to
+// confirm that all the various web server logs are not stale.
+$nexterror = get_config('tool_heartbeat', 'nexterror');
+$errorperiod = get_config('tool_heartbeat', 'errorlog') || 30 * MINSECS;
+if ($errorperiod > 0 && (!$nexterror || time() > $nexterror) ) {
+    $nexterror = time() + $errorperiod;
+    $now = userdate(time(), $format);
+    $next = userdate($nexterror, $format);
+    // @codingStandardsIgnoreStart
+    error_log("heartbeat test $now, next test expected at $next");
+    // @codingStandardsIgnoreEnd
+    set_config('nexterror', $nexterror, 'tool_heartbeat');
 }
 
 if ($CFG->branch < 27) {

@@ -64,6 +64,10 @@ if ($hassiteconfig) {
                     (new lang_string('allowedipsdescription', 'tool_heartbeat').$description),
                     ''  );
         $settings->add($iplist);
+
+        $settings->add(new admin_setting_configduration('tool_heartbeat/errorlog',
+                get_string('errorlog', 'tool_heartbeat'),
+                get_string('errorlogdesc', 'tool_heartbeat'), 30 * MINSECS, MINSECS));
     }
 }
 

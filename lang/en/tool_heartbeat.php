@@ -23,6 +23,8 @@
  */
 
 $string['pluginname'] = 'Heartbeat';
+$string['errorlog'] = 'Error log period';
+$string['errorlogdesc'] = 'To help ensure that all web server logging is working we can emit an intermittent message to the error_log. Set this to 0 to turn it off.';
 $string['testing'] = 'Test heartbeat';
 $string['testingdesc'] = 'You can use this to temporarily fake a warn or error condition to test that your monitoring is correctly working end to end.';
 $string['normal'] = 'Normal monitoring';

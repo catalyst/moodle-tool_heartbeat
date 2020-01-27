@@ -21,14 +21,6 @@
  * @copyright  2014 Brendan Heywood <brendan@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-// @codingStandardsIgnoreStart
-if (isset($argv)) {
-    define('CLI_SCRIPT', true);
-} else {
-    define('CLI_SCRIPT', false);
-}
-// @codingStandardsIgnoreEnd
-require_once(__DIR__ . '/../../../config.php');
 
 // Make sure varnish doesn't cache this. But it still might so go check it!
 header('Pragma: no-cache');
@@ -50,6 +42,7 @@ if (isset($argv) && $argv[0]) {
     $fullcheck = count($argv) > 1 && $argv[1] === 'fullcheck';
 } else {
     define('NO_MOODLE_COOKIES', true);
+    define('CLI_SCRIPT', false);
     $fullcheck = isset($_GET['fullcheck']);
 }
 if (!defined(CLI_SCRIPT)) {
@@ -88,6 +81,7 @@ if (check_climaintenance(__DIR__ . '/../../../config.php') === true) {
     exit;
 }
 
+require_once(__DIR__ . '/../../../config.php');
 global $CFG;
 
 $status = "";
@@ -106,11 +100,6 @@ function failed($reason) {
     exit;
 }
 
-// IP Locking, check for CLI, check for remote IP in validated list, if not, exit.
-if (!(isset($argv))) {
-    require_once('iplock.php');
-}
-
 $testfile = $CFG->dataroot . "/tool_heartbeat.test";
 $size = file_put_contents($testfile, '1');
 if ($size !== 1) {
@@ -126,6 +115,11 @@ if (file_exists($testfile)) {
 define('ABORT_AFTER_CONFIG_CANCEL', true);
 require($CFG->dirroot . '/lib/setup.php');
 require_once($CFG->libdir.'/filelib.php');
+
+// IP Locking, check for CLI, check for remote IP in validated list, if not, exit.
+if (!(isset($argv))) {
+    require_once('iplock.php');
+}
 
 if ($fullcheck || $checksession) {
     $c = new curl(array('cache' => false, 'cookie' => true));

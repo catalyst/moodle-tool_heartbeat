@@ -46,7 +46,7 @@ if (isset($argv)) {
     // If run from the CLI.
     define('CLI_SCRIPT', true);
     require_once(__DIR__ . '/../../../config.php');
-    require_once('nagios.php');
+    require_once(__DIR__.'/nagios.php');
     require_once($CFG->libdir . '/clilib.php');
 
     list($options, $unrecognized) = cli_get_params($options,
@@ -80,7 +80,8 @@ if (isset($argv)) {
 } else {
     // If run from the web.
     require_once(__DIR__ . '/../../../config.php');
-    require_once('nagios.php');
+    require_once(__DIR__.'/nagios.php');
+    require_once(__DIR__.'/iplock.php');
 
     $options['critthresh'] = optional_param('critthresh', 500, PARAM_INT);
     $options['warnthresh'] = optional_param('warnthresh', 10, PARAM_INT);
@@ -110,7 +111,7 @@ $count = $tablequery->logincount;
 if ($count > $options['critthresh']) {
     send_critical("$count failed logins in the last ". $options['logtime'] ." minute(s).");
 } else if ($count > $options['warnthresh']) {
-    send_warning("$count Failed logins in the last ". $options['logtime'] ." minute(s).");
+    send_warning("$count failed logins in the last ". $options['logtime'] ." minute(s).");
 } else {
-    send_good("Normal Login behaivour\n");
+    send_good("Normal Login behaviour\n");
 }
