@@ -6,5 +6,5 @@ tool_heartbeat.zip:
 	@cd .. && zip -r --exclude=heartbeat/build/ --exclude=heartbeat/Makefile heartbeat/build/tool_heartbeat.zip heartbeat/*
 
 clean:
-	@rm -rf build
+	@$(RRM) build
 
