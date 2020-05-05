@@ -112,7 +112,10 @@ if ($response !== false) {
         $output .= "WARNING: Progress bar is not working";
     }
 
-    $output .= " Debugging:: URL: {$info['url']} HTTP code: {$info['http_code']} Total time: {$info['total_time']} TTFB: {$info['starttransfer_time']}\n";
+    $output .= " Debugging:: URL: {$info['url']}";
+    $output .= " HTTP code: {$info['http_code']}";
+    $output .= " Total time: {$info['total_time']}"
+    $output .= " TTFB: {$info['starttransfer_time']}\n";
 } else {
     $pass = false;
     $output .= "WARNING: Progress bar is not working\n";
