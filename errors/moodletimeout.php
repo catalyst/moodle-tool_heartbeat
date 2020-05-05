@@ -14,30 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
- * Set a random integer in session and redirect to check if persists.
+ * Tests all the different types of error classes
  *
  * @package    tool_heartbeat
- * @copyright  2019 Tom Dickman <tomdickman@catalyst-au.net>
+ * @copyright  2020 Brendan Heywood <brendan@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+define('NO_OUTPUT_BUFFERING', true);
+
 // @codingStandardsIgnoreStart
-require_once('../../../config.php');
+require(__DIR__ . '/../../../../config.php');
 // @codingStandardsIgnoreEnd
 
-global $SESSION;
+set_time_limit(1);
 
-$testnumber = rand();
-$testtimemicro = microtime(true);
-$hostname = gethostname();
+$max = 1000 * 1000 * 1000; // We should max out before 1 billion cycles.
+for ($c = 0; $c < $max; $c++) {
 
-$SESSION->testnumber = $testnumber;
+    // A sleep(1) isn't actually counted so lets do some real work.
+    $rand = random_bytes(100);
+    $hash = substr(hash('sha256', $rand), 0, 10);
 
-$params = array(
-    'testnumber' => $testnumber,
-    'reqtime' => $testtimemicro,
-    'host' => $hostname);
-$url = new moodle_url('/admin/tool/heartbeat/sessiontwo.php', $params);
+}
 
-redirect($url);

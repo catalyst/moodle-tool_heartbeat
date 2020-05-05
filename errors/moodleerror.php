@@ -14,30 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
- * Set a random integer in session and redirect to check if persists.
+ * Tests all the different types of error classes
  *
  * @package    tool_heartbeat
- * @copyright  2019 Tom Dickman <tomdickman@catalyst-au.net>
+ * @copyright  2020 Brendan Heywood <brendan@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 // @codingStandardsIgnoreStart
-require_once('../../../config.php');
+require(__DIR__ . '/../../../../config.php');
 // @codingStandardsIgnoreEnd
 
-global $SESSION;
+$code = required_param('code', PARAM_INT);
 
-$testnumber = rand();
-$testtimemicro = microtime(true);
-$hostname = gethostname();
+header("HTTP/1.0 $code Moodle custom error");
 
-$SESSION->testnumber = $testnumber;
+$syscontext = context_system::instance();
+$PAGE->set_url('/admin/tool/heartbeat/errors.php');
+$PAGE->set_context($syscontext);
+$PAGE->set_cacheable(false);
+echo $OUTPUT->header();
+echo $OUTPUT->heading("Error $code");
 
-$params = array(
-    'testnumber' => $testnumber,
-    'reqtime' => $testtimemicro,
-    'host' => $hostname);
-$url = new moodle_url('/admin/tool/heartbeat/sessiontwo.php', $params);
+echo "This is a $code error page with full styling";
 
-redirect($url);
+echo $OUTPUT->footer();

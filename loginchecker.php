@@ -30,10 +30,12 @@
  *
  */
 
+// @codingStandardsIgnoreStart
 defined('MOODLE_INTERNAL');
 
 // We want this to run regardless if there are any pending upgrades.
 define('NO_UPGRADE_CHECK', true);
+// @codingStandardsIgnoreEnd
 
 $options = array(
     'help' => false,

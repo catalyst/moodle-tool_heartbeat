@@ -14,30 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
- * Set a random integer in session and redirect to check if persists.
+ * Tests all the different types of error classes
  *
  * @package    tool_heartbeat
- * @copyright  2019 Tom Dickman <tomdickman@catalyst-au.net>
+ * @copyright  2020 Brendan Heywood <brendan@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+define('NO_OUTPUT_BUFFERING', true);
+
 // @codingStandardsIgnoreStart
-require_once('../../../config.php');
+require(__DIR__ . '/../../../../config.php');
 // @codingStandardsIgnoreEnd
 
-global $SESSION;
+// So we don't  brick our session.
+\core\session\manager::write_close();
 
-$testnumber = rand();
-$testtimemicro = microtime(true);
-$hostname = gethostname();
+$sleep = required_param('time', PARAM_INT);
 
-$SESSION->testnumber = $testnumber;
+for ($c = 0; $c < $sleep; $c++) {
 
-$params = array(
-    'testnumber' => $testnumber,
-    'reqtime' => $testtimemicro,
-    'host' => $hostname);
-$url = new moodle_url('/admin/tool/heartbeat/sessiontwo.php', $params);
+    sleep(1);
 
-redirect($url);
+}
+
+echo "Hello world, this should have died upstream and you should not see this";
+

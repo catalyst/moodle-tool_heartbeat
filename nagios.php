@@ -20,9 +20,13 @@
  * Returns a Nagios status code, used for automated monitoring
  *
  * Numeric value:   |   Status  |   Description
- * 0                |    OK     |   The plugin was able to check the service and it appeared to be functioning properly.
- * 1                |  Warning  |   The plugin was able to check the service, but it appeared to be above some "warning" threshold or did not appear to be working properly.
- * 2                |  Critical |   The plugin detected that either the service was not running or it was above some "critical" threshold.
+ * 0                |    OK     |   The plugin was able to check the service and
+ *                              |   it appeared to be functioning properly.
+ * 1                |  Warning  |   The plugin was able to check the service, but
+ *                              |   it appeared to be above some "warning"
+ *                              |   threshold or did not appear to be working properly.
+ * 2                |  Critical |   The plugin detected that either the service was
+ *                              |   not running or it was above some "critical" threshold.
  * 3                |  Unknown  |   The plugin was unable to determine the status of the service.
  *
  * @package    tool_heartbeat
