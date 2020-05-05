@@ -35,7 +35,7 @@
 function validate_ip_against_config($iplist) {
 // @codingStandardsIgnoreEnd
 
-    // Require library for nagios responses
+    // Require library for nagios responses.
     require_once(__DIR__.'/nagios.php');
     // Validate remote IP against safe list.
     if (remoteip_in_list($iplist)) {

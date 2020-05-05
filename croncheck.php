@@ -30,6 +30,7 @@
  *
  */
 
+// @codingStandardsIgnoreStart
 define('NO_UPGRADE_CHECK', true);
 
 $cronthreshold   = 6;   // Hours.
@@ -38,6 +39,8 @@ $delaythreshold  = 600; // Minutes.
 $delaywarn       = 60;  // Minutes.
 $legacythreshold = 60 * 6; // Minute.
 $legacywarn      = 60 * 2; // Minutes.
+
+// @codingStandardsIgnoreEnd
 
 $dirroot = __DIR__ . '/../../../';
 
@@ -237,7 +240,8 @@ $minsincelegacylastrun = floor((time() - $legacylastrun) / 60); // In minutes.
 $when = userdate($legacylastrun, $format);
 
 if ( $minsincelegacylastrun > $options['legacyerror']) {
-    send_critical("Moodle legacy task last run $minsincelegacylastrun mins ago > {$options['legacyerror']} mins\nLast run at $when");
+    send_critical("Moodle legacy task last run $minsincelegacylastrun "
+        . "mins ago > {$options['legacyerror']} mins\nLast run at $when");
 }
 if ( $minsincelegacylastrun > $options['legacywarn']) {
     send_warning("Moodle legacy task last run $minsincelegacylastrun mins ago > {$options['legacywarn']} mins\nLast run at $when");
