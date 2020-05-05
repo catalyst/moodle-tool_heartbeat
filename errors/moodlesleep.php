@@ -24,7 +24,9 @@
 
 define('NO_OUTPUT_BUFFERING', true);
 
+// @codingStandardsIgnoreStart
 require(__DIR__ . '/../../../../config.php');
+// @codingStandardsIgnoreEnd
 
 // So we don't  brick our session.
 \core\session\manager::write_close();

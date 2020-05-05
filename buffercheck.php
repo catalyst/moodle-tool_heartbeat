@@ -96,10 +96,8 @@ if (in_array("    header('X-Accel-Buffering: no');", $lines)) {
 }
 
 $url = new moodle_url('/admin/tool/heartbeat/progress.php');
-// Fake a curl domain error.
-// $url = 'http://404.php.net/';
-// Fake a curl timeout error.
-// $url = 'http://blackhole.webpagetest.org/';
+// Use http://404.php.net/ to fake a curl domain error.
+// Use http://blackhole.webpagetest.org/ to fake a curl timeout error.
 curl_setopt($curl, CURLOPT_URL, $url);
 $response = curl_exec($curl);
 $info     = curl_getinfo($curl);

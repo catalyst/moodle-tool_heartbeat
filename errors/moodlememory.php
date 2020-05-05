@@ -24,15 +24,17 @@
 
 define('NO_OUTPUT_BUFFERING', true);
 
+// @codingStandardsIgnoreStart
 require(__DIR__ . '/../../../../config.php');
+// @codingStandardsIgnoreEnd
 
 ini_set('memory_limit', '1k');
 
-$max = 1000 * 1000 * 1000; // We should max out before 1 billion cycles
+$max = 1000 * 1000 * 1000; // We should max out before 1 billion cycles.
 $array = [];
 for ($c = 0; $c < $max; $c++) {
 
-    // sleep(1) isn't actually counted so lets do some real work.
+    // A sleep(1) isn't actually counted so lets do some real work.
     $rand = random_bytes(100);
     $hash = substr(hash('sha256', $rand), 0, 10);
 

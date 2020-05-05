@@ -22,12 +22,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// @codingStandardsIgnoreStart
 define('NO_OUTPUT_BUFFERING', true);
 
 global $CFG;
 if (!isset($CFG)) {
     $CFG = new stdClass();
 }
+
+// @codingStandardsIgnoreEnd
 
 // Setup a fake, but incomplete config.php file.
 

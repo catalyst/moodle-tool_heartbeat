@@ -24,10 +24,12 @@
 
 define('NO_OUTPUT_BUFFERING', true);
 
+// @codingStandardsIgnoreStart
 global $CFG;
 if (!isset($CFG)) {
     $CFG = new stdClass();
 }
+// @codingStandardsIgnoreEnd
 
 // Setup a fake, but incomplete config.php file.
 $CFG->dataroot = '/tmp';

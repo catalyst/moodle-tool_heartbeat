@@ -101,7 +101,7 @@ Example:
 } else {
     // If run from the web.
     define('NO_MOODLE_COOKIES', true);
-    // Add requirement for IP validation
+    // Add requirement for IP validation.
     require($dirroot.'config.php');
     require_once(__DIR__.'/nagios.php');
     require_once(__DIR__.'/iplock.php');

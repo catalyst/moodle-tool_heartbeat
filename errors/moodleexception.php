@@ -22,7 +22,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// @codingStandardsIgnoreStart
 require(__DIR__ . '/../../../../config.php');
+// @codingStandardsIgnoreEnd
 
 // This simulates a page just exploding for some reason.
 
