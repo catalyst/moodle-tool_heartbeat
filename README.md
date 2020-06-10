@@ -12,7 +12,7 @@
 
 # What is this?
 
-This plugin exposes various endpoint that can be wired to load balancers and monitoring systems to help expose when this go wrong.
+This plugin exposes various endpoints that can be wired to load balancers and monitoring systems to help expose when things go wrong.
 
 NOTE: In an ideal world this plugin should be redundant and most of it's functionality built into core as a new API, enabling each plugin to delare it's own extra health checks. See:
 
@@ -136,7 +136,7 @@ http://moodle.local/admin/settings.php?section=tool_heartbeat
 
 # Testing
 
-When you have first setup this plugin and wired it end to end with Nagios / Icinga or another monitoring tool, you want the peace of mind to know that it is all correctly working. There is a setting which allows you to send a fake warning so you can confirm your pager will go off. This setting is set to 'error' by default by design
+When you first setup this plugin and have wired it end to end with Nagios / Icinga or another monitoring tool, you want the peace of mind to know that it is all correctly working. There is a setting which allows you to send a fake warning so you can confirm your pager will go off. This setting is set to 'error' by default by design
 
 http://moodle.local/admin/settings.php?section=tool_heartbeat
 
