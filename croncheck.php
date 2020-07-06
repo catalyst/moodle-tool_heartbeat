@@ -234,8 +234,13 @@ foreach ($tasks as $task) {
 }
 
 $tasks = $DB->get_records('task_adhoc');
-foreach ($tasks as $task) {
-    $task = \core\task\manager::adhoc_task_from_record($task);
+foreach ($tasks as $record) {
+    $task = \core\task\manager::adhoc_task_from_record($record);
+
+    if (!$task) {
+        send_warning("TASK: id={$record->id} ({$record->classname}) does not exist and must be deleted");
+        continue;
+    }
 
     $faildelay = $task->get_fail_delay();
     if ($faildelay == 0) {
