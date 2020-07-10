@@ -34,6 +34,7 @@ if (!isset($CFG)) {
 // Setup a fake, but incomplete config.php file.
 $CFG->dataroot = '/tmp';
 $CFG->wwwroot = '/tmp';
+$CFG->dbtype = 'broken';
 
 require_once('../../../../lib/setup.php');
 

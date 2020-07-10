@@ -255,5 +255,42 @@ if ( $maxminsdelay > $options['delayerror'] ) {
     send_warning("Moodle task faildelay > {$options['delaywarn']} mins\n$delay");
 }
 
+// If the Check API from 3.9 exists then call those as well:
+if (class_exists('\core\check\manager')) {
+
+    $checks = \core\check\manager::get_checks('status');
+    $output = '';
+
+    foreach ($checks as $check) {
+        $ref = $check->get_ref();
+        $result = $check->get_result();
+
+        $status = $result->get_status();
+
+        // Summary is treated as html.
+        $summary = $result->get_summary();
+        $summary = html_to_text($summary, 80, false);
+
+        if ($status == \core\check\result::WARNING ||
+            $status == \core\check\result::CRITICAL ||
+            $status == \core\check\result::ERROR) {
+
+            $output .= $check->get_name() . "\n";
+            $output .= "$summary\n";
+
+            $link = $check->get_action_link();
+            if ($link) {
+                $output .= $link->url . "\n";
+            }
+        }
+    }
+
+    // Strictly some of these could a critical but softly softly.
+    if ($output) {
+        send_warning($output);
+    }
+
+}
+
 send_good("MOODLE CRON RUNNING\n");
 
