@@ -47,7 +47,7 @@ if (isset($argv) && $argv[0]) {
     define('CLI_SCRIPT', false);
     $fullcheck = isset($_GET['fullcheck']);
 }
-if (!defined(CLI_SCRIPT)) {
+if (!defined('CLI_SCRIPT')) {
     $checksession = isset($_GET['checksession']);
 }
 define('NO_UPGRADE_CHECK', true);
