@@ -148,8 +148,8 @@ $sessionhandler = (property_exists($CFG, 'session_handler_class') && $CFG->sessi
 $savepath = property_exists($CFG, 'session_memcached_save_path');
 
 if ($sessionhandler && $savepath) {
-    require_once($CFG->libdir . '/classes/session/util.php');
-    $servers = \core\session\util::connection_string_to_memcache_servers($CFG->session_memcached_save_path);
+    require_once(__DIR__ .'/classes/MemcachedUtil.php');
+    $servers = MemcachedUtil::connection_string_to_memcache_servers($CFG->session_memcached_save_path);
     try {
         $memcached = new \Memcached();
         $memcached->addServers($servers);

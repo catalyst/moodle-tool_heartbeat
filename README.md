@@ -139,7 +139,3 @@ http://moodle.local/admin/settings.php?section=tool_heartbeat
 When you have first setup this plugin and wired it end to end with Nagios / Icinga or another monitoring tool, you want the peace of mind to know that it is all correctly working. There is a setting which allows you to send a fake warning so you can confirm your pager will go off. This setting is set to 'error' by default by design
 
 http://moodle.local/admin/settings.php?section=tool_heartbeat
-
-
-
-
