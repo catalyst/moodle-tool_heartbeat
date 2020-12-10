@@ -278,6 +278,9 @@ if (class_exists('\core\check\manager')) {
             $output .= $check->get_name() . "\n";
             $output .= "$summary\n";
 
+            $detail = new moodle_url('/report/status/index.php', ['detail' => $ref]);
+            $output .= 'Details: ' . $detail->out() . "\n\n";
+
             $link = $check->get_action_link();
             if ($link) {
                 $output .= $link->url . "\n";
