@@ -233,6 +233,23 @@ foreach ($tasks as $task) {
     $delay .= "TASK: " . $task->get_name() . ' (' .get_class($task) . ") Delay: $faildelay\n";
 }
 
+$records = $DB->get_records_sql('SELECT * from {task_adhoc} WHERE faildelay > 0');
+foreach ($records as $record) {
+    $task = \core\task\manager::adhoc_task_from_record($record);
+    if (!$task) {
+        continue;
+    }
+
+    $faildelay = $task->get_fail_delay();
+    if ($faildelay == 0) {
+        continue;
+    }
+    if ($faildelay > $maxdelay) {
+        $maxdelay = $faildelay;
+    }
+    $delay .= "TASK: " . $task->get_name() . ' (' .get_class($task) . ") Delay: $faildelay\n";
+}
+
 if ( empty($legacylastrun) ) {
     send_warning("Moodle legacy task isn't running (ie disabled)\n");
 }
