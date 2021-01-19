@@ -27,6 +27,8 @@ define('NO_OUTPUT_BUFFERING', true); // Progress bar is used here.
 require(__DIR__ . '/../../../config.php');
 // @codingStandardsIgnoreEnd
 
+require_once(__DIR__.'/iplock.php');
+
 $syscontext = context_system::instance();
 $PAGE->set_url('/admin/tool/heartbeat/progress.php');
 $PAGE->set_context($syscontext);
