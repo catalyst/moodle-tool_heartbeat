@@ -45,8 +45,8 @@ echo $OUTPUT->footer();
 // stack and not the test, so we have just added more margin here.
 $total = 10;
 $progressbar->update_full(0, '0%');
-for ($c = 1; $c <= 100; $c++) {
-    usleep($total * 1000000 / 100);
-    $progressbar->update_full($c, $c . '%');
+for ($c = 1; $c <= 100; $c+= .2) {
+    usleep($total * 10000);
+    $progressbar->update_full($c, sprintf("You are up to %.1f out of 100", $c));
 }
 
