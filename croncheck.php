@@ -230,7 +230,7 @@ foreach ($tasks as $task) {
     if ($faildelay > $maxdelay) {
         $maxdelay = $faildelay;
     }
-    $delay .= "TASK: " . $task->get_name() . ' (' .get_class($task) . ") Delay: $faildelay\n";
+    $delay .= "SCHEDULED TASK: " . get_class($task) . ' (' .$task->get_name() . ") Delay: $faildelay\n";
 }
 
 $records = $DB->get_records_sql('SELECT * from {task_adhoc} WHERE faildelay > 0');
@@ -247,7 +247,7 @@ foreach ($records as $record) {
     if ($faildelay > $maxdelay) {
         $maxdelay = $faildelay;
     }
-    $delay .= "TASK: " . $task->get_name() . ' (' .get_class($task) . ") Delay: $faildelay\n";
+    $delay .= "ADHOC TASK: " .get_class($task) . " Delay: $faildelay\n";
 }
 
 if ( empty($legacylastrun) ) {
