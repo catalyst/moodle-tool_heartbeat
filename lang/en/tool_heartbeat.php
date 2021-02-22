@@ -39,7 +39,13 @@ $string['allowedipsempty'] = 'When the allowed IPs list is empty we will not blo
 $string['allowedipshasmyip'] = 'Your IP (<i>{$a->ip}</i>) is in the list and you will not be blocked from checking the heartbeat.';
 $string['allowedipshasntmyip'] = 'Your IP (<i>{$a->ip}</i>) is not in the list and you will be blocked from checking the heartbeat.';
 $string['allowedipsnoconfig'] = 'Your config.php does not have the extra setup to allow blocking via IP.<br />Please refer to our <a href="https://github.com/catalyst/moodle-auth_outage#installation" target="_blank">README.md</a> file for more information.';
-
+$string['emptyautherror'] = 'Auth methods empty, config lost. Previous value: {$a}';
+$string['configauthmissing'] = 'Configured auth methods are not currently enabled.';
+$string['setinitialauthstate'] = 'Initial auth state for heartbeat auth check set.';
+$string['authcorrect'] = 'Auth methods correctly configured.';
+$string['configuredauths'] = 'Check auth methods';
+$string['configuredauthsdesc'] = 'Auth methods to check are enabled in the Check API. A warning will be emitted if they are not enabled.';
+$string['checkauthcheck'] = 'Authentication methods';
 /*
  * Privacy provider (GDPR)
  */
