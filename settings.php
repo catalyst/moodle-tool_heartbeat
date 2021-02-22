@@ -68,7 +68,9 @@ if ($hassiteconfig) {
         $settings->add(new admin_setting_configduration('tool_heartbeat/errorlog',
                 get_string('errorlog', 'tool_heartbeat'),
                 get_string('errorlogdesc', 'tool_heartbeat'), 30 * MINSECS, MINSECS));
+
+        $settings->add(new admin_setting_configtext('tool_heartbeat/configuredauths',
+                get_string('configuredauths', 'tool_heartbeat'),
+                get_string('configuredauthsdesc', 'tool_heartbeat'), '', PARAM_TEXT));
     }
 }
-
-
