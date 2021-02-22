@@ -21,6 +21,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-function tool_heartbeat_security_checks() {
+function tool_heartbeat_status_checks() {
     return [new \tool_heartbeat\check\authcheck()];
 }
