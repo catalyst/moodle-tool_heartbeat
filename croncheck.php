@@ -277,6 +277,8 @@ if (class_exists('\core\check\manager')) {
 
     $checks = \core\check\manager::get_checks('status');
     $output = '';
+    // Should this check block emit as critical?
+    $critical = false;
 
     foreach ($checks as $check) {
         $ref = $check->get_ref();
@@ -291,6 +293,10 @@ if (class_exists('\core\check\manager')) {
         if ($status == \core\check\result::WARNING ||
             $status == \core\check\result::CRITICAL ||
             $status == \core\check\result::ERROR) {
+
+            if (!$critical) {
+                $critical = $status == \core\check\result::CRITICAL;
+            }
 
             $output .= $check->get_name() . "\n";
             $output .= "$summary\n";
@@ -307,10 +313,14 @@ if (class_exists('\core\check\manager')) {
 
     // Strictly some of these could a critical but softly softly.
     if ($output) {
-        send_warning($output);
+        // For now emit only criticals as criticals. Error status should be a critical later.
+        if ($critical) {
+            send_critical($output);
+        } else {
+            send_warning($output);
+        }
     }
 
 }
 
 send_good("MOODLE CRON RUNNING\n");
-
