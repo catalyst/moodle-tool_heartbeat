@@ -99,10 +99,20 @@ $latest = max($admin->lastaccess, $admin->lastlogin);
 $recency = time() - $latest;
 $delta = format_time($recency);
 
-if ($recency < $options['critthresh']) {
-    send_critical("Last admin login was $delta ago < " . format_time($options['critthresh']));
+$mutedbefore = get_config('tool_heartbeat', 'adminmute');
+$muteddelta = '';
+if ($mutedbefore && ($mutedbefore > $latest)) {
+    $muteddelta = format_time($mutedbefore - time());
+}
+
+$muteinfo = "\nThis can be muted via php admin/tool/heartbeat/cli/muteadminlogin.php --mute";
+
+if ($muteddelta and ($recency < $options['critthresh'] or $recency < $options['critthresh'])) {
+    send_good("Last admin login was $delta ago but MUTED $muteddelta ago");
+} else if ($recency < $options['critthresh']) {
+    send_critical("Last admin login was $delta ago < " . format_time($options['critthresh']), $muteinfo);
 } else if ($recency < $options['warnthresh']) {
-    send_warning("Last admin login was $delta ago < ". format_time($options['warnthresh']));
+    send_warning("Last admin login was $delta ago < " . format_time($options['warnthresh']), $muteinfo);
 } else {
     send_good("No recent main admin login\n");
 }
