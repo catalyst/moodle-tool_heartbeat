@@ -43,11 +43,12 @@ $now = userdate(time(), $format);
  * Sends a good Nagios response, with message.
  *
  * @param string  $msg the message to append the Nagios response.
+ * @param string  $more aditional message
  */
 
-function send_good($msg) {
+function send_good($msg, $more = '') {
     global $now;
-    printf ("OK: $msg (Checked $now)\n");
+    printf ("OK: $msg (Checked $now)\n$more");
     exit(0);
 }
 
@@ -55,11 +56,12 @@ function send_good($msg) {
  * Sends a warning Nagios response, with message.
  *
  * @param string  $msg the message to append the Nagios response.
+ * @param string  $more aditional message
  */
 
-function send_warning($msg) {
+function send_warning($msg, $more = '') {
     global $now;
-    printf ("WARNING: $msg (Checked $now)\n");
+    printf ("WARNING: $msg (Checked $now)\n$more");
     exit(1);
 }
 
@@ -67,11 +69,12 @@ function send_warning($msg) {
  * Sends a critical Nagios response, with message.
  *
  * @param string  $msg the message to append the Nagios response.
+ * @param string  $more aditional message
  */
 
-function send_critical($msg) {
+function send_critical($msg, $more = '') {
     global $now;
-    printf ("CRITICAL: $msg (Checked $now)\n");
+    printf ("CRITICAL: $msg (Checked $now)\n$more");
     exit(2);
 }
 
@@ -79,10 +82,11 @@ function send_critical($msg) {
  * Sends an unknown Nagios response, with message.
  *
  * @param string  $msg the message to append the Nagios response.
+ * @param string  $more aditional message
  */
 
-function send_unknown($msg) {
-    printf ("UNKNOWN: $msg\n");
+function send_unknown($msg, $more = '') {
+    printf ("UNKNOWN: $msg\n$more");
     exit(3);
 }
 
