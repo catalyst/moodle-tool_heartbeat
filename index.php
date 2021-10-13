@@ -68,7 +68,6 @@ function check_climaintenance($configfile) {
 
     $re = '/^\$CFG->dataroot\s+=\s+(.*?);/m';  // Lines starting with $CFG->dataroot.
     preg_match($re, $content, $matches);
-
     if (!empty($matches)) {
         // We trust what we found is safe because it was found in the site's config.php
         // This eval makes it so that any use of getenv() or other variables to feed that dataroot variable will be parsed correctly
