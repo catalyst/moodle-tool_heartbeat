@@ -68,6 +68,9 @@ function check_climaintenance($configfile) {
 
     $re = '/^\$CFG->dataroot\s+=\s+["\'](.*?)["\'];/m';  // Lines starting with $CFG->dataroot.
     preg_match($re, $content, $matches);
+    
+    print_r($matches);
+    
     if (!empty($matches)) {
         $climaintenance = $matches[count($matches) - 1] . '/climaintenance.html';
 
@@ -84,18 +87,8 @@ if (check_climaintenance(__DIR__ . '/../../../config.php') === true) {
     exit;
 }
 
-echo "before config load";
-
 require_once(__DIR__ . '/../../../config.php');
 global $CFG;
-
-// Maintenance can also be enabled in the database config. Check for it otherwise we'll return a 503 to the heartbeat request
-if (!empty($CFG->maintenance_enabled)) {
-    print "Server is in MAINTENANCE<br>\n";
-    exit;
-} else {
-    echo "not in maintenance";
-}
 
 $status = "";
 
