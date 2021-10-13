@@ -87,6 +87,12 @@ if (check_climaintenance(__DIR__ . '/../../../config.php') === true) {
 require_once(__DIR__ . '/../../../config.php');
 global $CFG;
 
+// Maintenance can also be enabled in the database config. Check for it otherwise we'll return a 503 to the heartbeat request
+if (!empty($CFG->maintenance_enabled)) {
+    print "Server is in MAINTENANCE<br>\n";
+    exit;
+}
+
 $status = "";
 
 /**
