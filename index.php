@@ -70,12 +70,11 @@ function check_climaintenance($configfile) {
     $re = '/^\$CFG->dataroot\s+=\s+(.*?);/m';  // Lines starting with $CFG->dataroot.
     preg_match($re, $content, $matches);
     
-    print_r($matches);
-    $dataroot = $matches[count($matches) - 1];
-    echo "dataroot=".$dataroot;
-    
     if (!empty($matches)) {
-        $climaintenance = $matches[count($matches) - 1] . '/climaintenance.html';
+        // We trust what we found is safe because it was found in the site's config.php
+        // This eval makes it so that any use of getenv() or other variables to feed that dataroot variable will be parsed correctly
+        eval($matches[0]);
+        $climaintenance = $CFG->dataroot . '/climaintenance.html';
 
         if (file_exists($climaintenance)) {
             return true;
