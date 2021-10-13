@@ -73,7 +73,7 @@ function check_climaintenance($configfile) {
     if (!empty($matches)) {
         // We trust what we found is safe because it was found in the site's config.php
         // This eval makes it so that any use of getenv() or other variables to feed that dataroot variable will be parsed correctly
-        print_r($matches);
+        $CFG = new stdClass();
         eval($matches[0]);
         $climaintenance = $CFG->dataroot . '/climaintenance.html';
 
