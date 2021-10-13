@@ -84,6 +84,8 @@ if (check_climaintenance(__DIR__ . '/../../../config.php') === true) {
     exit;
 }
 
+echo "before config load";
+
 require_once(__DIR__ . '/../../../config.php');
 global $CFG;
 
@@ -91,6 +93,8 @@ global $CFG;
 if (!empty($CFG->maintenance_enabled)) {
     print "Server is in MAINTENANCE<br>\n";
     exit;
+} else {
+    echo "not in maintenance";
 }
 
 $status = "";
