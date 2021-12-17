@@ -21,6 +21,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 function tool_heartbeat_status_checks() {
     return [new \tool_heartbeat\check\authcheck()];
 }
+
+tool_heartbeat\logger::register_shutdown_handler();
