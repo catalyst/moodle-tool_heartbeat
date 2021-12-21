@@ -90,7 +90,6 @@ class logger {
         }
     }
 
-
     /**
      * Log lines to a stream
      *
@@ -100,9 +99,11 @@ class logger {
      * @throws moodle_exception
      */
     public static function log_to_stream($stream, array $lines): void {
+        global $PAGE;
+
         if ($fh = fopen($stream, 'a')) {
             foreach ($lines as $l) {
-                if (fwrite($fh, $l) === false) {
+                if (fwrite($fh, "{$PAGE->pagetype} - $l") === false) {
                     throw new moodle_exception("tool_heartbeat\\logger::log_to_stream: Cannot write to $stream");
                 }
             }
@@ -121,7 +122,9 @@ class logger {
             return null;
         }
 
-        return '';
+        // XXX from config, currently supports 'syslog://<facility>/<log prefix>'
+        // defaults: facility: user, log prefix: shortname
+        return 'syslog://local5';
     }
 
     /**

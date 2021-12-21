@@ -37,7 +37,7 @@ class logger_test extends base_testcase {
     }
 
     public function test_log() {
-        GLOBAL $teststream;
+        GLOBAL $PAGE;
 
         $protocol = 'test-heartbeat-log';
         $stream = "$protocol://teststream";
@@ -47,10 +47,15 @@ class logger_test extends base_testcase {
 
         logger::register_stat_callback([__NAMESPACE__.'\logger_test', 'stats'], $stream);
 
+        $page = 'test';
+        $PAGE->set_url("/$page");
         logger::log();
 
         if ($fh = fopen($stream, 'r')) {
-            $this->assertEquals(implode("\n", self::$stats), fread($fh, 4096));
+            $this->assertEquals(
+                implode("\n", array_map(function ($l) use ($page) { return "$page - $l"; }, self::$stats)),
+                fread($fh, 4096)
+            );
         } else {
             $this->fail("Cannot open $stream for reading");
         }
