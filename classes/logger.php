@@ -133,12 +133,36 @@ class logger {
      * @return array
      */
     public static function default_stats(): array {
-        global $CFG, $PERF, $DB, $PAGE;
+        global $CFG, $PERF;
+
+        // XXX This is lame, same call is in request_shutdown()
+        $perf = get_performance_info();
+        list($db_reads, $db_writes) = explode('/', $perf['dbqueries']);
+        list($cache_hits, $cache_misses, $cache_sets) = explode(' / ', $perf['cachesused']);
 
         $stats = [
-            'db_reads: '.$DB->perf_get_reads(),
-            'db_writes: '.$DB->perf_get_writes(),
+            "db_reads: $db_reads",
+            "db_writes: $db_writes",
         ];
+
+        if ($cache_hits > 0 || $cache_misses > 0 || $cache_sets  > 0 ) {
+            // otherwise perfdebug is not set, and stats are not recorded
+            $stats[] = "cache_hits: $cache_hits";
+            $stats[] = "cache_misses: $cache_misses";
+            $stats[] = "cache_sets: $cache_sets";
+        }
+
+        if (isset($PERF->sessionlock['gain'])) {
+            list($msec, $sec) = explode(' ', $PERF->starttime);
+            $stats[] = 'sess_lock_acquired_in: '.($PERF->sessionlock['gain'] - ((float) $sec  + (float) $msec));
+            $stats[] = 'sess_lock_type: '.(
+                defined('READ_ONLY_SESSION') && !empty($CFG->enable_read_only_sessions) && READ_ONLY_SESSION ? 'readonly' : 'write'
+            );
+
+        } else {
+            $stats[] = 'sess_lock_type: none';
+        }
+
         if (function_exists('memory_get_peak_usage')) {
             $stats[] = 'memory_peak: '.memory_get_peak_usage();
         }
