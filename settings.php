@@ -72,5 +72,9 @@ if ($hassiteconfig) {
         $settings->add(new admin_setting_configtext('tool_heartbeat/configuredauths',
                 get_string('configuredauths', 'tool_heartbeat'),
                 get_string('configuredauthsdesc', 'tool_heartbeat'), '', PARAM_TEXT));
+
+        $settings->add(new admin_setting_configtext('tool_heartbeat/logstream',
+                get_string('logstream', 'tool_heartbeat'),
+                get_string('logstreamdesc', 'tool_heartbeat'), '', PARAM_TEXT));
     }
 }

@@ -61,10 +61,10 @@ class logger_test extends base_testcase {
         }
     }
 
-    public function test_default_stats() {
+    public function test_perf_stats() {
         $cnt = function_exists('memory_get_peak_usage') ? 4 : 3;
 
-        $stats = logger::default_stats();
+        $stats = logger::perf_stats();
         $this->assertEquals($cnt, count($stats));
     }
 }

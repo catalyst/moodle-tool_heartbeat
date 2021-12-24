@@ -24,10 +24,16 @@
 defined('MOODLE_INTERNAL') || die();
 
 function tool_heartbeat_status_checks() {
-    return [new \tool_heartbeat\check\authcheck()];
+    return [
+        new \tool_heartbeat\check\authcheck(),
+        new \tool_heartbeat\check\logcheck(),
+    ];
 }
 
-stream_wrapper_register('syslog', 'tool_heartbeat\wrapper\syslog')
-    or throw new moodle_exception('Failed to register syslog protocol');
+function tool_heartbeat_after_config() {
+    if(!stream_wrapper_register('syslog', 'tool_heartbeat\wrapper\syslog')) {
+        throw new moodle_exception('Failed to register syslog protocol');
+    }
 
-tool_heartbeat\logger::register_shutdown_handler();
+    tool_heartbeat\logger::register_shutdown_handler();
+}

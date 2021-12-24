@@ -64,14 +64,23 @@ class logger {
      */
     public static function log(): void {
         $defaultstream = self::default_log_stream();
+        $statcallbacks = self::$statcallbacks;
         if ($defaultstream) {
-            self::$statcallbacks[$defaultstream] = self::$statcallbacks[null];
-            self::$statcallbacks[$defaultstream][] = [self::$classname, 'default_stats'];
+            if (!isset($statcallbacks[$defaultstream])) {
+                $statcallbacks[$defaultstream] = [];
+            }
+            if (isset($statcallbacks[null])) {
+                $statcallbacks[$defaultstream] = array_merge(
+                    $statcallbacks[$defaultstream],
+                    $statcallbacks[null]
+                );
+            }
+            $statcallbacks[$defaultstream][] = [self::$classname, 'perf_stats'];
         }
-        unset(self::$statcallbacks[null]);
+        unset($statcallbacks[null]);
 
 
-        foreach(self::$statcallbacks as $stream => $callbacks) {
+        foreach($statcallbacks as $stream => $callbacks) {
             $lines = [];
             foreach ($callbacks as $cb) {
                 try {
@@ -122,9 +131,7 @@ class logger {
             return null;
         }
 
-        // XXX from config, currently supports 'syslog://<facility>/<log prefix>'
-        // defaults: facility: user, log prefix: shortname
-        return 'syslog://local5';
+        return get_config('tool_heartbeat', 'logstream');
     }
 
     /**
@@ -132,7 +139,7 @@ class logger {
      *
      * @return array
      */
-    public static function default_stats(): array {
+    public static function perf_stats(): array {
         global $CFG, $PERF;
 
         // XXX This is lame, same call is in request_shutdown()
