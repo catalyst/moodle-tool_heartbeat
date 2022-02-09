@@ -131,6 +131,7 @@ https://moodle.org/plugins/view/tool_heartbeat
 http://moodle.local/admin/settings.php?section=tool_heartbeat
 
 * Set a fake warning state of 'error' or 'warn'
+* By default in a new install this is set to 'error'. This is done intertionally so that you know your monitoring is wired up correctly end to end. You should see you monitoring raise an alert which tells you that it is a test and links to the admin setting to turn it into normal monitoring mode.
 * Optionaly lock down the endpoints by IP
 
 
