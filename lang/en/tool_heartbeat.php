@@ -46,6 +46,10 @@ $string['authcorrect'] = 'Auth methods correctly configured.';
 $string['configuredauths'] = 'Check auth methods';
 $string['configuredauthsdesc'] = 'Auth methods to check are enabled in the Check API. A warning will be emitted if they are not enabled.';
 $string['checkauthcheck'] = 'Authentication methods';
+$string['logstream'] = 'Performance log stream url';
+$string['logstreamdesc'] = 'Url of the log stream for performance stats logging. currently supports standard php stream urls and "syslog://facility/[log prefix]", default log prefix: $SITE->shortname.';
+$string['logstreamnotset'] = 'Performance log stream url not set';
+$string['logstreamerror'] = 'Performance log stream error: {a}';
 /*
  * Privacy provider (GDPR)
  */
