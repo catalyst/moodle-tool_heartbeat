@@ -46,6 +46,9 @@ $string['authcorrect'] = 'Auth methods correctly configured.';
 $string['configuredauths'] = 'Check auth methods';
 $string['configuredauthsdesc'] = 'Auth methods to check are enabled in the Check API. A warning will be emitted if they are not enabled.';
 $string['checkauthcheck'] = 'Authentication methods';
+$string['checkrangerequestcheck'] = 'Range requests check';
+$string['checkrangerequestok'] = 'Range requests are working, 206 response with only 10 bytes of data';
+$string['checkrangerequestbad'] = 'Range requests are bad! HTTP {$a->code} response with only {$a->bytes} bytes of data for {$a->url}';
 /*
  * Privacy provider (GDPR)
  */

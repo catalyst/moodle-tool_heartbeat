@@ -22,5 +22,34 @@
  */
 
 function tool_heartbeat_status_checks() {
-    return [new \tool_heartbeat\check\authcheck()];
+    return [
+        new \tool_heartbeat\check\authcheck(),
+    ];
+}
+
+function tool_heartbeat_performance_checks() {
+    return [
+        new \tool_heartbeat\check\rangerequestcheck(),
+    ];
+}
+
+/**
+ * Serves test files for heartbeat.
+ *
+ * @param stdClass $course Course object
+ * @param stdClass $cm Course module object
+ * @param context $context Context
+ * @param string $filearea File area for data privacy
+ * @param array $args Arguments
+ * @param bool $forcedownload If we are forcing the download
+ * @param array $options More options
+ * @return bool Returns false if we don't find a file.
+ */
+function tool_heartbeat_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+    global $CFG;
+
+    // README is just safe content we know exist. Used in the range request check.
+    $file = "$CFG->dirroot/admin/tool/heartbeat/README.md";
+    readfile_accel($file, 'text/plain', true);
+    die;
 }
