@@ -90,3 +90,21 @@ function send_unknown($msg, $more = '') {
     exit(3);
 }
 
+/**
+ * This converts a check to the nagios web format
+ *
+ * @param $check
+ */
+function send_check($check) {
+
+    $result = $check->get_result();
+    if ($result->status == \core\check\result::OK) {
+        send_good($result->get_summary(), $result->get_details());
+    }
+    if ($result->status == \core\check\result::WARNING) {
+        send_warning($result->get_summary(), $result->get_details());
+    }
+    send_critical($result->get_summary(), $result->get_details());
+
+}
+
