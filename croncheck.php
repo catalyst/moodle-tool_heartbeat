@@ -163,13 +163,17 @@ if (moodle_needs_upgrading()) {
 // We want to periodically emit an error_log which we will detect elsewhere to
 // confirm that all the various web server logs are not stale.
 $nexterror = get_config('tool_heartbeat', 'nexterror');
-$errorperiod = get_config('tool_heartbeat', 'errorlog') || 30 * MINSECS;
-if ($errorperiod > 0 && (!$nexterror || time() > $nexterror) ) {
+$errorperiod = get_config('tool_heartbeat', 'errorlog');
+if (!$errorperiod) {
+    $errorperiod = 30 * MINSECS;
+}
+if (!$nexterror || time() > $nexterror) {
     $nexterror = time() + $errorperiod;
     $now = userdate(time(), $format);
     $next = userdate($nexterror, $format);
+    $period = format_time($errorperiod);
     // @codingStandardsIgnoreStart
-    error_log("heartbeat test $now, next test expected at $next");
+    error_log("heartbeat test $now, next test expected in $period at $next");
     // @codingStandardsIgnoreEnd
     set_config('nexterror', $nexterror, 'tool_heartbeat');
 }
