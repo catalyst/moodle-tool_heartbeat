@@ -28,19 +28,13 @@ use tool_heartbeat\lib;
 
 class lib_test extends advanced_testcase {
     /**
-     * Set up before each test
-     */
-    protected function setUp(): void {
-        parent::setUp();
-        $this->resetAfterTest();
-    }
-
-    /**
      * Test lib::test_get_allowed_ips
      * @throws coding_exception
      * @throws dml_exception
      */
     public function test_get_allowed_ips() {
+        $this->resetAfterTest();
+
         set_config('allowedips', '127.0.0.1', 'tool_heartbeat');
         set_config('allowedips_forced', '127.0.0.2', 'tool_heartbeat');
         $this->assertEquals("127.0.0.1\n127.0.0.2", lib::get_allowed_ips());
