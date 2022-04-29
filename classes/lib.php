@@ -17,29 +17,25 @@
 namespace tool_heartbeat;
 
 /**
- * General fucntion for use with heartbeat.
+ * General functions for use with heartbeat.
  *
  * @package   tool_heartbeat
  * @author    Jason den Dulk <jasondendulk@catalyst-au.net>
  * @copyright 2022, Catalyst IT
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class lib {
     /**
      * Return the list of allowed IPs, by combining the UI editable IP list with the
      * config defined IP list.
      *
      * @return string
-     * @throws \coding_exception
-     * @throws \dml_exception
      */
     public static function get_allowed_ips(): string {
         return trim(
             get_config('tool_heartbeat', 'allowedips') .
-            "\n" .
+            PHP_EOL .
             get_config('tool_heartbeat', 'allowedips_forced')
         );
     }
 }
-

@@ -56,7 +56,7 @@ if ($hassiteconfig) {
             $type = 'notifyerror';
         };
         $description .= $OUTPUT->notification(get_string($message, 'tool_heartbeat', ['ip' => getremoteaddr()]), $type);
-        $description .= '<p>'.get_string('ips_combine', 'tool_heartbeat').'</p>';
+        $description .= html_writer::tag('p',get_string('ips_combine', 'tool_heartbeat'));
 
         // IP entry box for blocking.
         $iplist = new admin_setting_configiplist('tool_heartbeat/allowedips',
