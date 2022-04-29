@@ -14,8 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use tool_heartbeat\lib;
+
 /**
- * <insertdescription>
+ * Test class for tool_heartbeat\lib
  *
  * @package   tool_heartbeat
  * @author    Jason den Dulk <jasondendulk@catalyst-au.net>
@@ -25,21 +27,34 @@
 
 
 class lib_test extends advanced_testcase {
+    /**
+     * Set up before each test
+     */
+    protected function setUp(): void {
+        parent::setUp();
+        $this->resetAfterTest();
+    }
+
+    /**
+     * Test lib::test_get_allowed_ips
+     * @throws coding_exception
+     * @throws dml_exception
+     */
     public function test_get_allowed_ips() {
-        set_config('allowedips', '127.0.0.1');
-        set_config('allowedips_forced', '127.0.0.2');
-        $this->assertEquals("127.0.0.1\n127.0.0.2", tool_heartbeat\lib::get_allowed_ips());
+        set_config('allowedips', '127.0.0.1', 'tool_heartbeat');
+        set_config('allowedips_forced', '127.0.0.2', 'tool_heartbeat');
+        $this->assertEquals("127.0.0.1\n127.0.0.2", lib::get_allowed_ips());
 
-        set_config('allowedips', '127.0.0.1');
-        set_config('allowedips_forced', '');
-        $this->assertEquals("127.0.0.1", tool_heartbeat\lib::get_allowed_ips());
+        set_config('allowedips', '127.0.0.1', 'tool_heartbeat');
+        set_config('allowedips_forced', '', 'tool_heartbeat');
+        $this->assertEquals("127.0.0.1", lib::get_allowed_ips());
 
-        set_config('allowedips', '');
-        set_config('allowedips_forced', '127.0.0.2');
-        $this->assertEquals("127.0.0.2", tool_heartbeat\lib::get_allowed_ips());
+        set_config('allowedips', '', 'tool_heartbeat');
+        set_config('allowedips_forced', '127.0.0.2', 'tool_heartbeat');
+        $this->assertEquals("127.0.0.2", lib::get_allowed_ips());
 
-        set_config('allowedips', '');
-        set_config('allowedips_forced', '');
-        $this->assertEquals('', tool_heartbeat\lib::get_allowed_ips());
+        set_config('allowedips', '', 'tool_heartbeat');
+        set_config('allowedips_forced', '', 'tool_heartbeat');
+        $this->assertEquals('', lib::get_allowed_ips());
     }
 }
