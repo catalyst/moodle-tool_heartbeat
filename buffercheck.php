@@ -25,6 +25,8 @@
 define('NO_MOODLE_COOKIES', true);
 require(__DIR__ . '/../../../config.php');
 
+tool_heartbeat\lib::validate_ip_against_config();
+
 header("Content-Type: text/plain");
 
 // Make sure varnish doesn't cache this. But it still might so go check it!

@@ -26,6 +26,8 @@
 require_once('../../../config.php');
 // @codingStandardsIgnoreEnd
 
+tool_heartbeat\lib::validate_ip_against_config();
+
 $syscontext = context_system::instance();
 $PAGE->set_url('/admin/tool/heartbeat/compresscheck.php');
 $PAGE->set_context($syscontext);

@@ -27,7 +27,7 @@ define('NO_OUTPUT_BUFFERING', true);
 // @codingStandardsIgnoreStart
 require_once('../../../config.php');
 require_once($CFG->libdir.'/clilib.php');
-require_once(__DIR__.'/iplock.php');
+tool_heartbeat\lib::validate_ip_against_config();
 
 $ascii = gzuncompress(base64_decode('eJy1VNsJgDAM/HeKzioiThCF4nKdRNESm+aSVtCQr0vsPVoM4bcaMJxoObsPhcNE6w1cHTM2MvYnM9NumXNKNBcw80uR5RDCiUhNzNVyW0h8oE7y2lXkLIWv7Iidg4B0ivUE6tTp1lk7QUtl+Hlo8+5SW/HeuA6pPsI8QaqkQnBU9KXrXVCO1klWaISm7Tj0xF6tXDSXVG/GZ8E9Tp1h/DO84kfUt/6KwdX6OdvLOgC47Z0k'));
 // @codingStandardsIgnoreEnd

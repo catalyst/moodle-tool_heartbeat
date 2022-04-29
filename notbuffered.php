@@ -36,23 +36,17 @@
 
 require(__DIR__ . '/../../../config.php');
 
-// Right now we have a session lock, but we ourselves have not sent
-// anything over the network.
+tool_heartbeat\lib::validate_ip_against_config();
 
-// We can set a header, but header
+// Right now we have a session lock, but we ourselves have not sent anything over the network.
+
+// We can set a header, but header.
 header('Content-Type:text/html');
-
-// $syscontext = context_system::instance();
-// $PAGE->set_url('/admin/tool/heartbeat/notbuffered.php');
-// $PAGE->set_context($syscontext);
-// $PAGE->set_cacheable(false);
-
 
 for ($c = 1; $c <= 10; $c++) {
     $bytes = 100;
 
     echo "c = $c\n";
-    // while(@ob_flush());
 
     // Sleep my pretty.
     usleep(20 * 1000);
