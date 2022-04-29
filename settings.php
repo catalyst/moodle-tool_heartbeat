@@ -43,7 +43,7 @@ if ($hassiteconfig) {
                         $options));
 
         // Current IP validation against list for description.
-        $allowedips = get_config('tool_heartbeat', 'allowedips');
+        $allowedips = tool_heartbeat\lib::get_allowed_ips();
         $description = '';
         if (trim($allowedips) == '') {
             $message = 'allowedipsempty';
@@ -56,13 +56,21 @@ if ($hassiteconfig) {
             $type = 'notifyerror';
         };
         $description .= $OUTPUT->notification(get_string($message, 'tool_heartbeat', ['ip' => getremoteaddr()]), $type);
-
+        $description .= '<p>'.get_string('ips_combine', 'tool_heartbeat').'</p>';
 
         // IP entry box for blocking.
         $iplist = new admin_setting_configiplist('tool_heartbeat/allowedips',
                     new lang_string('allowedipstitle', 'tool_heartbeat'),
                     (new lang_string('allowedipsdescription', 'tool_heartbeat').$description),
                     ''  );
+        $settings->add($iplist);
+
+        $iplist = new admin_setting_configiplist(
+            'tool_heartbeat/allowedips_forced',
+            get_string('builtinallowediplist', 'tool_heartbeat'),
+            get_string('builtinallowediplist_desc', 'tool_heartbeat'),
+            ''
+        );
         $settings->add($iplist);
 
         $settings->add(new admin_setting_configduration('tool_heartbeat/errorlog',
