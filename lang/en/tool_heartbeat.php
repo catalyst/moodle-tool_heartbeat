@@ -43,12 +43,16 @@ $string['emptyautherror'] = 'Auth methods empty, config lost. Previous value: {$
 $string['configauthmissing'] = 'Configured auth methods are not currently enabled.';
 $string['setinitialauthstate'] = 'Initial auth state for heartbeat auth check set.';
 $string['authcorrect'] = 'Auth methods correctly configured.';
+$string['builtinallowediplist'] = 'Builtin IP Blocking Configuration';
+$string['builtinallowediplist_desc'] = 'This allowed IP list would allow some IPs to be editable in the UI in addition to those forced in config.php.';
 $string['configuredauths'] = 'Check auth methods';
 $string['configuredauthsdesc'] = 'Auth methods to check are enabled in the Check API. A warning will be emitted if they are not enabled.';
 $string['checkauthcheck'] = 'Authentication methods';
 $string['checkrangerequestcheck'] = 'Range requests check';
 $string['checkrangerequestok'] = 'Range requests are working, 206 response with only 10 bytes of data';
 $string['checkrangerequestbad'] = 'Range requests are bad! HTTP {$a->code} response with only {$a->bytes} bytes of data for {$a->url}';
+$string['ips_combine'] = 'The IPs listed above will be combined with the IPs listed below.';
+
 /*
  * Privacy provider (GDPR)
  */

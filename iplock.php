@@ -48,5 +48,5 @@ function validate_ip_against_config($iplist) {
     }
 }
 
-validate_ip_against_config(get_config('tool_heartbeat', 'allowedips'));
+validate_ip_against_config(tool_heartbeat\lib::get_allowed_ips());
 
