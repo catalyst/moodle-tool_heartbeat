@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-use tool_heartbeat\lib;
+namespace tool_heartbeat;
 
 /**
  * Test class for tool_heartbeat\lib
@@ -24,7 +24,7 @@ use tool_heartbeat\lib;
  * @copyright 2022, Catalyst IT
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class lib_test extends advanced_testcase {
+class lib_test extends \advanced_testcase {
     /**
      * Test lib::test_get_allowed_ips()
      */

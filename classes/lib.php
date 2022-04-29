@@ -38,4 +38,25 @@ class lib {
             get_config('tool_heartbeat', 'allowedips_forced')
         );
     }
+
+    /**
+     * Validates any remote IP connected against the IP list stored as config.
+     *
+     * @return null Returns to calling class if remote IP is in safe list, or safe list is empty
+     *
+     */
+    public static function validate_ip_against_config() {
+        $iplist = self::get_allowed_ips();
+        // Require library for nagios responses.
+        require_once(__DIR__.'/../nagios.php');
+        // Validate remote IP against safe list.
+        if (remoteip_in_list($iplist)) {
+            return;
+        } else if (trim($iplist) == '') {
+            return;
+        } else {
+            $msg = 'Failed IP check from '.getremoteaddr();
+            send_unknown($msg);
+        }
+    }
 }

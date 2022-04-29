@@ -107,7 +107,8 @@ Example:
     // Add requirement for IP validation.
     require($dirroot.'config.php');
     require_once(__DIR__.'/nagios.php');
-    require_once(__DIR__.'/iplock.php');
+    tool_heartbeat\lib::validate_ip_against_config();
+
     $options = array(
         'cronerror'   => optional_param('cronerror',   $cronthreshold,   PARAM_NUMBER),
         'cronwarn'    => optional_param('cronwarn',    $cronwarn,        PARAM_NUMBER),
@@ -276,7 +277,7 @@ if ( $maxminsdelay > $options['delayerror'] ) {
     send_warning("Moodle task faildelay > {$options['delaywarn']} mins\n$delay");
 }
 
-// If the Check API from 3.9 exists then call those as well:
+// If the Check API from 3.9 exists then call those as well.
 if (class_exists('\core\check\manager')) {
 
     $checks = \core\check\manager::get_checks('status');

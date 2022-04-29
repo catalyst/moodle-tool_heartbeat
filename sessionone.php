@@ -25,6 +25,7 @@
 // @codingStandardsIgnoreStart
 require_once('../../../config.php');
 // @codingStandardsIgnoreEnd
+tool_heartbeat\lib::validate_ip_against_config();
 
 global $SESSION;
 

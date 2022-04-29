@@ -63,7 +63,7 @@ function check_climaintenance($configfile) {
     $content = file_get_contents($configfile);
     // Set comments to be on newlines, replace '//' with '\n//', where // does not start with a : colon.
     $content = preg_replace("#[^!:]//#", "\n//", $content);
-    $content = preg_replace("/;/", ";\n", $content);         // Split up statements, replace ';' with ';\n'
+    $content = preg_replace("/;/", ";\n", $content);         // Split up statements, replace ';' with ';\n'.
     $content = preg_replace("/^[\s]+/m", "", $content);      // Removes all initial whitespace and newlines.
 
     $re = '/^\$CFG->dataroot\s+=\s+["\'](.*?)["\'];/m';  // Lines starting with $CFG->dataroot.
@@ -121,7 +121,7 @@ require_once($CFG->libdir.'/filelib.php');
 
 // IP Locking, check for CLI, check for remote IP in validated list, if not, exit.
 if (!(isset($argv))) {
-    require_once('iplock.php');
+    tool_heartbeat\lib::validate_ip_against_config();
 }
 
 if ($fullcheck || $checksession) {

@@ -26,7 +26,7 @@
 require_once('../../../config.php');
 // @codingStandardsIgnoreEnd
 
-require_once(__DIR__.'/iplock.php');
+tool_heartbeat\lib::validate_ip_against_config();
 
 $syscontext = context_system::instance();
 $PAGE->set_url('/admin/tool/heartbeat/errors.php');

@@ -27,6 +27,10 @@
  * php cli/testupload.php
  *
  */
+
+require_once('../../../config.php');
+tool_heartbeat\lib::validate_ip_against_config();
+
 // @codingStandardsIgnoreStart
 // Ignore Statement to skip codechecker needing require config.php first.
 $starttime = microtime(true);

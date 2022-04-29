@@ -81,7 +81,7 @@ if (isset($argv)) {
     // If run from the web.
     require_once(__DIR__ . '/../../../config.php');
     require_once(__DIR__.'/nagios.php');
-    require_once(__DIR__.'/iplock.php');
+    tool_heartbeat\lib::validate_ip_against_config();
 
     $options['critthresh'] = optional_param('critthresh', $options['critthresh'],  PARAM_INT);
     $options['warnthresh'] = optional_param('warnthresh', $options['warnthresh'], PARAM_INT);
