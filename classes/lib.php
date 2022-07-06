@@ -31,7 +31,7 @@ class lib {
      *
      * @return string
      */
-    public static function get_allowed_ips(): string {
+    public static function get_allowed_ips() {
         return trim(
             get_config('tool_heartbeat', 'allowedips') .
             PHP_EOL .
