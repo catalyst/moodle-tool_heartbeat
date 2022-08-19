@@ -52,6 +52,11 @@ $string['checkrangerequestcheck'] = 'Range requests check';
 $string['checkrangerequestok'] = 'Range requests are working, 206 response with only 10 bytes of data';
 $string['checkrangerequestbad'] = 'Range requests are bad! HTTP {$a->code} response with only {$a->bytes} bytes of data for {$a->url}';
 $string['ips_combine'] = 'The IPs listed above will be combined with the IPs listed below.';
+$string['errorascritical'] = ' Report check errors as:';
+$string['errorascritical_desc'] = 'This setting controls what check API errors are reported as in Nagios. "CRITICAL" is the most noisy, and "WARNING" is the least noisy for monitoring endpoints. Business hours is 9AM - 5PM in the server timezone ({$a}).';
+$string['error_critical'] = 'CRITICAL';
+$string['error_critical_business'] = 'CRITICAL during business hours';
+$string['error_warning'] = 'WARNING';
 
 /*
  * Privacy provider (GDPR)

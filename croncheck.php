@@ -299,7 +299,18 @@ if (class_exists('\core\check\manager')) {
             $status == \core\check\result::CRITICAL ||
             $status == \core\check\result::ERROR) {
 
-            if (!$critical) {
+            // If we have an error, how should we handle it.
+            if ($status == \core\check\result::ERROR && !$critical) {
+                $mapping = get_config('tool_heartbeat', 'errorcritical');
+                if ($mapping === 'critical') {
+                    $critical = true;
+                } else if ($mapping === 'criticalbusiness') {
+                    // Here we should only set the critical flag between 0900 and 1700 server time.
+                    $time = new DateTime('now', core_date::get_server_timezone_object());
+                    $hour = (int) $time->format('H');
+                    $critical = ($hour >= 9 && $hour < 17);
+                }
+            } else if (!$critical) {
                 $critical = $status == \core\check\result::CRITICAL;
             }
 
