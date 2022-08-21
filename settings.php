@@ -80,5 +80,15 @@ if ($hassiteconfig) {
         $settings->add(new admin_setting_configtext('tool_heartbeat/configuredauths',
                 get_string('configuredauths', 'tool_heartbeat'),
                 get_string('configuredauthsdesc', 'tool_heartbeat'), '', PARAM_TEXT));
+
+        $opts = [
+            'critical' => 'CRITICAL',
+            'criticalbusiness' => get_string('error_critical_business', 'tool_heartbeat'),
+            'warning' => 'WARNING'
+        ];
+        $time = new \DateTime('now', core_date::get_server_timezone_object());
+        $settings->add(new admin_setting_configselect('tool_heartbeat/errorcritical',
+                get_string('errorascritical', 'tool_heartbeat'),
+                get_string('errorascritical_desc', 'tool_heartbeat', $time->format('e P')), 'warning', $opts));
     }
 }
