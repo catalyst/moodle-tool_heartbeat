@@ -1,14 +1,16 @@
-<a href="https://travis-ci.org/catalyst/moodle-tool_heartbeat">
-<img src="https://travis-ci.org/catalyst/moodle-tool_heartbeat.svg?branch=master">
-</a>
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/catalyst/moodle-tool_heartbeat/ci/:master?label=ci)
 
 # A heartbeat test page for Moodle
 
-* [What is this?](#what-is-this)
-* [Branches](#branches)
-* [Installation](#installation)
-* [Configuration](#configuration)
-* [Testing](#testing)
+- [A heartbeat test page for Moodle](#a-heartbeat-test-page-for-moodle)
+- [What is this?](#what-is-this)
+  - [Front end health](#front-end-health)
+  - [Application health](#application-health)
+  - [Failed login detection](#failed-login-detection)
+- [Branches](#branches)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Testing](#testing)
 
 # What is this?
 
@@ -140,7 +142,3 @@ http://moodle.local/admin/settings.php?section=tool_heartbeat
 When you first setup this plugin and have wired it end to end with Nagios / Icinga or another monitoring tool, you want the peace of mind to know that it is all correctly working. There is a setting which allows you to send a fake warning so you can confirm your pager will go off. This setting is set to 'error' by default by design
 
 http://moodle.local/admin/settings.php?section=tool_heartbeat
-
-
-
-
