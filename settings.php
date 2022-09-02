@@ -90,5 +90,10 @@ if ($hassiteconfig) {
         $settings->add(new admin_setting_configselect('tool_heartbeat/errorcritical',
                 get_string('errorascritical', 'tool_heartbeat'),
                 get_string('errorascritical_desc', 'tool_heartbeat', $time->format('e P')), 'warning', $opts));
+
+        $example = '\logstore_standard\task\cleanup_task, 5, 5, 5';
+        $settings->add(new admin_setting_configtextarea('tool_heartbeat/tasklatencymonitoring',
+                get_string('tasklatencymonitoring', 'tool_heartbeat'),
+                get_string('tasklatencymonitoring_desc', 'tool_heartbeat', $example), '', PARAM_TEXT));
     }
 }

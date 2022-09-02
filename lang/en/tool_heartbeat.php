@@ -57,6 +57,11 @@ $string['errorascritical_desc'] = 'This setting controls what check API errors a
 $string['error_critical'] = 'CRITICAL';
 $string['error_critical_business'] = 'CRITICAL during business hours';
 $string['error_warning'] = 'WARNING';
+$string['tasklatencymonitoring'] = 'Task monitoring';
+$string['tasklatencymonitoring_desc'] = 'Enter configuration for monitoring specific cron tasks. Enter each task configuration on a new line. Configuration format is <code>\component\task\classname, (integer) runtime, (integer) starttimedrift, (integer) notrunning</code>. Runtime is the max runtime that an invididual run of a task cannot exceed. Start time drift is the drift from the scheduled run time of a task before the task begins execution. Not running is the configured time period for which a task must have run within. E.g. <code>{$a}</code>';
+$string['latencydelayedstart'] = 'Task {$a->task} start is delayed past configured threshold: {$a->mins}.';
+$string['latencynotrun'] = 'Task {$a->task} has not run within the configured latency threshold: {$a->mins}.';
+$string['latencyruntime'] = 'Task {$a->task} was last run with a runtime longer than the configured threshold: {$a->mins}.';
 
 /*
  * Privacy provider (GDPR)
