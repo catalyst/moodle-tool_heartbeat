@@ -62,7 +62,8 @@ $string['tasklatencymonitoring_desc'] = 'Enter configuration for monitoring spec
 $string['latencydelayedstart'] = 'Task {$a->task} start is delayed past configured threshold: {$a->mins}.';
 $string['latencynotrun'] = 'Task {$a->task} has not run within the configured latency threshold: {$a->mins}.';
 $string['latencyruntime'] = 'Task {$a->task} was last run with a runtime longer than the configured threshold: {$a->mins}.';
-
+$string['checktasklatencycheck'] = 'Task latency check';
+$string['taskconfigbad'] = 'Bad configurations {$a}';
 /*
  * Privacy provider (GDPR)
  */
