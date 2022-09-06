@@ -64,6 +64,7 @@ $string['latencynotrun'] = 'Task {$a->task} has not run within the configured la
 $string['latencyruntime'] = 'Task {$a->task} was last run with a runtime longer than the configured threshold: {$a->mins}.';
 $string['checktasklatencycheck'] = 'Task latency check';
 $string['taskconfigbad'] = 'Bad configurations {$a}';
+$string['tasklatencyok'] = 'Task latency OK.';
 /*
  * Privacy provider (GDPR)
  */

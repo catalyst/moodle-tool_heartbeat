@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2022090200;
+$plugin->version   = 2022090201;
 $plugin->release   = 2022090200; // Match release exactly to version.
 $plugin->requires  = 2012120311; // Deep support going back to 2.4.
 $plugin->supported = [24, 401];

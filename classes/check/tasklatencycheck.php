@@ -48,7 +48,12 @@ class tasklatencycheck extends check {
 
         $taskconfig = get_config('tool_heartbeat', 'tasklatencymonitoring');
         $status = result::OK;
+        $okmessage = get_string('tasklatencyok', 'tool_heartbeat');
         $messages = '';
+
+        if ($taskconfig === '') {
+            return new result($status, $okmessage);
+        }
 
         $lockstats = isset($CFG->lock_factory) && $CFG->lock_factory === \tool_lockstats\proxy_lock_factory::class;
 
@@ -156,6 +161,10 @@ class tasklatencycheck extends check {
                     ) . PHP_EOL;
                 }
             }
+        }
+
+        if ($status === result::OK) {
+            return new result($status, $okmessage);
         }
 
         return new result($status, $messages);
