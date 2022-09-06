@@ -53,8 +53,15 @@ class tasklatencycheck extends check {
         $lockstats = isset($CFG->lock_factory) && $CFG->lock_factory === \tool_lockstats\proxy_lock_factory::class;
 
         $tasks = explode(PHP_EOL, $taskconfig);
+
         foreach ($tasks as $taskconfig) {
-            list($taskclass, $runtime, $startdelay, $completiondelay) = explode(',', str_replace(' ', '', $taskconfig));
+            $configarr = explode(',', str_replace(' ', '', $taskconfig));
+            if (count($configarr) !== 4) {
+                return new result(result::ERROR, get_string('taskconfigbad', 'tool_heartbeat', $configarr[0]));
+            }
+
+            list($taskclass, $runtime, $startdelay, $completiondelay) = $configarr;
+
             $task = \core\task\manager::get_scheduled_task($taskclass);
 
             // Input validation.
@@ -82,8 +89,11 @@ class tasklatencycheck extends check {
             if (!$locked) {
                 if ($startdelay != 0 && ($starttime <= (time() - $startdelay * MINSECS))) {
                     $status = result::CRITICAL;
-                    $messages .= get_string('latencydelayedstart', 'tool_heartbeat',
-                        ['task' => $taskclass, 'mins' => $startdelay]) . PHP_EOL;
+                    $messages .= get_string(
+                        'latencydelayedstart',
+                        'tool_heartbeat',
+                        ['task' => $taskclass, 'mins' => $startdelay]
+                    ) . PHP_EOL;
                 }
             }
 
@@ -95,8 +105,11 @@ class tasklatencycheck extends check {
                 // If we aren't locked something deeper is wrong, cron might be cooked.
                 if ($lastrun != 0 && $lastrun <= (time() - $completiondelay * MINSECS)) {
                     $status = result::CRITICAL;
-                    $messages .= get_string('latencynotrun', 'tool_heartbeat',
-                        ['task' => $taskclass, 'mins' => $startdelay]) . PHP_EOL;
+                    $messages .= get_string(
+                        'latencynotrun',
+                        'tool_heartbeat',
+                        ['task' => $taskclass, 'mins' => $startdelay]
+                    ) . PHP_EOL;
                 }
             }
 
@@ -111,31 +124,36 @@ class tasklatencycheck extends check {
             if ($dbman->table_exists($table)) {
                 // We can use task logs!
                 $sql = "SELECT (timeend - timestart) AS duration
-                            FROM {task_log}
-                            WHERE classname = ?
-                        ORDER BY timeend DESC
-                            LIMIT 1";
+                          FROM {task_log}
+                         WHERE classname = ?
+                      ORDER BY timeend DESC
+                         LIMIT 1";
                 $record = $DB->get_record_sql($sql, [$taskclass]);
 
                 if ($record && $record->duration > $runtime * MINSECS) {
                     $status = result::CRITICAL;
-                    $messages .= get_string('latencyruntime', 'tool_heartbeat',
-                        ['task' => $taskclass, 'mins' => $startdelay]) . PHP_EOL;
+                    $messages .= get_string(
+                        'latencyruntime',
+                        'tool_heartbeat',
+                        ['task' => $taskclass, 'mins' => $startdelay]
+                    ) . PHP_EOL;
                 }
-
             } else if ($lockstats) {
                 // Our fallback here is lockstats.
                 $sql = "SELECT duration
-                            FROM {tool_lockstats_history}
-                            WHERE classname = ?
-                        ORDER BY released DESC
-                            LIMIT 1";
+                          FROM {tool_lockstats_history}
+                         WHERE classname = ?
+                      ORDER BY released DESC
+                         LIMIT 1";
                 $record = $DB->get_record_sql($sql, [$taskclass]);
 
                 if ($record && $record->duration > $runtime * MINSECS) {
                     $status = result::CRITICAL;
-                    $messages .= get_string('latencyruntime', 'tool_heartbeat',
-                        ['task' => $taskclass, 'mins' => $startdelay]) . PHP_EOL;
+                    $messages .= get_string(
+                        'latencyruntime',
+                        'tool_heartbeat',
+                        ['task' => $taskclass, 'mins' => $startdelay]
+                    ) . PHP_EOL;
                 }
             }
         }
