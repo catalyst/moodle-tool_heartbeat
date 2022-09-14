@@ -38,18 +38,24 @@ defined('MOODLE_INTERNAL') || die();
 class rangerequestcheck extends check {
 
     public function get_result() : result {
-        global $DB;
+        global $DB, $CFG;
 
-        $url = new \moodle_url('/pluginfile.php/1/tool_heartbeat/test');
+        $url = $CFG->wwwroot . '/pluginfile.php/1/tool_heartbeat/test';
 
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RANGE, '0-9');
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $curl = new \curl();
+        $curl->setopt([
+            'CURLOPT_RANGE' => '0-9',
+        ]);
 
-        $response = curl_exec($curl);
+        $response = $curl->get($url);
         $datalength = strlen($response);
-        $info = curl_getinfo($curl);
+        $info = $curl->get_info();
+
+        if (empty($info)) {
+            // Happens when the url is blocked.
+            return new result(result::ERROR, get_string('checkrangerequestfailed', 'tool_heartbeat',
+                ['error' => $response]));
+        }
 
         if ($response !== false) {
             if ($info['http_code'] === 206 && $info['size_download'] == 10) {
@@ -57,10 +63,8 @@ class rangerequestcheck extends check {
             }
         }
 
-        curl_close($curl);
-
         return new result(result::ERROR, get_string('checkrangerequestbad', 'tool_heartbeat', [
-            'url'   => $url->out(),
+            'url'   => $url,
             'code'  => $info['http_code'],
             'bytes' => $info['size_download'],
         ]));
