@@ -24,6 +24,7 @@
 function tool_heartbeat_status_checks() {
     return [
         new \tool_heartbeat\check\authcheck(),
+        new \tool_heartbeat\check\logstorecheck(),
         new \tool_heartbeat\check\tasklatencycheck(),
     ];
 }
