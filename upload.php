@@ -28,7 +28,9 @@
  *
  */
 
-require_once('../../../config.php');
+// @codingStandardsIgnoreStart
+require(__DIR__ . '/../../../config.php');
+// @codingStandardsIgnoreEnd
 tool_heartbeat\lib::validate_ip_against_config();
 
 // @codingStandardsIgnoreStart

@@ -33,9 +33,9 @@
 // is OFF, but very opaque for whn stuff will hit the network for
 // the case when buffering is on.
 //
-
+// @codingStandardsIgnoreStart
 require(__DIR__ . '/../../../config.php');
-
+// @codingStandardsIgnoreEnd
 tool_heartbeat\lib::validate_ip_against_config();
 
 // Right now we have a session lock, but we ourselves have not sent anything over the network.

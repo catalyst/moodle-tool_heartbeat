@@ -21,6 +21,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * Status checks.
+ *
+ * @return array
+ */
 function tool_heartbeat_status_checks() {
     return [
         new \tool_heartbeat\check\authcheck(),
@@ -29,6 +34,11 @@ function tool_heartbeat_status_checks() {
     ];
 }
 
+/**
+ * Performance checks.
+ *
+ * @return array
+ */
 function tool_heartbeat_performance_checks() {
     return [
         new \tool_heartbeat\check\rangerequestcheck(),

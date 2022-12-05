@@ -107,7 +107,7 @@ if ($mutedbefore && ($mutedbefore > $latest)) {
 
 $muteinfo = "\nThis can be muted via php admin/tool/heartbeat/cli/muteadminlogin.php --mute";
 
-if ($muteddelta and ($recency < $options['critthresh'] or $recency < $options['critthresh'])) {
+if ($muteddelta && ($recency < $options['critthresh'] || $recency < $options['critthresh'])) {
     send_good("Last admin login was $delta ago but MUTED $muteddelta ago");
 } else if ($recency < $options['critthresh']) {
     send_critical("Last admin login was $delta ago < " . format_time($options['critthresh']), $muteinfo);
