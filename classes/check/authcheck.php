@@ -32,15 +32,30 @@ namespace tool_heartbeat\check;
 use core\check\check;
 use core\check\result;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Auth check class.
+ *
+ * @copyright  2022
+ * @author     Brendan Heywood <brendan@catalyst-au.net>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class authcheck extends check {
 
+    /**
+     * Get an action link.
+     *
+     * @return null|\action_link
+     */
     public function get_action_link(): ?\action_link {
         $url = new \moodle_url('/admin/settings.php', ['section' => 'manageauths']);
         return new \action_link($url, get_string('authsettings', 'admin'));
     }
 
+    /**
+     * Get Result.
+     *
+     * @return result
+     */
     public function get_result() : result {
         global $DB;
 

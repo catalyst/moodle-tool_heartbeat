@@ -28,7 +28,7 @@
 define('NO_UPGRADE_CHECK', true);
 define('CLI_SCRIPT', true);
 
-require('../../../../config.php');
+require(__DIR__ . '/../../../../config.php');
 require_once($CFG->libdir.'/clilib.php');
 
 list($options, $unrecognized) = cli_get_params(

@@ -33,12 +33,21 @@ namespace tool_heartbeat\check;
 use core\check\check;
 use core\check\result;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Range request check class.
+ *
+ * @copyright  2022
+ * @author     Brendan Heywood <brendan@catalyst-au.net>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class rangerequestcheck extends check {
 
+    /**
+     * Range request check provider.
+     *
+     * @return result
+     */
     public function get_result() : result {
-        global $DB;
 
         $url = new \moodle_url('/pluginfile.php/1/tool_heartbeat/test');
 
@@ -48,7 +57,6 @@ class rangerequestcheck extends check {
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
         $response = curl_exec($curl);
-        $datalength = strlen($response);
         $info = curl_getinfo($curl);
 
         if ($response !== false) {

@@ -24,8 +24,10 @@
  */
 
 define('NO_MOODLE_COOKIES', true);
-require(__DIR__ . '/../../../config.php');
+// @codingStandardsIgnoreStart
+// Ignore required to skip codechecker error for no config.php load in class.
 require_once(__DIR__.'/nagios.php');
+// @codingStandardsIgnoreEnd
 tool_heartbeat\lib::validate_ip_against_config();
 
 header("Content-Type: text/plain");

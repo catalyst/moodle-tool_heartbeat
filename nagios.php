@@ -34,10 +34,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // @codingStandardsIgnoreStart
-// Ignore required to skip codechecker error for no config.php load in class
-$format = '%b %d %H:%M:%S';
+// Ignore required to skip codechecker error for no config.php load in class.
+require_once(__DIR__ . '/../../../config.php');
 // @codingStandardsIgnoreEnd
+$format = '%b %d %H:%M:%S';
 $now = userdate(time(), $format);
+
 
 /**
  * Sends a good Nagios response, with message.
@@ -45,7 +47,6 @@ $now = userdate(time(), $format);
  * @param string  $msg the message to append the Nagios response.
  * @param string  $more aditional message
  */
-
 function send_good($msg, $more = '') {
     global $now;
     printf ("OK: $msg (Checked $now)\n$more");
@@ -58,7 +59,6 @@ function send_good($msg, $more = '') {
  * @param string  $msg the message to append the Nagios response.
  * @param string  $more aditional message
  */
-
 function send_warning($msg, $more = '') {
     global $now;
     printf ("WARNING: $msg (Checked $now)\n$more");
@@ -71,7 +71,6 @@ function send_warning($msg, $more = '') {
  * @param string  $msg the message to append the Nagios response.
  * @param string  $more aditional message
  */
-
 function send_critical($msg, $more = '') {
     global $now;
     printf ("CRITICAL: $msg (Checked $now)\n$more");
@@ -84,7 +83,6 @@ function send_critical($msg, $more = '') {
  * @param string  $msg the message to append the Nagios response.
  * @param string  $more aditional message
  */
-
 function send_unknown($msg, $more = '') {
     printf ("UNKNOWN: $msg\n$more");
     exit(3);
@@ -93,9 +91,10 @@ function send_unknown($msg, $more = '') {
 /**
  * This converts a check to the nagios web format
  *
- * @param $check
+ * @param \core\check\check $check
+ * @return void
  */
-function send_check($check) {
+function send_check(\core\check\check $check): void {
 
     $result = $check->get_result();
     if ($result->status == \core\check\result::OK) {

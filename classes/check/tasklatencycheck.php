@@ -36,6 +36,13 @@ use core\check\result;
 defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/cronlib.php");
 
+/**
+ * Task latency check class.
+ *
+ * @copyright  2022
+ * @author     Brendan Heywood <brendan@catalyst-au.net>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class tasklatencycheck extends check {
 
     /**

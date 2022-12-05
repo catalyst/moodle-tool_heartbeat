@@ -110,12 +110,12 @@ Example:
     tool_heartbeat\lib::validate_ip_against_config();
 
     $options = array(
-        'cronerror'   => optional_param('cronerror',   $cronthreshold,   PARAM_NUMBER),
-        'cronwarn'    => optional_param('cronwarn',    $cronwarn,        PARAM_NUMBER),
-        'delayerror'  => optional_param('delayerror',  $delaythreshold,  PARAM_NUMBER),
-        'delaywarn'   => optional_param('delaywarn',   $delaywarn,       PARAM_NUMBER),
-        'legacyerror' => optional_param('legacyerror', $legacythreshold, PARAM_NUMBER),
-        'legacywarn'  => optional_param('legacywarn',  $legacywarn,      PARAM_NUMBER),
+        'cronerror'   => optional_param('cronerror',   $cronthreshold,   PARAM_INT),
+        'cronwarn'    => optional_param('cronwarn',    $cronwarn,        PARAM_INT),
+        'delayerror'  => optional_param('delayerror',  $delaythreshold,  PARAM_INT),
+        'delaywarn'   => optional_param('delaywarn',   $delaywarn,       PARAM_INT),
+        'legacyerror' => optional_param('legacyerror', $legacythreshold, PARAM_INT),
+        'legacywarn'  => optional_param('legacywarn',  $legacywarn,      PARAM_INT),
     );
     header("Content-Type: text/plain");
 
@@ -168,10 +168,11 @@ $errorperiod = get_config('tool_heartbeat', 'errorlog');
 if (!$errorperiod) {
     $errorperiod = 30 * MINSECS;
 }
+
 if (!$nexterror || time() > $nexterror) {
     $nexterror = time() + $errorperiod;
-    $now = userdate(time(), $format);
-    $next = userdate($nexterror, $format);
+    $now = userdate(time());
+    $next = userdate($nexterror);
     $period = format_time($errorperiod);
     // @codingStandardsIgnoreStart
     error_log("heartbeat test $now, next test expected in $period at $next");
@@ -180,7 +181,6 @@ if (!$nexterror || time() > $nexterror) {
 }
 
 if ($CFG->branch < 27) {
-
     $lastcron = $DB->get_field_sql('SELECT MAX(lastcron) FROM {modules}');
     $currenttime = time();
     $difference = $currenttime - $lastcron;
@@ -207,7 +207,7 @@ if ($testing == 'error') {
     send_warning("Moodle this is a test $CFG->wwwroot/admin/settings.php?section=tool_heartbeat\n");
 }
 
-$when = userdate($lastcron, $format);
+$when = userdate($lastcron);
 
 if ( $difference > $options['cronerror'] * 60 * 60 ) {
     send_critical("Moodle cron ran > {$options['cronerror']} hours ago\nLast run at $when");
@@ -259,7 +259,7 @@ if ( empty($legacylastrun) ) {
     send_warning("Moodle legacy task isn't running (ie disabled)\n");
 }
 $minsincelegacylastrun = floor((time() - $legacylastrun) / 60); // In minutes.
-$when = userdate($legacylastrun, $format);
+$when = userdate($legacylastrun);
 
 if ( $minsincelegacylastrun > $options['legacyerror']) {
     send_critical("Moodle legacy task last run $minsincelegacylastrun "

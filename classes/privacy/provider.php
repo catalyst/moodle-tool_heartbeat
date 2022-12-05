@@ -23,11 +23,12 @@
 
 namespace tool_heartbeat\privacy;
 
-defined('MOODLE_INTERNAL') || die();
 
 use core_privacy\local\request\context;
 
 /**
+ * Privacy provider.
+ *
  * @copyright  2018 Olivier SECRET <olivier.secret@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -45,7 +46,7 @@ class provider implements
      *
      * @return  string
      */
-    public static function _get_reason() {
+    public static function get_reason(): string {
         return 'privacy:no_data_reason';
     }
 }
