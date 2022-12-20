@@ -279,7 +279,7 @@ if ( $maxminsdelay > $options['delayerror'] ) {
 
 // If the Check API from 3.9 exists then call those as well.
 if (class_exists('\core\check\manager')) {
-
+    require_once($CFG->dirroot.'/mnet/lib.php');
     $checks = \core\check\manager::get_checks('status');
     $output = '';
     // Should this check block emit as critical?
