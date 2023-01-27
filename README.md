@@ -1,4 +1,4 @@
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/catalyst/moodle-tool_heartbeat/ci/:master?label=ci)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/catalyst/moodle-tool_heartbeat/ci.yml?branch=master&label=ci)
 
 # A heartbeat test page for Moodle
 
