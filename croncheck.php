@@ -281,6 +281,7 @@ if ( $maxminsdelay > $options['delayerror'] ) {
 if (class_exists('\core\check\manager')) {
 
     if (isset($CFG->mnet_dispatcher_mode) and $CFG->mnet_dispatcher_mode !== 'off') {
+        // This is a core bug workaround, see MDL-77247 for more details.
         require_once($CFG->dirroot.'/mnet/lib.php');
     }
 
