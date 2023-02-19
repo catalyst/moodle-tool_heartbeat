@@ -66,10 +66,14 @@ function check_climaintenance($configfile) {
     $content = preg_replace("/;/", ";\n", $content);         // Split up statements, replace ';' with ';\n'.
     $content = preg_replace("/^[\s]+/m", "", $content);      // Removes all initial whitespace and newlines.
 
-    $re = '/^\$CFG->dataroot\s+=\s+["\'](.*?)["\'];/m';  // Lines starting with $CFG->dataroot.
+    $re = '/^\$CFG->dataroot\s+=\s+(.*?);/m';  // Lines starting with $CFG->dataroot.
     preg_match($re, $content, $matches);
     if (!empty($matches)) {
-        $climaintenance = $matches[count($matches) - 1] . '/climaintenance.html';
+        // We trust what we found is safe because it was found in the site's config.php
+        // This eval makes it so that any use of getenv() or other variables to feed that dataroot variable will be parsed correctly
+        $CFG = new stdClass();
+        eval($matches[0]);
+        $climaintenance = $CFG->dataroot . '/climaintenance.html';
 
         if (file_exists($climaintenance)) {
             return true;
