@@ -46,6 +46,17 @@ function tool_heartbeat_performance_checks() {
 }
 
 /**
+ * Security checks.
+ *
+ * @return array
+ */
+function tool_heartbeat_security_checks() {
+    return [
+        new \tool_heartbeat\check\dnscheck(),
+    ];
+}
+
+/**
  * Serves test files for heartbeat.
  *
  * @param stdClass $course Course object
