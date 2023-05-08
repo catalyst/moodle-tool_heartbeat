@@ -81,7 +81,7 @@ class dnscheck extends check {
             if (ip_is_public($ip)) {
 
                 $curl = new \curl();
-                $whoishtml = $curl->get('https://who.is/whois-ip/ip-address/104.22.38.234');
+                $whoishtml = $curl->get('https://who.is/whois-ip/ip-address/' . $ip);
 
                 if (preg_match('/OrgName\:(.*)OrgId/sim', $whoishtml, $match)) {
 
