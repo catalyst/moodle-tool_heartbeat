@@ -34,7 +34,6 @@ use core\check\check;
 use core\check\result;
 
 defined('MOODLE_INTERNAL') || die();
-// require_once("$CFG->libdir/cronlib.php");
 
 /**
  * Task latency check class.
