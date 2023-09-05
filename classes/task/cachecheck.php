@@ -15,18 +15,35 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * Basic Task
  *
- * @package    tool_heartbeat
- * @copyright  2017 Brendan Heywood <brendan@catalyst-au.net>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_testtasks
+ * @author    Kenneth Hendricks <kennethhendricks@catalyst-au.net>
+ * @copyright Catalyst IT
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace tool_heartbeat\task;
+
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023090500;
-$plugin->release   = 2023090500; // Match release exactly to version.
-$plugin->requires  = 2012120311; // Deep support going back to 2.4.
-$plugin->supported = [24, 401];
-$plugin->component = 'tool_heartbeat';
-$plugin->maturity  = MATURITY_STABLE;
+class cachecheck extends \core\task\scheduled_task {
+
+    /**
+     * Get task name
+     */
+    public function get_name() {
+        return get_string('checkcachecheck', 'tool_heartbeat');
+    }
+
+    /**
+     * Execute task
+     */
+    public function execute() {
+        \tool_heartbeat\check\cachecheck::ping('cron');
+    }
+
+}
+
+

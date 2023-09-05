@@ -21,6 +21,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
+function tool_heartbeat_before_http_headers() {
+    \tool_heartbeat\check\cachecheck::ping('web');
+}
+
 /**
  * Status checks.
  *
@@ -29,6 +34,7 @@
 function tool_heartbeat_status_checks() {
     return [
         new \tool_heartbeat\check\authcheck(),
+        new \tool_heartbeat\check\cachecheck(),
         new \tool_heartbeat\check\logstorecheck(),
         new \tool_heartbeat\check\tasklatencycheck(),
     ];

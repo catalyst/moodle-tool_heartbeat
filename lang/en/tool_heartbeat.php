@@ -21,8 +21,6 @@
  * @copyright  2014 Brendan Heywood <brendan@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-$string['pluginname'] = 'Heartbeat';
 $string['allowedips'] = 'Allowed IPs Config';
 $string['allowedipsdescription'] = 'Box to enter safe IP addresses for the heartbeat to respond to.';
 $string['allowedipsempty'] = 'When the allowed IPs list is empty we will not block anyone. You can add your own IP address (<i>{$a->ip}</i>) and block all other IPs.';
@@ -34,6 +32,12 @@ $string['authcorrect'] = 'Auth methods correctly configured.';
 $string['builtinallowediplist'] = 'Builtin IP Blocking Configuration';
 $string['builtinallowediplist_desc'] = 'This allowed IP list would allow some IPs to be editable in the UI in addition to those forced in config.php.';
 $string['checkauthcheck'] = 'Authentication methods';
+$string['checkcachecheck'] = 'Cache consistency check';
+$string['checkcachecronmissing'] = 'The cron cache check has not succeeded yet';
+$string['checkcachedetails'] = 'It appears that the caches the web processes see are different to the cron processes see! If you purge the cache and this check passes and then fails again after a few hours then that strongly suggests a cache misconfiguration.';
+$string['checkcacheerrorsplit'] = 'The {$a->type} caches are not consistent! ';
+$string['checkcachenotsplit'] = 'Caches appear consistent between web and cron';
+$string['checkcachewebmissing'] = 'The web cache check has not succeeded yet';
 $string['checkdnscheck'] = 'DNS check';
 $string['checklogstorebad'] = 'Logstore checks are bad! Please ensure at least one logstore has been set and enabled.';
 $string['checklogstorecheck'] = 'Logstore check';
@@ -54,10 +58,12 @@ $string['errorascritical_desc'] = 'This setting controls what check API errors a
 $string['errorlog'] = 'Error log period';
 $string['errorlogdesc'] = 'To help ensure that all web server logging is working we can emit an intermittent message to the error_log. Set this to 0 to turn it off.';
 $string['ips_combine'] = 'The IPs listed above will be combined with the IPs listed below.';
+$string["privacy:no_data_reason"] = "The Heartbeat plugin does not store any personal data.";
 $string['latencydelayedstart'] = 'Task {$a->task} start is delayed past configured threshold: {$a->mins}.';
 $string['latencynotrun'] = 'Task {$a->task} has not run within the configured latency threshold: {$a->mins}.';
 $string['latencyruntime'] = 'Task {$a->task} was last run with a runtime longer than the configured threshold: {$a->mins}.';
 $string['normal'] = 'Normal monitoring';
+$string['pluginname'] = 'Heartbeat';
 $string['progress'] = 'Progress bar test';
 $string['progresshelp'] = 'This tests that all the various output buffers in the entire stack are corrent including but not limited to php, ob, gzip/deflat, varnish, nginx etc';
 $string['setinitialauthstate'] = 'Initial auth state for heartbeat auth check set.';
@@ -69,7 +75,3 @@ $string['testerror'] = 'Fake a critical';
 $string['testing'] = 'Test heartbeat';
 $string['testingdesc'] = 'You can use this to temporarily fake a warn or error condition to test that your monitoring is correctly working end to end.';
 $string['testwarning'] = 'Fake a warning';
-/*
- * Privacy provider (GDPR)
- */
-$string["privacy:no_data_reason"] = "The Heartbeat plugin does not store any personal data.";

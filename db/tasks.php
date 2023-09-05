@@ -15,18 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * Tool heartbeat
  *
- * @package    tool_heartbeat
- * @copyright  2017 Brendan Heywood <brendan@catalyst-au.net>
+ * @author     Brendan Heywood <brendan@catalyst-au.net>
+ * @copyright  Catalyst IT 2023
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+$tasks = [
+    [
+        'classname' => 'tool_heartbeat\task\cachecheck',
+        'minute' => '*',
+        'hour' => '*',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ],
+];
 
-$plugin->version   = 2023090500;
-$plugin->release   = 2023090500; // Match release exactly to version.
-$plugin->requires  = 2012120311; // Deep support going back to 2.4.
-$plugin->supported = [24, 401];
-$plugin->component = 'tool_heartbeat';
-$plugin->maturity  = MATURITY_STABLE;
