@@ -220,15 +220,11 @@ if ( $difference > $options['cronwarn'] * 60 * 60 ) {
 $delay = '';
 $maxdelay = 0;
 $tasks = core\task\manager::get_all_scheduled_tasks();
-$legacylastrun = null;
 foreach ($tasks as $task) {
     if ($task->get_disabled()) {
         continue;
     }
     $faildelay = $task->get_fail_delay();
-    if (get_class($task) == 'core\task\legacy_plugin_cron_task') {
-        $legacylastrun = $task->get_last_run_time();
-    }
     if ($faildelay == 0) {
         continue;
     }
@@ -255,26 +251,29 @@ foreach ($records as $record) {
     $delay .= "ADHOC TASK: " .get_class($task) . " Delay: $faildelay\n";
 }
 
-if ( empty($legacylastrun) ) {
-    send_warning("Moodle legacy task isn't running (ie disabled)\n");
-}
-$minsincelegacylastrun = floor((time() - $legacylastrun) / 60); // In minutes.
-$when = userdate($legacylastrun);
-
-if ( $minsincelegacylastrun > $options['legacyerror']) {
-    send_critical("Moodle legacy task last run $minsincelegacylastrun "
-        . "mins ago > {$options['legacyerror']} mins\nLast run at $when");
-}
-if ( $minsincelegacylastrun > $options['legacywarn']) {
-    send_warning("Moodle legacy task last run $minsincelegacylastrun mins ago > {$options['legacywarn']} mins\nLast run at $when");
-}
-
 $maxminsdelay = $maxdelay / 60;
 if ( $maxminsdelay > $options['delayerror'] ) {
     send_critical("Moodle task faildelay > {$options['delayerror']} mins\n$delay");
 
 } else if ( $maxminsdelay > $options['delaywarn'] ) {
     send_warning("Moodle task faildelay > {$options['delaywarn']} mins\n$delay");
+}
+
+if ($CFG->branch < 403) {
+    $legacytask = \core\task\manager::get_scheduled_task('core\task\legacy_plugin_cron_task');
+    $legacylastrun = $legacytask->get_last_run_time();
+    if (!$legacylastrun) {
+        send_warning("Moodle legacy task isn't running (ie disabled)\n");
+    }
+    $minsincelegacylastrun = floor((time() - $legacylastrun) / 60); // In minutes.
+    $when = userdate($legacylastrun);
+    if ( $minsincelegacylastrun > $options['legacyerror']) {
+        send_critical("Moodle legacy task last run $minsincelegacylastrun "
+            . "mins ago > {$options['legacyerror']} mins\nLast run at $when");
+    }
+    if ( $minsincelegacylastrun > $options['legacywarn']) {
+        send_warning("Moodle legacy task last run $minsincelegacylastrun mins ago > {$options['legacywarn']} mins\nLast run at $when");
+    }
 }
 
 // If the Check API from 3.9 exists then call those as well.
