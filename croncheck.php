@@ -234,7 +234,10 @@ foreach ($tasks as $task) {
     $delay .= "SCHEDULED TASK: " . get_class($task) . ' (' .$task->get_name() . ") Delay: $faildelay\n";
 }
 
+// Find any failed adhoc tasks.
 $records = $DB->get_records_sql('SELECT * from {task_adhoc} WHERE faildelay > 0');
+$adhoctaskdelays = [];
+
 foreach ($records as $record) {
     $task = \core\task\manager::adhoc_task_from_record($record);
     if (!$task) {
@@ -248,7 +251,27 @@ foreach ($records as $record) {
     if ($faildelay > $maxdelay) {
         $maxdelay = $faildelay;
     }
-    $delay .= "ADHOC TASK: " .get_class($task) . " Delay: $faildelay\n";
+    $adhoctaskdelays[] = "ADHOC TASK: " .get_class($task) . " Delay: $faildelay";
+}
+
+// Deduplicate these, but record the count in the string, by doing the following:
+// 1. Add the count.
+// 2. Filter by unique.
+// 3. Merge together into single string.
+
+// Get the count and add it to each string (do not add if count is 1).
+$delaycounts = array_count_values($adhoctaskdelays);
+$delayswithcounts = array_map(function($msg) use ($delaycounts) {
+    $count = $delaycounts[$msg];
+    return $count == 1 ? $msg : $msg . ' (' . $count . ' duplicates!!!)';
+}, $adhoctaskdelays);
+
+// Filter by unique - now only 1 line per task with count added to it.
+$delayswithcounts = array_unique($delayswithcounts);
+
+// Combine together.
+if (count($delayswithcounts) > 0) {
+    $delay .= implode("\n", $delayswithcounts) . "\n";
 }
 
 $maxminsdelay = $maxdelay / 60;
