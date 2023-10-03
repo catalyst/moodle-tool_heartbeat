@@ -219,37 +219,30 @@ if ( $difference > $options['cronwarn'] * 60 * 60 ) {
 
 $delay = '';
 $maxdelay = 0;
-$tasks = core\task\manager::get_all_scheduled_tasks();
-foreach ($tasks as $task) {
-    if ($task->get_disabled()) {
-        continue;
-    }
-    $faildelay = $task->get_fail_delay();
-    if ($faildelay == 0) {
-        continue;
-    }
-    if ($faildelay > $maxdelay) {
-        $maxdelay = $faildelay;
-    }
-    $delay .= "SCHEDULED TASK: " . get_class($task) . ' (' .$task->get_name() . ") Delay: $faildelay\n";
+
+// Instead of using task API here, we read directly from the database.
+// This stops errors originating from broken tasks.
+$scheduledtasks = $DB->get_records_sql("SELECT * FROM {task_scheduled} WHERE faildelay > 0 AND disabled = 0");
+foreach ($scheduledtasks as $task) {
+    $delay .= "SCHEDULED TASK: {$task->classname} Delay: {$task->faildelay}\n";
 }
 
-$records = $DB->get_records_sql('SELECT * from {task_adhoc} WHERE faildelay > 0');
-foreach ($records as $record) {
-    $task = \core\task\manager::adhoc_task_from_record($record);
-    if (!$task) {
-        continue;
-    }
+// Instead of using task API here, we read directly from the database.
+// This stops errors originating from broken tasks, and allows the DB to de-duplicate them.
+$adhoctasks = $DB->get_records_sql("  SELECT classname, COUNT(*) count, MAX(faildelay) faildelay
+                                       FROM {task_adhoc}
+                                      WHERE faildelay > 0
+                                   GROUP BY classname");
 
-    $faildelay = $task->get_fail_delay();
-    if ($faildelay == 0) {
-        continue;
-    }
-    if ($faildelay > $maxdelay) {
-        $maxdelay = $faildelay;
-    }
-    $delay .= "ADHOC TASK: " .get_class($task) . " Delay: $faildelay\n";
+foreach ($adhoctasks as $record) {
+    // Only add duplicate message if there are more than 1.
+    $duplicatemsg = $record->count > 1 ? " ({$record->count} duplicates!!!)" : '';
+    $delay .= "ADHOC TASK: {$record->classname} Delay: {$record->faildelay} {$duplicatemsg}\n";
 }
+
+// Find the largest faildelay out of both adhoc and scheduled tasks.
+$alldelays = array_merge(array_column($adhoctasks, 'faildelay'), array_column($scheduledtasks, 'faildelay'));
+$maxdelay = max($alldelays);
 
 $maxminsdelay = $maxdelay / 60;
 if ( $maxminsdelay > $options['delayerror'] ) {
@@ -284,51 +277,56 @@ if (class_exists('\core\check\manager')) {
         require_once($CFG->dirroot.'/mnet/lib.php');
     }
 
-    $checks = \core\check\manager::get_checks('status');
-    $output = '';
-    // Should this check block emit as critical?
-    $critical = false;
+    try {
+        $checks = \core\check\manager::get_checks('status');
+        $output = '';
+        // Should this check block emit as critical?
+        $critical = false;
 
-    foreach ($checks as $check) {
-        $ref = $check->get_ref();
-        $result = $check->get_result();
+        foreach ($checks as $check) {
+            $ref = $check->get_ref();
+            $result = $check->get_result();
 
-        $status = $result->get_status();
+            $status = $result->get_status();
 
-        // Summary is treated as html.
-        $summary = $result->get_summary();
-        $summary = html_to_text($summary, 80, false);
+            // Summary is treated as html.
+            $summary = $result->get_summary();
+            $summary = html_to_text($summary, 80, false);
 
-        if ($status == \core\check\result::WARNING ||
-            $status == \core\check\result::CRITICAL ||
-            $status == \core\check\result::ERROR) {
+            if ($status == \core\check\result::WARNING ||
+                $status == \core\check\result::CRITICAL ||
+                $status == \core\check\result::ERROR) {
 
-            // If we have an error, how should we handle it.
-            if ($status == \core\check\result::ERROR && !$critical) {
-                $mapping = get_config('tool_heartbeat', 'errorcritical');
-                if ($mapping === 'critical') {
-                    $critical = true;
-                } else if ($mapping === 'criticalbusiness') {
-                    // Here we should only set the critical flag between 0900 and 1700 server time.
-                    $time = new DateTime('now', core_date::get_server_timezone_object());
-                    $hour = (int) $time->format('H');
-                    $critical = ($hour >= 9 && $hour < 17);
+                // If we have an error, how should we handle it.
+                if ($status == \core\check\result::ERROR && !$critical) {
+                    $mapping = get_config('tool_heartbeat', 'errorcritical');
+                    if ($mapping === 'critical') {
+                        $critical = true;
+                    } else if ($mapping === 'criticalbusiness') {
+                        // Here we should only set the critical flag between 0900 and 1700 server time.
+                        $time = new DateTime('now', core_date::get_server_timezone_object());
+                        $hour = (int) $time->format('H');
+                        $critical = ($hour >= 9 && $hour < 17);
+                    }
+                } else if (!$critical) {
+                    $critical = $status == \core\check\result::CRITICAL;
                 }
-            } else if (!$critical) {
-                $critical = $status == \core\check\result::CRITICAL;
-            }
 
-            $output .= $check->get_name() . "\n";
-            $output .= "$summary\n";
+                $output .= $check->get_name() . "\n";
+                $output .= "$summary\n";
 
-            $detail = new moodle_url('/report/status/index.php', ['detail' => $ref]);
-            $output .= 'Details: ' . $detail->out() . "\n\n";
+                $detail = new moodle_url('/report/status/index.php', ['detail' => $ref]);
+                $output .= 'Details: ' . $detail->out() . "\n\n";
 
-            $link = $check->get_action_link();
-            if ($link) {
-                $output .= $link->url . "\n";
+                $link = $check->get_action_link();
+                if ($link) {
+                    $output .= $link->url . "\n";
+                }
             }
         }
+    } catch (\Throwable $e) {
+        $critical = true;
+        $output .= "Error scanning checks: " . $e . "\n";
     }
 
     // Strictly some of these could a critical but softly softly.
