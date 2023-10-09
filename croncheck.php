@@ -229,10 +229,11 @@ foreach ($scheduledtasks as $task) {
 
 // Instead of using task API here, we read directly from the database.
 // This stops errors originating from broken tasks, and allows the DB to de-duplicate them.
-$adhoctasks = $DB->get_records_sql("  SELECT classname, COUNT(*) count, MAX(faildelay) faildelay
+$adhoctasks = $DB->get_records_sql("  SELECT classname, COUNT(*) count, MAX(faildelay) faildelay, SUM(faildelay) cfaildelay
                                        FROM {task_adhoc}
                                       WHERE faildelay > 0
-                                   GROUP BY classname");
+                                   GROUP BY classname
+                                   ORDER BY cfaildelay DESC");
 
 foreach ($adhoctasks as $record) {
     // Only add duplicate message if there are more than 1.
