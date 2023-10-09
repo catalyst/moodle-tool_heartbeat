@@ -242,7 +242,7 @@ foreach ($adhoctasks as $record) {
 
 // Find the largest faildelay out of both adhoc and scheduled tasks.
 $alldelays = array_merge(array_column($adhoctasks, 'faildelay'), array_column($scheduledtasks, 'faildelay'));
-$maxdelay = max($alldelays);
+$maxdelay = !empty($alldelays) ? max($alldelays) : 0;
 
 $maxminsdelay = $maxdelay / 60;
 if ( $maxminsdelay > $options['delayerror'] ) {
@@ -277,57 +277,86 @@ if (class_exists('\core\check\manager')) {
         require_once($CFG->dirroot.'/mnet/lib.php');
     }
 
+    // Try find checks and catch any potential exceptions.
+    $checks = [];
     try {
         $checks = \core\check\manager::get_checks('status');
-        $output = '';
-        // Should this check block emit as critical?
-        $critical = false;
-
-        foreach ($checks as $check) {
-            $ref = $check->get_ref();
-            $result = $check->get_result();
-
-            $status = $result->get_status();
-
-            // Summary is treated as html.
-            $summary = $result->get_summary();
-            $summary = html_to_text($summary, 80, false);
-
-            if ($status == \core\check\result::WARNING ||
-                $status == \core\check\result::CRITICAL ||
-                $status == \core\check\result::ERROR) {
-
-                // If we have an error, how should we handle it.
-                if ($status == \core\check\result::ERROR && !$critical) {
-                    $mapping = get_config('tool_heartbeat', 'errorcritical');
-                    if ($mapping === 'critical') {
-                        $critical = true;
-                    } else if ($mapping === 'criticalbusiness') {
-                        // Here we should only set the critical flag between 0900 and 1700 server time.
-                        $time = new DateTime('now', core_date::get_server_timezone_object());
-                        $hour = (int) $time->format('H');
-                        $critical = ($hour >= 9 && $hour < 17);
-                    }
-                } else if (!$critical) {
-                    $critical = $status == \core\check\result::CRITICAL;
-                }
-
-                $output .= $check->get_name() . "\n";
-                $output .= "$summary\n";
-
-                $detail = new moodle_url('/report/status/index.php', ['detail' => $ref]);
-                $output .= 'Details: ' . $detail->out() . "\n\n";
-
-                $link = $check->get_action_link();
-                if ($link) {
-                    $output .= $link->url . "\n";
-                }
-            }
-        }
     } catch (\Throwable $e) {
         $critical = true;
-        $output .= "Error scanning checks: " . $e . "\n";
+        $output .= "Error scanning checks: {$e}\n";
     }
+
+    // Define a function to get the check result and determine if the error is critical or not.
+    $processcheckfn = function($check) {
+        $output = '';
+        $critical = false;
+
+        $ref = $check->get_ref();
+        $result = $check->get_result();
+
+        $status = $result->get_status();
+
+        // Summary is treated as html.
+        $summary = $result->get_summary();
+        $summary = html_to_text($summary, 80, false);
+
+        if ($status == \core\check\result::WARNING ||
+            $status == \core\check\result::CRITICAL ||
+            $status == \core\check\result::ERROR) {
+
+            // If we have an error, how should we handle it.
+            if ($status == \core\check\result::ERROR && !$critical) {
+                $mapping = get_config('tool_heartbeat', 'errorcritical');
+                if ($mapping === 'critical') {
+                    $critical = true;
+                } else if ($mapping === 'criticalbusiness') {
+                    // Here we should only set the critical flag between 0900 and 1700 server time.
+                    $time = new DateTime('now', core_date::get_server_timezone_object());
+                    $hour = (int) $time->format('H');
+                    $critical = ($hour >= 9 && $hour < 17);
+                }
+            } else if (!$critical) {
+                $critical = $status == \core\check\result::CRITICAL;
+            }
+
+            $output .= $check->get_name() . "\n";
+            $output .= "$summary\n";
+
+            $detail = new moodle_url('/report/status/index.php', ['detail' => $ref]);
+            $output .= 'Details: ' . $detail->out() . "\n";
+
+            $link = $check->get_action_link();
+            if ($link) {
+                $output .= $link->url . "\n";
+            }
+        }
+
+        return [$output, $critical];
+    };
+
+    // Check if any of them are critical, and catch any exceptions that might be thrown.
+    // This is an array of [$output, $critical].
+    $checkoutputs = array_map(function($check) use ($processcheckfn) {
+        try {
+            return $processcheckfn($check);
+        } catch (\Throwable $e) {
+            $critical = true;
+            $output = "Check \"{$check->get_name()}\" threw an exception: {$e}\n";
+            return [$output, $critical];
+        }
+    }, $checks);
+
+    // Combine outputs and remove any that are empty.
+    $outputs = array_filter(array_column($checkoutputs, 0));
+    $output = implode("\n", $outputs);
+
+    // If > 1 check reported warnings/errors, add a prefix which describes what has happened.
+    if (count($outputs) > 1) {
+        $output = count($outputs) . " status checks have reported warnings or errors: \n" . $output;
+    }
+
+    // Check if any returned critical as true.
+    $critical = in_array(true, array_column($checkoutputs, 1));
 
     // Strictly some of these could a critical but softly softly.
     if ($output) {
