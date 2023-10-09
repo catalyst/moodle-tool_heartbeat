@@ -222,14 +222,14 @@ if ( $difference > $options['cronwarn'] * 60 * 60 ) {
     send_warning("Moodle cron ran > {$options['cronwarn']} hours ago\nLast run at $when");
 }
 
-$delay = '';
-$maxdelay = 0;
+$taskoutputs = [];
 
 // Instead of using task API here, we read directly from the database.
 // This stops errors originating from broken tasks.
 $scheduledtasks = $DB->get_records_sql("SELECT * FROM {task_scheduled} WHERE faildelay > 0 AND disabled = 0");
+
 foreach ($scheduledtasks as $task) {
-    $delay .= "SCHEDULED TASK: {$task->classname} Delay: {$task->faildelay}\n";
+    $taskoutputs[] = "SCHEDULED TASK: {$task->classname} Delay: {$task->faildelay}\n";
 }
 
 // Instead of using task API here, we read directly from the database.
@@ -243,19 +243,41 @@ $adhoctasks = $DB->get_records_sql("  SELECT classname, COUNT(*) count, MAX(fail
 foreach ($adhoctasks as $record) {
     // Only add duplicate message if there are more than 1.
     $duplicatemsg = $record->count > 1 ? " ({$record->count} duplicates!!!)" : '';
-    $delay .= "ADHOC TASK: {$record->classname} Delay: {$record->faildelay} {$duplicatemsg}\n";
+    $taskoutputs[] = "ADHOC TASK: {$record->classname} Delay: {$record->faildelay} {$duplicatemsg}\n";
 }
 
 // Find the largest faildelay out of both adhoc and scheduled tasks.
 $alldelays = array_merge(array_column($adhoctasks, 'faildelay'), array_column($scheduledtasks, 'faildelay'));
-$maxdelay = !empty($alldelays) ? max($alldelays) : 0;
+$maxdelaymins = !empty($alldelays) ? max($alldelays) / 60 : 0;
 
-$maxminsdelay = $maxdelay / 60;
-if ( $maxminsdelay > $options['delayerror'] ) {
-    send_critical("Moodle task faildelay > {$options['delayerror']} mins\n$delay");
+// Define a simple function to work out what the message should be based on the task outputs.
+$taskoutputfn = function($faildelaymins) use ($taskoutputs) {
+    $count = count($taskoutputs);
 
-} else if ( $maxminsdelay > $options['delaywarn'] ) {
-    send_warning("Moodle task faildelay > {$options['delaywarn']} mins\n$delay");
+    if ($count == 1) {
+        // Only a single task is failing, so put it at the top level.
+        return $taskoutputs[0];
+    }
+
+    if ($count > 1) {
+        // More than 1, add a message at the start that indicates how many.
+        return "{$count} Moodle tasks reported errors, maximum faildelay > {$faildelaymins} mins\n" . implode("", $taskoutputs);
+    }
+
+    // There are 0 tasks are failing, default to nothing.
+    return '';
+};
+
+// Send the warning or critical based on the faildelay.
+$sendwarning = $maxdelaymins > $options['delaywarn'];
+$sendcritical = $maxdelaymins > $options['delayerror'];
+
+if ($sendcritical) {
+    send_critical($taskoutputfn($options['delayerror']));
+}
+
+if ($sendwarning) {
+    send_warning($taskoutputfn($options['delaywarn']));
 }
 
 if ($CFG->branch < 403) {
