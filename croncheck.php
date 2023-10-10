@@ -288,8 +288,8 @@ if (class_exists('\core\check\manager')) {
     try {
         $checks = \core\check\manager::get_checks('status');
     } catch (\Throwable $e) {
-        $critical = true;
-        $output .= "Error scanning checks: {$e}\n";
+        // The check API exploded, so there is no point continuing.
+        send_critical("Error scanning checks: {$e}\n");
     }
 
     // Define a function to get the check result and determine if the error is critical or not.
