@@ -48,9 +48,7 @@ $now = userdate(time(), $format);
  * @param string  $more aditional message
  */
 function send_good($msg, $more = '') {
-    global $now;
-    printf ("OK: $msg (Checked $now)\n$more");
-    exit(0);
+    send(0, $msg, $more);
 }
 
 /**
@@ -60,9 +58,7 @@ function send_good($msg, $more = '') {
  * @param string  $more aditional message
  */
 function send_warning($msg, $more = '') {
-    global $now;
-    printf ("WARNING: $msg (Checked $now)\n$more");
-    exit(1);
+    send(1, $msg, $more);
 }
 
 /**
@@ -72,9 +68,7 @@ function send_warning($msg, $more = '') {
  * @param string  $more aditional message
  */
 function send_critical($msg, $more = '') {
-    global $now;
-    printf ("CRITICAL: $msg (Checked $now)\n$more");
-    exit(2);
+    send(2, $msg, $more);
 }
 
 /**
@@ -84,8 +78,56 @@ function send_critical($msg, $more = '') {
  * @param string  $more aditional message
  */
 function send_unknown($msg, $more = '') {
-    printf ("UNKNOWN: $msg\n$more");
-    exit(3);
+    send(3, $msg, $more);
+}
+
+/**
+ * Sends a Nagios response, with message.
+ * @param int $level Status code level
+ * @param string $msg the message to append the Nagios response.
+ * @param string $more additional message
+ */
+function send($level, $msg, $more = '') {
+    global $now;
+    $buffercontents = check_buffer();
+
+    // If buffer was outputted, and is currently OK or UNKNOWN level, upgrade to WARNING level.
+    if (!empty($buffercontents) && ($level == 0 || $level == 3)) {
+        $level = 1;
+    }
+
+    $prefixes = [
+        0 => "OK",
+        1 => "WARNING",
+        2 => "CRITICAL",
+        3 => "UNKNOWN",
+    ];
+
+    // Add any buffer contents message to the msg, ensuring the details are on the first line.
+    $msglines = explode("\n", $msg);
+
+    $msglines[0] .= $buffercontents;
+    $msg = implode("\n", $msglines);
+
+    printf("{$prefixes[$level]}: $msg (Checked {$now})\n$more");
+    exit($level);
+}
+
+/**
+ * Finishes output buffering, and returns a message if the buffer contained anything.
+ * Ideally, the buffer should always be empty, but debugging messages often are outputted to it.
+ * @return string
+ */
+function check_buffer() {
+    $contents = ob_get_clean();
+
+    // All good - no output.
+    if ($contents == false) {
+        return '';
+    }
+
+    // There was output, return it.
+    return ", but there was unexpected output:\n {$contents}\n";
 }
 
 /**
