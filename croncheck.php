@@ -42,6 +42,11 @@ $legacywarn      = 60 * 2; // Minutes.
 
 // @codingStandardsIgnoreEnd
 
+// Start output buffering. This stops for e.g. debugging messages from breaking the output.
+// When a nagios.php send_* function is called, they will collect the buffer
+// and warn if it is not empty (but do it nicely).
+ob_start();
+
 $dirroot = __DIR__ . '/../../../';
 
 if (isset($argv)) {
