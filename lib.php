@@ -31,6 +31,7 @@ function tool_heartbeat_status_checks() {
         new \tool_heartbeat\check\authcheck(),
         new \tool_heartbeat\check\logstorecheck(),
         new \tool_heartbeat\check\tasklatencycheck(),
+        new \tool_heartbeat\check\failingtaskcheck(),
     ];
 }
 

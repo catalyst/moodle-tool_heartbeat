@@ -68,7 +68,7 @@ Failed: database error
 
 ## Application health
 
-This is the croncheck.php - it is mostly, and was originally only around the cron queues, but has grown to cover other aspects.
+Named `croncheck.php` for compatibility with older versions of this plugin, this page executes all `status` check API checks, and shows any that return non-ok results.
 
 It is a nagios compliant checker to see if cron or any individual tasks are failing, with configurable thresholds
 
@@ -81,13 +81,6 @@ Or can be run as a CLI in which case it will return in the format expected by Na
 ```
 sudo -u www-data php /var/www/moodle/admin/tool/heartbeat/croncheck.php
 ```
-
-The various thresholds can be configured with query params or cli args see this for details:
-
-```
-php croncheck.php -h
-```
-
 
 ## Failed login detection
 
@@ -111,10 +104,16 @@ php loginchecker.php -h
 
 # Branches
 
+| Branch      | Version |
+| ----------- | ----------- |
+| master      | Moodle 2.7 + |
+| MOODLE_39_STABLE   | Moodle 3.9 + |
+
 The master branch is always stable and should retain very deep support for old Totara's and Moodle's back to Moodle 2.7
 
 For this reason we will continue to support php5 for some time.
 
+The MOODLE_39_STABLE branch uses the [Check API](https://moodledev.io/docs/apis/subsystems/check) exclusively.
 
 # Installation
 
