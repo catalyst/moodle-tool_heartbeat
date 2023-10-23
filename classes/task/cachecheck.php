@@ -14,19 +14,35 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+
+namespace tool_heartbeat\task;
+
 /**
- * Version details.
+ * Scheduled task to ping the cache from CRON.
  *
- * @package    tool_heartbeat
- * @copyright  2017 Brendan Heywood <brendan@catalyst-au.net>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_heartbeat
+ * @author    Brendan Heywood <brendan@catalyst-au.net>
+ * @copyright Catalyst IT
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class cachecheck extends \core\task\scheduled_task {
 
-defined('MOODLE_INTERNAL') || die();
+    /**
+     * Get task name
+     */
+    public function get_name() {
+        return get_string('checkcachecheck', 'tool_heartbeat');
+    }
 
-$plugin->version   = 2023102400;
-$plugin->release   = 2023101100; // Match release exactly to version.
-$plugin->requires  = 2020061500; // Support for 3.9 and above, due to the Check API.
-$plugin->supported = [39, 401];
-$plugin->component = 'tool_heartbeat';
-$plugin->maturity  = MATURITY_STABLE;
+    /**
+     * Execute task
+     */
+    public function execute() {
+        if (class_exists('\core\check\manager')) {
+            \tool_heartbeat\check\cachecheck::ping('cron');
+        }
+    }
+
+}
+
+

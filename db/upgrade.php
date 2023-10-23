@@ -13,20 +13,29 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
- * Version details.
+ * DB upgrade script.
  *
  * @package    tool_heartbeat
- * @copyright  2017 Brendan Heywood <brendan@catalyst-au.net>
+ * @author     Matthew Hilton <matthewhilton@catalyst-au.net>
+ * @copyright  Catalyst IT 2023
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+/**
+ * Upgrade
+ * @param int $oldversion
+ */
+function xmldb_tool_heartbeat_upgrade($oldversion) {
+    if ($oldversion < 2023102400) {
+        // If there are issues with split caches they need to be exposed
+        // after some time for them to diverge.
+        if (class_exists('\core\check\manager')) {
+            \tool_heartbeat\check\cachecheck::ping('web');
+            \tool_heartbeat\check\cachecheck::ping('cron');
+        }
+        upgrade_main_savepoint(true, 2023102400);
+    }
 
-$plugin->version   = 2023102400;
-$plugin->release   = 2023101100; // Match release exactly to version.
-$plugin->requires  = 2020061500; // Support for 3.9 and above, due to the Check API.
-$plugin->supported = [39, 401];
-$plugin->component = 'tool_heartbeat';
-$plugin->maturity  = MATURITY_STABLE;
+    return true;
+}
