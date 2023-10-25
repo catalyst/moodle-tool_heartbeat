@@ -79,6 +79,8 @@ $string['latencyruntime'] = 'Task {$a->task} was last run with a runtime longer 
 $string['checktasklatencycheck'] = 'Task latency check';
 $string['taskconfigbad'] = 'Bad configurations {$a}';
 $string['tasklatencyok'] = 'Task latency OK.';
+$string['checkfailingtaskcheck'] = 'Failing tasks';
+
 /*
  * Privacy provider (GDPR)
  */

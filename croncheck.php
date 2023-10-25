@@ -15,387 +15,91 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * CRON health check
+ * Check API Health Check
  *
  * @package    tool_heartbeat
- * @copyright  2015 Brendan Heywood <brendan@catalyst-au.net>
+ * @copyright  2023 Matthew Hilton <matthewhilton@catalyst-au.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * This can be run either as a web api, or on the CLI. When run on the
- * CLI it conforms to the Nagios plugin standard.
  *
  * See also:
  *  - http://nagios.sourceforge.net/docs/3_0/pluginapi.html
  *  - https://nagios-plugins.org/doc/guidelines.html#PLUGOUTPUT
- *
  */
+
 
 // @codingStandardsIgnoreStart
 define('NO_UPGRADE_CHECK', true);
+define('NO_MOODLE_COOKIES', true);
 
-$cronthreshold   = 6;   // Hours.
-$cronwarn        = 2;   // Hours.
-$delaythreshold  = 600; // Minutes.
-$delaywarn       = 60;  // Minutes.
-$legacythreshold = 60 * 6; // Minute.
-$legacywarn      = 60 * 2; // Minutes.
+// Detect if web or CLI.
+$isweb = !isset($argv);
+$iscli = !$isweb;
 
-// @codingStandardsIgnoreEnd
-
-// Start output buffering. This stops for e.g. debugging messages from breaking the output.
-// When a nagios.php send_* function is called, they will collect the buffer
-// and warn if it is not empty (but do it nicely).
-ob_start();
+// CLI must define this before including config.php
+if ($iscli) {
+    define('CLI_SCRIPT', true);
+}
 
 $dirroot = __DIR__ . '/../../../';
+require_once($dirroot . 'config.php');
 
-if (isset($argv)) {
-    // If run from the CLI.
-    define('CLI_SCRIPT', true);
-
-    $last = $argv[count($argv) - 1];
-    if (preg_match("/(.*):(.+)/", $last, $matches)) {
-        $last = $matches[1];
-    }
-    if ($last && is_dir($last) ) {
-        $dirroot = $last . '/';
-        array_pop($_SERVER['argv']);
-    }
-
-    require($dirroot.'config.php');
-    require_once(__DIR__.'/nagios.php');
-    require_once($CFG->libdir.'/clilib.php');
-
-    list($options, $unrecognized) = cli_get_params(
-        array(
-            'help' => false,
-            'cronwarn'    => $cronwarn,
-            'cronerror'   => $cronthreshold,
-            'delaywarn'   => $delaywarn,
-            'delayerror'  => $delaythreshold,
-            'legacywarn'  => $legacywarn,
-            'legacyerror' => $legacythreshold,
-        ),
-        array(
-            'h'   => 'help'
-        )
-    );
-
-    if ($unrecognized) {
-        $unrecognized = implode("\n  ", $unrecognized);
-        cli_error(get_string('cliunknowoption', 'admin', $unrecognized));
-    }
-
-    if ($options['help']) {
-        print "Check the moodle cron system for when it last ran and any task fail delays
-
-croncheck.php [options] [moodle path]
-
-Options:
--h, --help          Print out this help
-    --cronwarn=n    Threshold for no cron run error in hours (default $cronwarn)
-    --cronerror=n   Threshold for no cron run warn in hours (default $cronthreshold)
-    --delaywarn=n   Threshold for fail delay cron error in minutes (default $delaywarn)
-    --delayerror=n  Threshold for fail delay cron warn in minutes (default $delaythreshold)
-    --legacywarn=n  Threshold for legacy cron warn in minutes (default $legacywarn)
-    --legacyerror=n Threshold for legacy cron error in minutes (default $legacythreshold)
-
-Example:
-\$sudo -u www-data /usr/bin/php admin/tool/heartbeat/croncheck.php
-";
-        die;
-    }
-
-} else {
+if ($isweb) {
     // If run from the web.
-    define('NO_MOODLE_COOKIES', true);
     // Add requirement for IP validation.
-    require($dirroot.'config.php');
-    require_once(__DIR__.'/nagios.php');
     tool_heartbeat\lib::validate_ip_against_config();
 
-    $options = array(
-        'cronerror'   => optional_param('cronerror',   $cronthreshold,   PARAM_INT),
-        'cronwarn'    => optional_param('cronwarn',    $cronwarn,        PARAM_INT),
-        'delayerror'  => optional_param('delayerror',  $delaythreshold,  PARAM_INT),
-        'delaywarn'   => optional_param('delaywarn',   $delaywarn,       PARAM_INT),
-        'legacyerror' => optional_param('legacyerror', $legacythreshold, PARAM_INT),
-        'legacywarn'  => optional_param('legacywarn',  $legacywarn,      PARAM_INT),
-    );
     header("Content-Type: text/plain");
 
-    // Make sure varnish doesn't cache this. But it still might so go check it!
+    // Ensure its not cached.
     header('Pragma: no-cache');
     header('Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate, proxy-revalidate');
     header('Expires: Tue, 04 Sep 2012 05:32:29 GMT');
 }
 
-if (isset($CFG->adminsetuppending)) {
-    send_critical("Admin setup pending, please set up admin account");
+use tool_heartbeat\checker;
+global $PAGE;
+
+if (isset($CFG->mnet_dispatcher_mode) and $CFG->mnet_dispatcher_mode !== 'off') {
+    // This is a core bug workaround, see MDL-77247 for more details.
+    require_once($CFG->dirroot.'/mnet/lib.php');
 }
 
-if (moodle_needs_upgrading()) {
-    $upgraderunning = get_config(null, 'upgraderunning');
-    $initialinstall = during_initial_install();
+// Start output buffering. This stops for e.g. debugging messages from breaking the output.
+// The checker class collects this, and if anything it output it shows a warning.
+ob_start();
 
-    $difference = format_time((time() > $upgraderunning ? (time() - $upgraderunning) : 300));
+$messages = checker::get_check_messages();
 
-    if (!$upgraderunning) {
-        send_critical("Moodle upgrade pending and is not running, cron execution suspended");
-    }
+// Construct the output message.
+$PAGE->set_context(\context_system::instance());
 
-    if ($upgraderunning >= time()) {
-        // Before the expected finish time.
-        if (!empty($initialinstall)) {
-            send_critical("Moodle installation is running, ETA > $difference, cron execution suspended");
-        } else {
-            send_critical("Moolde upgrade is running, ETA > $difference, cron execution suspended");
-        }
-    }
+// Indent the messages.
+$msg = array_map(function($message) {
+    global $OUTPUT;
+    
+    $spacer = " ";
 
-    /*
-     * After the expected finish time (timeout or other interruption)
-     * The "core_shutdown_manager::register_function('upgrade_finished_handler');" already handle these cases
-     * and unset config 'upgraderunning'
-     * The below critical ones can happen if core_shutdown_manager fails to run the handler function.
-     */
-    if (!empty($initialinstall)) {
-        send_critical("Moodle installation is running, overdue by $difference ");
-    } else {
-        send_critical("Moodle upgrade is running, overdue by $difference ");
-    }
-}
+    // Add the spacer to the start of each message line.
+    $indentedlines = explode("\n", $message->message);
+    $indentedlines = array_map(function($line) use ($spacer) {
+        return $spacer . $line;
+    }, $indentedlines);
+    
+    $indentedmessage = implode("\n", $indentedlines);
 
-// We want to periodically emit an error_log which we will detect elsewhere to
-// confirm that all the various web server logs are not stale.
-$nexterror = get_config('tool_heartbeat', 'nexterror');
-$errorperiod = get_config('tool_heartbeat', 'errorlog');
-if (!$errorperiod) {
-    $errorperiod = 30 * MINSECS;
-}
+    return $OUTPUT->render_from_template('tool_heartbeat/resultmessage', [
+        'prefix' => checker::NAGIOS_PREFIXES[$message->level],
+        'title' => $message->title,
+        'message' => $indentedmessage,
+    ]);
+}, $messages);
 
-if (!$nexterror || time() > $nexterror) {
-    $nexterror = time() + $errorperiod;
-    $now = userdate(time());
-    $next = userdate($nexterror);
-    $period = format_time($errorperiod);
-    // @codingStandardsIgnoreStart
-    error_log("heartbeat test $now, next test expected in $period at $next");
-    // @codingStandardsIgnoreEnd
-    set_config('nexterror', $nexterror, 'tool_heartbeat');
-}
+$msg = checker::create_summary($messages) . "\n" . implode("\n\n", $msg);
+$msg = htmlspecialchars_decode($msg);
 
-if ($CFG->branch < 27) {
-    $lastcron = $DB->get_field_sql('SELECT MAX(lastcron) FROM {modules}');
-    $currenttime = time();
-    $difference = $currenttime - $lastcron;
+$level = checker::determine_nagios_level($messages);
+$prefix = checker::NAGIOS_PREFIXES[$level];
+$now = userdate(time());
 
-    if ( $difference > $options['cronerror'] * 60 * 60 ) {
-        send_critical("Moodle cron ran > {$options['cronerror']} hours ago\nLast run at $when");
-    }
-
-    if ( $difference > $options['cronwarn'] * 60 * 60 ) {
-        send_warning("Moodle cron ran > {$options['cronwarn']} hours ago\nLast run at $when");
-    }
-
-    send_good("MOODLE CRON RUNNING\n");
-}
-
-$lastcron = $DB->get_field_sql('SELECT MAX(lastruntime) FROM {task_scheduled}');
-$currenttime = time();
-$difference = $currenttime - $lastcron;
-
-$testing = get_config('tool_heartbeat', 'testing');
-if ($testing == 'error') {
-    send_critical("Moodle this is a test $CFG->wwwroot/admin/settings.php?section=tool_heartbeat\n");
-} else if ($testing == 'warn') {
-    send_warning("Moodle this is a test $CFG->wwwroot/admin/settings.php?section=tool_heartbeat\n");
-}
-
-$when = userdate($lastcron);
-
-if ( $difference > $options['cronerror'] * 60 * 60 ) {
-    send_critical("Moodle cron ran > {$options['cronerror']} hours ago\nLast run at $when");
-}
-
-if ( $difference > $options['cronwarn'] * 60 * 60 ) {
-    send_warning("Moodle cron ran > {$options['cronwarn']} hours ago\nLast run at $when");
-}
-
-$taskoutputs = [];
-
-// Instead of using task API here, we read directly from the database.
-// This stops errors originating from broken tasks.
-$scheduledtasks = $DB->get_records_sql("SELECT * FROM {task_scheduled} WHERE faildelay > 0 AND disabled = 0");
-
-foreach ($scheduledtasks as $task) {
-    $taskoutputs[] = "SCHEDULED TASK: {$task->classname} Delay: {$task->faildelay}\n";
-}
-
-// Instead of using task API here, we read directly from the database.
-// This stops errors originating from broken tasks, and allows the DB to de-duplicate them.
-$adhoctasks = $DB->get_records_sql("  SELECT classname, COUNT(*) count, MAX(faildelay) faildelay, SUM(faildelay) cfaildelay
-                                       FROM {task_adhoc}
-                                      WHERE faildelay > 0
-                                   GROUP BY classname
-                                   ORDER BY cfaildelay DESC");
-
-foreach ($adhoctasks as $record) {
-    // Only add duplicate message if there are more than 1.
-    $duplicatemsg = $record->count > 1 ? " ({$record->count} duplicates!!!)" : '';
-    $taskoutputs[] = "ADHOC TASK: {$record->classname} Delay: {$record->faildelay} {$duplicatemsg}\n";
-}
-
-// Find the largest faildelay out of both adhoc and scheduled tasks.
-$alldelays = array_merge(array_column($adhoctasks, 'faildelay'), array_column($scheduledtasks, 'faildelay'));
-$maxdelaymins = !empty($alldelays) ? max($alldelays) / 60 : 0;
-
-// Define a simple function to work out what the message should be based on the task outputs.
-$taskoutputfn = function($faildelaymins) use ($taskoutputs) {
-    $count = count($taskoutputs);
-
-    if ($count == 1) {
-        // Only a single task is failing, so put it at the top level.
-        return $taskoutputs[0];
-    }
-
-    if ($count > 1) {
-        // More than 1, add a message at the start that indicates how many.
-        return "{$count} Moodle tasks reported errors, maximum faildelay > {$faildelaymins} mins\n" . implode("", $taskoutputs);
-    }
-
-    // There are 0 tasks are failing, default to nothing.
-    return '';
-};
-
-// Send the warning or critical based on the faildelay.
-$sendwarning = $maxdelaymins > $options['delaywarn'];
-$sendcritical = $maxdelaymins > $options['delayerror'];
-
-if ($sendcritical) {
-    send_critical($taskoutputfn($options['delayerror']));
-}
-
-if ($sendwarning) {
-    send_warning($taskoutputfn($options['delaywarn']));
-}
-
-if ($CFG->branch < 403) {
-    $legacytask = \core\task\manager::get_scheduled_task('core\task\legacy_plugin_cron_task');
-    $legacylastrun = $legacytask->get_last_run_time();
-    if (!$legacylastrun) {
-        send_warning("Moodle legacy task isn't running (ie disabled)\n");
-    }
-    $minsincelegacylastrun = floor((time() - $legacylastrun) / 60); // In minutes.
-    $when = userdate($legacylastrun);
-    if ( $minsincelegacylastrun > $options['legacyerror']) {
-        send_critical("Moodle legacy task last run $minsincelegacylastrun "
-            . "mins ago > {$options['legacyerror']} mins\nLast run at $when");
-    }
-    if ( $minsincelegacylastrun > $options['legacywarn']) {
-        send_warning("Moodle legacy task last run $minsincelegacylastrun mins ago > {$options['legacywarn']} mins\nLast run at $when");
-    }
-}
-
-// If the Check API from 3.9 exists then call those as well.
-if (class_exists('\core\check\manager')) {
-
-    if (isset($CFG->mnet_dispatcher_mode) and $CFG->mnet_dispatcher_mode !== 'off') {
-        // This is a core bug workaround, see MDL-77247 for more details.
-        require_once($CFG->dirroot.'/mnet/lib.php');
-    }
-
-    // Try find checks and catch any potential exceptions.
-    $checks = [];
-    try {
-        $checks = \core\check\manager::get_checks('status');
-    } catch (\Throwable $e) {
-        // The check API exploded, so there is no point continuing.
-        send_critical("Error scanning checks: {$e}\n");
-    }
-
-    // Define a function to get the check result and determine if the error is critical or not.
-    $processcheckfn = function($check) {
-        $output = '';
-        $critical = false;
-
-        $ref = $check->get_ref();
-        $result = $check->get_result();
-
-        $status = $result->get_status();
-
-        // Summary is treated as html.
-        $summary = $result->get_summary();
-        $summary = html_to_text($summary, 80, false);
-
-        if ($status == \core\check\result::WARNING ||
-            $status == \core\check\result::CRITICAL ||
-            $status == \core\check\result::ERROR) {
-
-            // If we have an error, how should we handle it.
-            if ($status == \core\check\result::ERROR && !$critical) {
-                $mapping = get_config('tool_heartbeat', 'errorcritical');
-                if ($mapping === 'critical') {
-                    $critical = true;
-                } else if ($mapping === 'criticalbusiness') {
-                    // Here we should only set the critical flag between 0900 and 1700 server time.
-                    $time = new DateTime('now', core_date::get_server_timezone_object());
-                    $hour = (int) $time->format('H');
-                    $critical = ($hour >= 9 && $hour < 17);
-                }
-            } else if (!$critical) {
-                $critical = $status == \core\check\result::CRITICAL;
-            }
-
-            $output .= $check->get_name() . "\n";
-            $output .= "$summary\n";
-
-            $detail = new moodle_url('/report/status/index.php', ['detail' => $ref]);
-            $output .= 'Details: ' . $detail->out() . "\n";
-
-            $link = $check->get_action_link();
-            if ($link) {
-                $output .= $link->url . "\n";
-            }
-        }
-
-        return [$output, $critical];
-    };
-
-    // Check if any of them are critical, and catch any exceptions that might be thrown.
-    // This is an array of [$output, $critical].
-    $checkoutputs = array_map(function($check) use ($processcheckfn) {
-        try {
-            return $processcheckfn($check);
-        } catch (\Throwable $e) {
-            $critical = true;
-            $output = "Check \"{$check->get_name()}\" threw an exception: {$e}\n";
-            return [$output, $critical];
-        }
-    }, $checks);
-
-    // Combine outputs and remove any that are empty.
-    $outputs = array_filter(array_column($checkoutputs, 0));
-    $output = implode("\n", $outputs);
-
-    // If > 1 check reported warnings/errors, add a prefix which describes what has happened.
-    if (count($outputs) > 1) {
-        $output = count($outputs) . " status checks have reported warnings or errors: \n" . $output;
-    }
-
-    // Check if any returned critical as true.
-    $critical = in_array(true, array_column($checkoutputs, 1));
-
-    // Strictly some of these could a critical but softly softly.
-    if ($output) {
-        // For now emit only criticals as criticals. Error status should be a critical later.
-        if ($critical) {
-            send_critical($output);
-        } else {
-            send_warning($output);
-        }
-    }
-
-}
-
-send_good("MOODLE CRON RUNNING\n");
+printf("{$prefix}: $msg\n\n(Checked {$now})\n");
+exit($level);
