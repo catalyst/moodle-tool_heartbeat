@@ -111,10 +111,16 @@ php loginchecker.php -h
 
 # Branches
 
+| Branch      | Version |
+| ----------- | ----------- |
+| master      | Moodle 2.7 + |
+| MOODLE_39_STABLE   | Moodle 3.9 + |
+
 The master branch is always stable and should retain very deep support for old Totara's and Moodle's back to Moodle 2.7
 
 For this reason we will continue to support php5 for some time.
 
+The MOODLE_39_STABLE branch uses the [Check API](https://moodledev.io/docs/apis/subsystems/check) exclusively.
 
 # Installation
 
