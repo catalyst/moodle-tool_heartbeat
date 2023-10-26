@@ -34,7 +34,7 @@ function xmldb_tool_heartbeat_upgrade($oldversion) {
             \tool_heartbeat\check\cachecheck::ping('web');
             \tool_heartbeat\check\cachecheck::ping('cron');
         }
-        upgrade_main_savepoint(true, 2023102400);
+        upgrade_plugin_savepoint(true, 2023102400, 'tool', 'heartbeat');
     }
 
     return true;
