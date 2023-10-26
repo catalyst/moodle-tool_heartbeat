@@ -27,7 +27,7 @@ $tasks = [
     [
         'classname' => 'tool_heartbeat\task\cachecheck',
         'minute' => '*',
-        'hour' => '*',
+        'hour' => '*/8',
         'day' => '*',
         'dayofweek' => '*',
         'month' => '*',
