@@ -22,6 +22,15 @@
  */
 
 /**
+ * Runs before HTTP headers. Used to ping the cachecheck.
+ */
+function tool_heartbeat_before_http_headers() {
+    if (class_exists('\core\check\manager')) {
+        \tool_heartbeat\check\cachecheck::ping('web');
+    }
+}
+
+/**
  * Status checks.
  *
  * @return array
@@ -29,6 +38,7 @@
 function tool_heartbeat_status_checks() {
     return [
         new \tool_heartbeat\check\authcheck(),
+        new \tool_heartbeat\check\cachecheck(),
         new \tool_heartbeat\check\logstorecheck(),
         new \tool_heartbeat\check\tasklatencycheck(),
     ];
