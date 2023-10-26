@@ -22,17 +22,16 @@ https://tracker.moodle.org/browse/MDL-47271
 
 # Branches
 
-| Branch             | Moodle version | PHP Version |
-| ------------------ | -------------- | ----------- |
-| master             | Moodle 2.7 +   | Php 5.4.4+  |
-| MOODLE_39_STABLE   | Moodle 3.9 +   | Php 7.2+    |
+| Branch             | Moodle version    | PHP Version |
+| ------------------ | ----------------- | ----------- |
+| master             | Moodle 2.7 - 4.1  | Php 5.4.4+  |
+| MOODLE_39_STABLE   | Moodle 3.9 +      | Php 7.2+    |
 
-The master branch is always stable and should retain very deep support for old Totara's and Moodle's back to Moodle 2.7
+The master branch retains very deep support for old Totara's and Moodle's back to Moodle 2.7.
 
-For this reason we will continue to support php5 for some time.
+For any site using Moodle 3.9 or later, it is recommended to use the MOODLE_39_STABLE branch.
 
-The MOODLE_39_STABLE branch uses the [Check API](https://moodledev.io/docs/apis/subsystems/check) exclusively.
-
+The MOODLE_39_STABLE branch uses the [Check API](https://moodledev.io/docs/apis/subsystems/check) exclusively, which simplifies the code massively.
 
 ## Front end health
 
