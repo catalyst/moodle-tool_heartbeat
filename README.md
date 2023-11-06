@@ -33,6 +33,14 @@ For any site using Moodle 3.9 or later, it is recommended to use the MOODLE_39_S
 
 The MOODLE_39_STABLE branch uses the [Check API](https://moodledev.io/docs/apis/subsystems/check) exclusively, which simplifies the code massively.
 
+## Versioning
+
+Versioning follows the [Moodle versioning guidelines](https://moodledev.io/docs/apis/commonfiles/version.php#version)
+
+Whenever a version change is required:
+- The `master` branch should always be `20231024xx` where `xx` increases by 1 each time.
+- The `MOODLE_39_STABLE` branch should always be updated to the current date.
+
 ## Front end health
 
 This is the ```index.php``` check, and is designed to only assert that the front end is healthy and was intended for use as a load balancer test.
