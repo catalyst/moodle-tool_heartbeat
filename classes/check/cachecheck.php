@@ -127,7 +127,7 @@ class cachecheck extends check {
 
         // Only update if the currently cached time is very old.
         if ($current < (time() - DAYSECS)) {
-            mtrace("\nHEARTBEAT doing {$type} ping {$current}\n", DEBUG_DEVELOPER);
+            debugging("\nHEARTBEAT doing {$type} ping {$current}\n", DEBUG_DEVELOPER);
             set_config($key, time(), 'tool_heartbeat');
         }
     }
