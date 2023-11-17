@@ -17,6 +17,7 @@
 namespace tool_heartbeat\check;
 use core\check\check;
 use core\check\result;
+use tool_heartbeat\lib;
 
 /**
  * Cache check class
@@ -101,20 +102,65 @@ class cachecheck extends check {
      * @param string $type type of check (e.g. web, cron)
      */
     public function check($type) {
-        global $DB;
-
         $return = [];
-        $key = "checkcache{$type}ping";
 
         // Read from cache (e.g. get_config uses cache).
-        $return[$type . 'api'] = get_config('tool_heartbeat', $key);
+        $cachevalue = self::get_cache_ping_value($type);
 
         // Read directly from database.
-        $return[$type . 'db'] = $DB->get_field('config_plugins', 'value', [
-            'plugin' => 'tool_heartbeat',
-            'name'  => $key,
-        ]);
+        $dbvalue = self::get_db_ping_value($type);
+
+        // Log that it was checked, so we can see historical values for debugging.
+        if (get_config('tool_heartbeat', 'shouldlogcachecheck')) {
+            lib::record_cache_checked($cachevalue, $dbvalue, $type);
+        }
+
+        $return = [
+            $type . 'api' => $cachevalue,
+            $type . 'db' => $dbvalue,
+        ];
+
         return $return;
+    }
+
+    /**
+     * Returns cache key
+     * @param string $type web or cron
+     * @return string
+     */
+    private static function get_key(string $type) {
+        return "checkcache{$type}ping";
+    }
+
+    /**
+     * Returns the cached value from get_config
+     * @param string $type web or cron
+     * @return int value
+     */
+    private static function get_cache_ping_value(string $type) {
+        return get_config('tool_heartbeat', self::get_key($type));
+    }
+
+    /**
+     * Returns the database stored ping value
+     * @param string $type web or cron
+     * @param int value
+     */
+    private static function get_db_ping_value(string $type) {
+        global $DB;
+        return $DB->get_field('config_plugins', 'value', [
+            'plugin' => 'tool_heartbeat',
+            'name'  => self::get_key($type),
+        ]);
+    }
+
+    /**
+     * Set the cache ping value
+     * @param string $type web or cron
+     * @param int $value new value to set
+     */
+    private static function set_cache_ping_value(string $type, int $value) {
+        set_config(self::get_key($type), $value, 'tool_heartbeat');
     }
 
     /**
@@ -122,13 +168,22 @@ class cachecheck extends check {
      * @param string $type type of check (e.g. web, cron)
      */
     public static function ping($type) {
-        $key = "checkcache{$type}ping";
-        $current = get_config('tool_heartbeat', $key);
+        $time = time();
+        $currentcache = self::get_cache_ping_value($type);
+        $currentdb = self::get_db_ping_value($type);
 
         // Only update if the currently cached time is very old.
-        if ($current < (time() - DAYSECS)) {
-            debugging("\nHEARTBEAT doing {$type} ping {$current}\n", DEBUG_DEVELOPER);
-            set_config($key, time(), 'tool_heartbeat');
+        if ($currentcache < ($time - DAYSECS)) {
+            debugging("\nHEARTBEAT doing {$type} ping\n", DEBUG_DEVELOPER);
+            self::set_cache_ping_value($type, $time);
+
+            // Read back the cached value immediately after setting it.
+            // This should help detect any cache replication delays.
+            $readbackvalue = self::get_cache_ping_value($type);
+
+            if (get_config('tool_heartbeat', 'shouldlogcacheping')) {
+                lib::record_cache_pinged($currentcache, $currentdb, $time, $readbackvalue, $type);
+            }
         }
     }
 }

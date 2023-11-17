@@ -95,5 +95,27 @@ if ($hassiteconfig) {
         $settings->add(new admin_setting_configtextarea('tool_heartbeat/tasklatencymonitoring',
                 get_string('tasklatencymonitoring', 'tool_heartbeat'),
                 get_string('tasklatencymonitoring_desc', 'tool_heartbeat', $example), '', PARAM_TEXT));
+
+        // Cache consistency check settings.
+        $settings->add(new admin_setting_heading('tool_heartbeat/cachechecksettings',
+            get_string('settings:cachecheckheading', 'tool_heartbeat'),
+            ''
+        ));
+
+        $settings->add(new admin_setting_configcheckbox('tool_heartbeat/shouldlogcacheping',
+            get_string('settings:shouldlogcacheping:heading', 'tool_heartbeat'),
+            get_string('settings:shouldlogcacheping:desc', 'tool_heartbeat'),
+            // Since pinging only happens usually once every 24 hrs, we default this on as it is quite lightweight.
+            1
+        ));
+
+        $settings->add(new admin_setting_configcheckbox('tool_heartbeat/shouldlogcachecheck',
+            get_string('settings:shouldlogcachecheck:heading', 'tool_heartbeat'),
+            get_string('settings:shouldlogcachecheck:desc', 'tool_heartbeat'),
+            // This happens every time the check api cachecheck is called, which is a lot more often than pinging.
+            // For e.g. with external monitoring, it could be once or more per minute.
+            // So its defaulted to off unless turned on for specific debugging.
+            0
+        ));
     }
 }
