@@ -16,6 +16,8 @@
 
 namespace tool_heartbeat;
 
+use Throwable;
+
 /**
  * General functions for use with heartbeat.
  *
@@ -59,4 +61,44 @@ class lib {
             send_unknown($msg);
         }
     }
+
+    /**
+     * Records that the cache was pinged. This is useful for cache debugging.
+     * @param int $previousincache
+     * @param int $previousindb
+     * @param int $newvalueset the value that the cache was set to
+     * @param int $readbackvalue the value read back from the cache immediately after it was set.
+     * @param string $where cron or web
+     */
+    public static function record_cache_pinged(int $previousincache, int $previousindb, int $newvalueset, int $readbackvalue,
+        string $where) {
+        $details = [
+                'previousvalueindb' => $previousindb,
+                'previousvalueincache' => $previousincache,
+                'newvalueincache' => $newvalueset,
+                'cachedvalueimmediatelyafterwrite' => $readbackvalue,
+                'where' => $where,
+        ];
+        // @codingStandardsIgnoreStart
+        error_log("Heartbeat cache was updated/pinged: " . json_encode($details));
+        // @codingStandardsIgnoreEnd
+    }
+
+    /**
+     * Records that the cache was checked. This is used for debugging cache mismatches
+     * @param int $valueincache
+     * @param int $valueindb
+     * @param string $where web or cron
+     */
+    public static function record_cache_checked(int $valueincache, int $valueindb, string $where) {
+        $details = [
+                'valueindb' => $valueindb,
+                'valueincache' => $valueincache,
+                'where' => $where,
+        ];
+        // @codingStandardsIgnoreStart
+        error_log("Heartbeat cache was checked: " . json_encode($details));
+        // @codingStandardsIgnoreEnd
+    }
 }
+
