@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 $tasks = [
     [
         'classname' => 'tool_heartbeat\task\cachecheck',
-        'minute' => '*',
+        'minute' => '0',
         'hour' => '*/8',
         'day' => '*',
         'dayofweek' => '*',
