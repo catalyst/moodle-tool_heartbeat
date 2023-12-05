@@ -86,6 +86,7 @@ $string['checktasklatencycheck'] = 'Task latency check';
 $string['taskconfigbad'] = 'Bad configurations {$a}';
 $string['tasklatencyok'] = 'Task latency OK.';
 $string['checkfailingtaskcheck'] = 'Failing tasks';
+$string['checkdirsizes'] = 'CFG->dataroot size';
 
 /*
  * Privacy provider (GDPR)
