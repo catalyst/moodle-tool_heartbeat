@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023102401;
-$plugin->release   = 2023102401; // Match release exactly to version.
+$plugin->version   = 2023102402;
+$plugin->release   = 2023102402; // Match release exactly to version.
 $plugin->requires  = 2012120311; // Deep support going back to 2.4.
 $plugin->supported = [24, 401];
 $plugin->component = 'tool_heartbeat';

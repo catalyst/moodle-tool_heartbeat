@@ -85,12 +85,12 @@ $string['latencyruntime'] = 'Task {$a->task} was last run with a runtime longer 
 $string['checktasklatencycheck'] = 'Task latency check';
 $string['taskconfigbad'] = 'Bad configurations {$a}';
 $string['tasklatencyok'] = 'Task latency OK.';
-
 $string['settings:cachecheckheading'] = 'Cache consistency check';
 $string['settings:shouldlogcacheping:heading'] = 'Log cache ping';
 $string['settings:shouldlogcacheping:desc'] = 'If enabled, whenever the cache ping is updated (usually once every 24 hrs), a <code>cache_ping</code> event will be triggered';
 $string['settings:shouldlogcachecheck:heading'] = 'Log cache check';
 $string['settings:shouldlogcachecheck:desc'] = 'If enabled, whenever the cache ping is checked (whenever the <code>cachecheck</code> check is executed) a <code>cache_check</code> event will be triggered';
+$string['checkdirsizes'] = 'CFG->dataroot size';
 
 /*
  * Privacy provider (GDPR)

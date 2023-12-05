@@ -52,6 +52,7 @@ function tool_heartbeat_status_checks() {
 function tool_heartbeat_performance_checks() {
     return [
         new \tool_heartbeat\check\rangerequestcheck(),
+        new \tool_heartbeat\check\dirsizes(),
     ];
 }
 
