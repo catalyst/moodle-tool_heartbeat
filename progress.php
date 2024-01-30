@@ -23,6 +23,10 @@
  */
 define('NO_OUTPUT_BUFFERING', true); // Progress bar is used here.
 
+if (isset($argv)) {
+    define('CLI_SCRIPT', true);
+}
+
 // @codingStandardsIgnoreStart
 require(__DIR__ . '/../../../config.php');
 // @codingStandardsIgnoreEnd
@@ -35,7 +39,7 @@ $PAGE->set_context($syscontext);
 $PAGE->set_cacheable(false);
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('progress', 'tool_heartbeat'));
-echo get_string('progresshelp', 'tool_heartbeat');
+echo $OUTPUT->paragraph(get_string('progresshelp', 'tool_heartbeat'));
 $progressbar = new progress_bar();
 $progressbar->create();
 echo $OUTPUT->footer();
