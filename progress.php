@@ -23,11 +23,12 @@
  */
 define('NO_OUTPUT_BUFFERING', true); // Progress bar is used here.
 
+// @codingStandardsIgnoreStart
+// Ignore expected config.php inclusion for $argv as CLI_SCRIPT must be defined first.
 if (isset($argv)) {
     define('CLI_SCRIPT', true);
 }
-
-// @codingStandardsIgnoreStart
+// Ignore expected login check.
 require(__DIR__ . '/../../../config.php');
 // @codingStandardsIgnoreEnd
 
