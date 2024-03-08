@@ -37,12 +37,16 @@ class failingtaskcheck extends check {
     /** @var int $errorthreshold Threshold in minutes after which should error about tasks failing **/
     public $errorthreshold = 600;
 
+    /** @var \stdClass $task Record of task that is failing **/
+    private $task;
+
     /**
      * Constructor
      */
-    public function __construct() {
+    public function __construct($task = null) {
         $this->id = 'cronfailingtasks';
         $this->name = get_string('checkfailingtaskcheck', 'tool_heartbeat');
+        $this->task = $task;
 
         $this->actionlink = new \action_link(
             new \moodle_url('/admin/tasklogs.php'),
@@ -56,72 +60,90 @@ class failingtaskcheck extends check {
     public function get_result() : result {
         global $DB;
 
-        $taskoutputs = [];
+        // Return OK if no task errors.
+        if (!isset($this->task)) {
+            $count = $DB->count_records_sql("SELECT COUNT(*) FROM {task_scheduled} WHERE faildelay = 0 AND disabled = 0");
+            return new result(result::OK, get_string('checkfailingtaskok', 'tool_heartbeat', $count), '');
+        }
+
+        // Find the largest faildelay out of both adhoc and scheduled tasks.
+        $maxdelaymins = !empty($this->task->faildelay) ? $this->task->faildelay / 60 : 0;
+
+        // Default to ok.
+        $status = result::OK;
+
+        // Check if warn - if so then upgrade to warn.
+        if ($maxdelaymins > $this->warnthreshold) {
+            $status = result::WARNING;
+        }
+
+        // Check if error - if so then upgrade to error.
+        if ($maxdelaymins > $this->errorthreshold) {
+            $status = result::ERROR;
+        }
+
+        return new result($status, $this->task->message, '');
+    }
+
+    /**
+     * Get the short check name
+     *
+     * @return string
+     */
+    public function get_name(): string {
+        $name = parent::get_name();
+        if (!isset($this->task)) {
+            return $name;
+        }
+        return get_string('checkfailingtaskchecktask', 'tool_heartbeat', $this->task->classname);
+    }
+
+    /**
+     * Get the check reference.
+     * If this check is on a specific task, use the task classname.
+     *
+     * @return string must be globally unique
+     */
+    public function get_ref(): string {
+        if (!isset($this->task)) {
+            return parent::get_ref();
+        }
+        // Format nicely to use as a query param.
+        return trim(str_replace('\\', '_', $this->task->classname), '_');
+    }
+
+    /**
+     * Gets an array of all failing tasks, stored as \stdClass.
+     *
+     * @return array of failing tasks
+     */
+    public static function get_failing_tasks(): array {
+        GLOBAL $DB;
+        $tasks = [];
 
         // Instead of using task API here, we read directly from the database.
         // This stops errors originating from broken tasks.
         $scheduledtasks = $DB->get_records_sql("SELECT * FROM {task_scheduled} WHERE faildelay > 0 AND disabled = 0");
 
         foreach ($scheduledtasks as $task) {
-            $taskoutputs[] = "SCHEDULED TASK: {$task->classname} Delay: {$task->faildelay}\n";
+            $task->message = "SCHEDULED TASK: {$task->classname} Delay: {$task->faildelay}\n";
+            $tasks[] = new \tool_heartbeat\check\failingtaskcheck($task);
         }
 
         // Instead of using task API here, we read directly from the database.
         // This stops errors originating from broken tasks, and allows the DB to de-duplicate them.
         $adhoctasks = $DB->get_records_sql("  SELECT classname, COUNT(*) count, MAX(faildelay) faildelay, SUM(faildelay) cfaildelay
-                                               FROM {task_adhoc}
-                                              WHERE faildelay > 0
-                                           GROUP BY classname
-                                           ORDER BY cfaildelay DESC");
+                                                FROM {task_adhoc}
+                                               WHERE faildelay > 0
+                                            GROUP BY classname
+                                            ORDER BY cfaildelay DESC");
 
         foreach ($adhoctasks as $record) {
             // Only add duplicate message if there are more than 1.
             $duplicatemsg = $record->count > 1 ? " ({$record->count} duplicates!!!)" : '';
-            $taskoutputs[] = "ADHOC TASK: {$record->classname} Delay: {$record->faildelay} {$duplicatemsg}\n";
+            $record->message = "ADHOC TASK: {$record->classname} Delay: {$record->faildelay} {$duplicatemsg}\n";
+            $tasks[] = new \tool_heartbeat\check\failingtaskcheck($record);
         }
-
-        // Find the largest faildelay out of both adhoc and scheduled tasks.
-        $alldelays = array_merge(array_column($adhoctasks, 'faildelay'), array_column($scheduledtasks, 'faildelay'));
-        $maxdelaymins = !empty($alldelays) ? max($alldelays) / 60 : 0;
-
-        // Define a simple function to work out what the message should be based on the task outputs.
-        // Returns the [$summary, $details].
-        $taskoutputfn = function($faildelaymins) use ($taskoutputs) {
-            $count = count($taskoutputs);
-
-            if ($count == 1) {
-                // Only a single task is failing, so put it at the top level.
-                return [$taskoutputs[0], ''];
-            }
-
-            if ($count > 1) {
-                // More than 1, add a message at the start that indicates how many.
-                return ["{$count} Moodle tasks reported errors, maximum faildelay > {$faildelaymins} mins", implode("", $taskoutputs)];
-            }
-
-            // There are 0 tasks are failing, default to nothing.
-            return ['', ''];
-        };
-
-        // Default to ok.
-        $status = result::OK;
-        $delay = 0;
-
-        // Check if warn - if so then upgrade to warn.
-        if ($maxdelaymins > $this->warnthreshold) {
-            $status = result::WARNING;
-            $delay = $this->warnthreshold;
-        }
-
-        // Check if error - if so then upgrade to error.
-        if ($maxdelaymins > $this->errorthreshold) {
-            $status = result::ERROR;
-            $delay = $this->errorthreshold;
-        }
-
-        list($summary, $details) = $taskoutputfn($delay);
-
-        return new result($status, nl2br($summary), nl2br($details));
-
+        return $tasks;
     }
 }
