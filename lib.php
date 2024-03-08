@@ -36,13 +36,15 @@ function tool_heartbeat_before_http_headers() {
  * @return array
  */
 function tool_heartbeat_status_checks() {
-    return [
+    $checks = [
         new \tool_heartbeat\check\authcheck(),
         new \tool_heartbeat\check\cachecheck(),
         new \tool_heartbeat\check\logstorecheck(),
         new \tool_heartbeat\check\tasklatencycheck(),
         new \tool_heartbeat\check\failingtaskcheck(),
     ];
+    $taskchecks = \tool_heartbeat\check\failingtaskcheck::get_failing_tasks();
+    return array_merge($checks, $taskchecks);
 }
 
 /**

@@ -86,6 +86,8 @@ $string['checktasklatencycheck'] = 'Task latency check';
 $string['taskconfigbad'] = 'Bad configurations {$a}';
 $string['tasklatencyok'] = 'Task latency OK.';
 $string['checkfailingtaskcheck'] = 'Failing tasks';
+$string['checkfailingtaskchecktask'] = 'Failing task: {$a}';
+$string['checkfailingtaskok'] = '{$a} tasks running OK.';
 $string['checkdirsizes'] = 'CFG->dataroot size';
 
 $string['settings:cachecheckheading'] = 'Cache consistency check';
