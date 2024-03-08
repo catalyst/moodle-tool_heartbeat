@@ -26,9 +26,19 @@ defined('MOODLE_INTERNAL') || die;
 
 if ($hassiteconfig) {
 
-    $settings = new admin_settingpage('tool_heartbeat', get_string('pluginname', 'tool_heartbeat'));
+    $category = new admin_category('heartbeatfolder', get_string('pluginname', 'tool_heartbeat'));
+    $ADMIN->add('tools', $category);
 
-    $ADMIN->add('tools', $settings);
+    $statuspage = new admin_externalpage(
+        'tool_heartbeat_status',
+        get_string('pluginname', 'report_status'),
+        new moodle_url('/admin/tool/heartbeat/status.php')
+    );
+    $ADMIN->add('heartbeatfolder', $statuspage);
+
+    $settings = new admin_settingpage('tool_heartbeat', get_string('settings'));
+    $ADMIN->add('heartbeatfolder', $settings);
+
     if (!during_initial_install()) {
 
         $options = array(
@@ -90,6 +100,10 @@ if ($hassiteconfig) {
         $settings->add(new admin_setting_configselect('tool_heartbeat/errorcritical',
                 get_string('errorascritical', 'tool_heartbeat'),
                 get_string('errorascritical_desc', 'tool_heartbeat', $time->format('e P')), 'warning', $opts));
+
+        $settings->add(new admin_setting_configduration('tool_heartbeat/mutedefault',
+            get_string('settings:mutedefault', 'tool_heartbeat'),
+            get_string('settings:mutedefault:desc', 'tool_heartbeat'), 12 * WEEKSECS, WEEKSECS));
 
         $example = '\logstore_standard\task\cleanup_task, 5, 5, 5';
         $settings->add(new admin_setting_configtextarea('tool_heartbeat/tasklatencymonitoring',

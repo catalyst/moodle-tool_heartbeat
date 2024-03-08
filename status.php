@@ -15,18 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * System Status report
  *
  * @package    tool_heartbeat
- * @copyright  2017 Brendan Heywood <brendan@catalyst-au.net>
+ * @copyright  2023 Owen Herbert (owenherbert@catalyst-au.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+use tool_heartbeat\table\status_table;
 
-$plugin->version   = 2024030800;
-$plugin->release   = 2024030800; // Match release exactly to version.
-$plugin->requires  = 2020061500; // Support for 3.9 and above, due to the Check API.
-$plugin->supported = [39, 401];
-$plugin->component = 'tool_heartbeat';
-$plugin->maturity  = MATURITY_STABLE;
+define('NO_OUTPUT_BUFFERING', true);
+
+require('../../../config.php');
+require_once($CFG->libdir.'/adminlib.php');
+
+admin_externalpage_setup('tool_heartbeat_status', '', null, '', ['pagelayout' => 'report']);
+
+$url = '/admin/tool/heartbeat/status.php';
+$table = new status_table('status', $url);
+
+echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('pluginname', 'report_status'));
+echo $table->render($OUTPUT);
+echo $OUTPUT->footer();
