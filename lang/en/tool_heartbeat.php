@@ -89,6 +89,16 @@ $string['checkfailingtaskcheck'] = 'Failing tasks';
 $string['checkfailingtaskchecktask'] = 'Failing task: {$a}';
 $string['checkfailingtaskok'] = '{$a} tasks running OK.';
 $string['checkdirsizes'] = 'CFG->dataroot size';
+$string['mute'] = 'Mute';
+$string['unmute'] = 'Unmute';
+$string['expiresat'] = 'Muted until';
+$string['override'] = 'Display status';
+$string['addmute'] = 'Add mute';
+$string['editmute'] = 'Edit mute';
+$string['overriderestore'] = 'Fields have been pre-filled with information from a previous override.';
+$string['noterequired'] = 'Please add some notes';
+$string['settings:mutedefault'] = 'Default mute duration';
+$string['settings:mutedefault:desc'] = 'Adjust the default duration of a check mute.';
 
 $string['settings:cachecheckheading'] = 'Cache consistency check';
 $string['settings:shouldlogcacheping:heading'] = 'Log cache ping';
@@ -99,4 +109,10 @@ $string['settings:shouldlogcachecheck:desc'] = 'If enabled, whenever the cache p
 /*
  * Privacy provider (GDPR)
  */
-$string["privacy:no_data_reason"] = "The Heartbeat plugin does not store any personal data.";
+$string['privacy:metadata:tool_heartbeat_overrides'] = 'Heartbeat Overrides';
+$string['privacy:metadata:tool_heartbeat_overrides:note'] = 'Override note added by user';
+$string['privacy:metadata:tool_heartbeat_overrides:url'] = 'Override URL added by user';
+$string['privacy:metadata:tool_heartbeat_overrides:userid'] = 'User who created the override';
+$string['privacy:metadata:tool_heartbeat_overrides:usermodified'] = 'User who modified the override';
+$string['privacy:metadata:tool_heartbeat_overrides:timecreated'] = 'Timestamp when the override was created';
+$string['privacy:metadata:tool_heartbeat_overrides:timemodified'] = 'Timestamp when the override was modified';

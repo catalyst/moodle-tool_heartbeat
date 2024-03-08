@@ -57,9 +57,7 @@ class checker {
         }
 
         // Remove any supressed checks from the list.
-        $checks = array_filter($checks, function($check) {
-            return !in_array(get_class($check), self::supressed_checks());
-        });
+        $checks = self::remove_supressed_checks($checks);
 
         // Execute each check and store their messages.
         $messages = [];
@@ -132,7 +130,7 @@ class checker {
     private static function process_check_and_get_result(check $check): resultmessage {
         $res = new resultmessage();
 
-        $checkresult = $check->get_result();
+        $checkresult = self::get_overridden_result($check);
 
         // Map check result to nagios level.
         $map = [
@@ -297,5 +295,32 @@ class checker {
             \tool_task\check\adhocqueue::class,
         ];
     }
-}
 
+    /**
+     * Removes supressed checks from an array
+     * @param array $checks
+     * @return array of checks without supressed checks
+     */
+    public static function remove_supressed_checks(array $checks): array {
+        // Remove any supressed checks from the list.
+        return array_filter($checks, function($check) {
+            return !in_array(get_class($check), self::supressed_checks());
+        });
+    }
+
+    /**
+     * Gets a check result while applying specified overrides.
+     * @param check $check
+     * @return result with overrides
+     */
+    public static function get_overridden_result(check $check): result {
+        $ref = $check->get_ref();
+        $result = $check->get_result();
+
+        $override = \tool_heartbeat\object\override::get_active_override($ref);
+        if (isset($override)) {
+            return new result($override->get('override'), $result->get_summary(), $result->get_details());
+        }
+        return $result;
+    }
+}
