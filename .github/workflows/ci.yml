@@ -12,6 +12,5 @@ jobs:
       # Any further options in this section
       disable_behat: true
       disable_grunt: true
-      disable_release: true
       disable_phplint: true
       disable_phpdoc: true
