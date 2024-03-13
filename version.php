@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2024030800;
-$plugin->release   = 2024030800; // Match release exactly to version.
+$plugin->version   = 2024031400;
+$plugin->release   = 2024031400; // Match release exactly to version.
 $plugin->requires  = 2020061500; // Support for 3.9 and above, due to the Check API.
 $plugin->supported = [39, 401];
 $plugin->component = 'tool_heartbeat';
