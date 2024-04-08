@@ -25,6 +25,9 @@
  * Runs before HTTP headers. Used to ping the cachecheck.
  */
 function tool_heartbeat_before_http_headers() {
+    if (defined('BEHAT_SITE_RUNNING')) {
+        return;
+    }
     if (class_exists('\core\check\manager')) {
         \tool_heartbeat\check\cachecheck::ping('web');
     }
