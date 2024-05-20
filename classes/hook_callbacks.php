@@ -14,19 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace tool_heartbeat;
+
 /**
- * Version details.
+ * Hook callbacks for tool_heartbeat.
  *
- * @package    tool_heartbeat
- * @copyright  2017 Brendan Heywood <brendan@catalyst-au.net>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_heartbeat
+ * @author    Benjamin Walker (benjaminwalker@catalyst-au.net)
+ * @copyright 2024 Catalyst IT
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class hook_callbacks {
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2024052000;
-$plugin->release   = 2024052000; // Match release exactly to version.
-$plugin->requires  = 2020061500; // Support for 3.9 and above, due to the Check API.
-$plugin->supported = [39, 404];
-$plugin->component = 'tool_heartbeat';
-$plugin->maturity  = MATURITY_STABLE;
+    /**
+     * Runs before HTTP headers. Used to ping the cachecheck.
+     *
+     * @param \core\hook\output\before_http_headers $hook
+     */
+    public static function before_http_headers(\core\hook\output\before_http_headers $hook): void {
+        if (class_exists('\core\check\manager')) {
+            \tool_heartbeat\check\cachecheck::ping('web');
+        }
+    }
+}
