@@ -23,6 +23,9 @@
 
 /**
  * Runs before HTTP headers. Used to ping the cachecheck.
+ *
+ * This is a legacy callback that is used for compatibility with older Moodle versions.
+ * Moodle 4.4+ will use tool_heartbeat\hook_callbacks::before_http_headers instead.
  */
 function tool_heartbeat_before_http_headers() {
     if (class_exists('\core\check\manager')) {
