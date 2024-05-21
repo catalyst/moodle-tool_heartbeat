@@ -44,13 +44,18 @@ class failingtaskcheck extends check {
      * Constructor
      */
     public function __construct($task = null) {
-        $this->id = 'cronfailingtasks';
-        $this->name = get_string('checkfailingtaskcheck', 'tool_heartbeat');
         $this->task = $task;
 
-        $this->actionlink = new \action_link(
-            new \moodle_url('/admin/tasklogs.php'),
-            get_string('tasklogs', 'tool_task'));
+    }
+
+    /**
+     * A link to check task logs
+     *
+     * @return \action_link|null
+     */
+    public function get_action_link(): ?\action_link {
+        $url = new \moodle_url('/admin/tasklogs.php');
+        return new \action_link($url, get_string('tasklogs', 'tool_task'));
     }
 
     /**
