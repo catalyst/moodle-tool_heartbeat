@@ -174,12 +174,13 @@ class cachecheck extends check {
 
         // Only update if the currently cached time is very old.
         if ($currentcache < ($time - DAYSECS)) {
-            debugging("\nHEARTBEAT doing {$type} ping\n", DEBUG_DEVELOPER);
             self::set_cache_ping_value($type, $time);
 
             // Read back the cached value immediately after setting it.
             // This should help detect any cache replication delays.
             $readbackvalue = self::get_cache_ping_value($type);
+
+            debugging("\nHEARTBEAT doing {$type} ping\n", DEBUG_DEVELOPER);
 
             if (get_config('tool_heartbeat', 'shouldlogcacheping')) {
                 lib::record_cache_pinged($currentcache, $currentdb, $time, $readbackvalue, $type);
