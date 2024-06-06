@@ -14,3 +14,4 @@ jobs:
       disable_grunt: true
       disable_phplint: true
       disable_phpdoc: true
+      ignore_paths: errors
