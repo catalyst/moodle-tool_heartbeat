@@ -28,6 +28,9 @@
  * Moodle 4.4+ will use tool_heartbeat\hook_callbacks::before_http_headers instead.
  */
 function tool_heartbeat_before_http_headers() {
+    if (defined('BEHAT_SITE_RUNNING')) {
+        return;
+    }
     if (class_exists('\core\check\manager')) {
         \tool_heartbeat\check\cachecheck::ping('web');
     }
