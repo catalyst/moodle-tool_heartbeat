@@ -105,6 +105,7 @@ $string['settings:shouldlogcacheping:heading'] = 'Log cache ping';
 $string['settings:shouldlogcacheping:desc'] = 'If enabled, whenever the cache ping is updated (usually once every 24 hrs), a <code>cache_ping</code> event will be triggered';
 $string['settings:shouldlogcachecheck:heading'] = 'Log cache check';
 $string['settings:shouldlogcachecheck:desc'] = 'If enabled, whenever the cache ping is checked (whenever the <code>cachecheck</code> check is executed) a <code>cache_check</code> event will be triggered';
+$string['systemstatus'] = 'Heartbeat system status';
 
 /*
  * Privacy provider (GDPR)
