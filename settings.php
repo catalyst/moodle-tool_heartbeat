@@ -34,7 +34,7 @@ if ($hassiteconfig) {
         get_string('systemstatus', 'tool_heartbeat'),
         new moodle_url('/admin/tool/heartbeat/status.php')
     );
-    $ADMIN->add('heartbeatfolder', $statuspage);
+    $ADMIN->add('reports', $statuspage);
 
     $settings = new admin_settingpage('tool_heartbeat', get_string('settings'));
     $ADMIN->add('heartbeatfolder', $settings);
