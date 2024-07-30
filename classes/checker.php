@@ -289,10 +289,9 @@ class checker {
      */
     private static function supressed_checks(): array {
         return [
-            // These two supressed and replaced by a more detailed/useful version in this plugin.
+            // This task is supressed and replaced by a more detailed/useful version in this plugin.
             // See failingtaskcheck.php.
             \tool_task\check\maxfaildelay::class,
-            \tool_task\check\adhocqueue::class,
         ];
     }
 
