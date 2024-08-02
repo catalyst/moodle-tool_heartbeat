@@ -25,6 +25,7 @@
 
 namespace tool_heartbeat\object;
 
+use core\check\result;
 use core\persistent;
 
 /**
@@ -45,6 +46,7 @@ class override extends Persistent {
      */
 
     public function __construct(int $id = 0, \stdClass $record = null) {
+        $this->set_default_status();
         $this->set_default_expiry();
         parent::__construct($id, $record);
     }
@@ -97,6 +99,18 @@ class override extends Persistent {
     private function set_default_expiry() {
         $expiredate = date('Y-m-d', time() + (int) get_config('tool_heartbeat', 'mutedefault'));
         $this->set('expires_at', strtotime($expiredate));
+    }
+
+    /**
+     * Sets the default override status
+     *
+     * @return void
+     */
+    private function set_default_status() {
+        $defaultstatus = get_config('tool_heartbeat', 'mutedefaultstatus');
+        if (!empty($defaultstatus)) {
+            $this->set('override', $defaultstatus);
+        }
     }
 
     /**
@@ -203,5 +217,25 @@ class override extends Persistent {
         $enddate = userdate($this->get('expires_at'), get_string('strftimedate', 'langconfig'));
         $remainingtime = format_time($this->get('expires_at') - time());
         return "$enddate ($remainingtime)";
+    }
+
+    /**
+     * Returns an array of statuses that can be used as an override
+     *
+     * @return array of status
+     */
+    public static function get_status_list(): array {
+        // Moodle 3.9-3.11 sites that haven't backported MDL-71627 will be missing 'statusunknown'.
+        $unknown = (moodle_major_version() < '4.0') ? get_string('statusunknown', 'tool_heartbeat') : get_string('statusunknown');
+
+        return [
+            result::NA => get_string('statusna'),
+            result::OK => get_string('statusok'),
+            result::INFO => get_string('statusinfo'),
+            result::UNKNOWN => $unknown,
+            result::WARNING => get_string('statuswarning'),
+            result::CRITICAL => get_string('statuscritical'),
+            result::ERROR => get_string('statuserror'),
+        ];
     }
 }
