@@ -105,6 +105,16 @@ if ($hassiteconfig) {
             get_string('settings:mutedefault', 'tool_heartbeat'),
             get_string('settings:mutedefault:desc', 'tool_heartbeat'), 12 * WEEKSECS, WEEKSECS));
 
+        $statuslist = tool_heartbeat\object\override::get_status_list();
+        reset($statuslist);
+        $settings->add(new admin_setting_configselect('tool_heartbeat/mutedefaultstatus',
+            get_string('settings:mutedefaultstatus', 'tool_heartbeat'),
+            get_string('settings:mutedefaultstatus:desc', 'tool_heartbeat'), key($statuslist), $statuslist));
+
+        $settings->add(new admin_setting_configtext('tool_heartbeat/muteurlregex',
+            get_string('settings:muteurlregex', 'tool_heartbeat'),
+            get_string('settings:muteurlregex:desc', 'tool_heartbeat'), '', PARAM_TEXT));
+
         $example = '\logstore_standard\task\cleanup_task, 5, 5, 5';
         $settings->add(new admin_setting_configtextarea('tool_heartbeat/tasklatencymonitoring',
                 get_string('tasklatencymonitoring', 'tool_heartbeat'),

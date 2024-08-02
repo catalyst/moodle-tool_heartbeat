@@ -24,8 +24,8 @@
 
 namespace tool_heartbeat\form;
 
-use core\check\result;
 use core\form\persistent;
+use tool_heartbeat\object\override;
 
 /**
  * Override form
@@ -50,15 +50,7 @@ class override_form extends persistent {
         $mform->setConstant('ref', $this->_customdata['ref']);
 
         // Override.
-        $mform->addElement('select', 'override', get_string('override', 'tool_heartbeat'), [
-            result::NA => get_string('statusna'),
-            result::OK => get_string('statusok'),
-            result::INFO => get_string('statusinfo'),
-            result::UNKNOWN => get_string('statusunknown'),
-            result::WARNING => get_string('statuswarning'),
-            result::CRITICAL => get_string('statuscritical'),
-            result::ERROR => get_string('statuserror'),
-        ]);
+        $mform->addElement('select', 'override', get_string('override', 'tool_heartbeat'), override::get_status_list());
 
         // Note.
         $mform->addElement('textarea', 'note', get_string('notes', 'core_notes'), ['rows' => 3]);
@@ -67,6 +59,13 @@ class override_form extends persistent {
         // URL.
         $mform->addElement('text', 'url', get_string('url'), ['size' => 80]);
         $mform->setType('url', PARAM_URL);
+        $urlregex = get_config('tool_heartbeat', 'muteurlregex');
+        if (!empty($urlregex)) {
+            $urlregex = stripslashes($urlregex);
+            $mform->addRule('url', get_string('required'), 'required', null, 'client');
+            $mform->addRule('url', get_string('muteurlregex', 'tool_heartbeat', $urlregex), 'regex', $urlregex, 'client');
+            $mform->addElement('static', 'url_help', '', get_string('muteurlregex', 'tool_heartbeat', $urlregex));
+        }
 
         // Override until.
         $mform->addElement('date_selector', 'expires_at', get_string('expiresat', 'tool_heartbeat'));
