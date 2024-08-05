@@ -61,10 +61,11 @@ class override_form extends persistent {
         $mform->setType('url', PARAM_URL);
         $urlregex = get_config('tool_heartbeat', 'muteurlregex');
         if (!empty($urlregex)) {
-            $urlregex = stripslashes($urlregex);
+            // Strip backslashes and remove delimiters from the regex display.
+            $urlregexdisplay = substr(stripslashes($urlregex), 1, -1);
             $mform->addRule('url', get_string('required'), 'required', null, 'client');
-            $mform->addRule('url', get_string('muteurlregex', 'tool_heartbeat', $urlregex), 'regex', $urlregex, 'client');
-            $mform->addElement('static', 'url_help', '', get_string('muteurlregex', 'tool_heartbeat', $urlregex));
+            $mform->addRule('url', get_string('muteurlregex', 'tool_heartbeat', $urlregexdisplay), 'regex', $urlregex, 'client');
+            $mform->addElement('static', 'url_help', '', get_string('muteurlregex', 'tool_heartbeat', $urlregexdisplay));
         }
 
         // Override until.
