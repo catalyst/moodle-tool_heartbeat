@@ -52,6 +52,8 @@ echo $OUTPUT->heading('Tests for all errors in the whole stack');
 
 <h3>PHP level errors and setup</h3>
 <p>These are errors are awkward to theme because they can appear in the middle of a themed page</p>
+<li>A 200 page which emits a notice and a warning
+    <a href='errors/phpwarnings.php'>phpwarnings.php</a></li>
 <li>A 200 unthemed moodle script which 'Fatal errors' times out after 1 second
     <a href='errors/moodletimeout.php'>moodletimeout.php</a></li>
 <li>A 200 unthemed moodle script which 'Fatal errors' times out after exceding memory
