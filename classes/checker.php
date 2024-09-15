@@ -135,6 +135,7 @@ class checker {
         // Map check result to nagios level.
         $map = [
             result::OK => resultmessage::LEVEL_OK,
+            result::INFO => resultmessage::LEVEL_OK,
             result::NA => resultmessage::LEVEL_OK,
             result::WARNING => resultmessage::LEVEL_WARN,
             result::CRITICAL => resultmessage::LEVEL_CRITICAL,
