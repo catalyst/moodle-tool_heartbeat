@@ -39,6 +39,17 @@ class checker {
         3 => "UNKNOWN",
     ];
 
+    /** @var array Map check result to nagios level **/
+    public const RESULT_MAPPING = [
+        result::OK => resultmessage::LEVEL_OK,
+        result::INFO => resultmessage::LEVEL_OK,
+        result::NA => resultmessage::LEVEL_OK,
+        result::WARNING => resultmessage::LEVEL_WARN,
+        result::CRITICAL => resultmessage::LEVEL_CRITICAL,
+        result::ERROR => resultmessage::LEVEL_CRITICAL,
+        result::UNKNOWN => resultmessage::LEVEL_UNKNOWN,
+    ];
+
     /**
      * Returns an array of check API messages.
      * If exceptions are thrown, they are caught and returned as result messages as well.
@@ -133,15 +144,7 @@ class checker {
         $checkresult = self::get_overridden_result($check);
 
         // Map check result to nagios level.
-        $map = [
-            result::OK => resultmessage::LEVEL_OK,
-            result::INFO => resultmessage::LEVEL_OK,
-            result::NA => resultmessage::LEVEL_OK,
-            result::WARNING => resultmessage::LEVEL_WARN,
-            result::CRITICAL => resultmessage::LEVEL_CRITICAL,
-            result::ERROR => resultmessage::LEVEL_CRITICAL,
-            result::UNKNOWN => resultmessage::LEVEL_UNKNOWN,
-        ];
+        $map = self::RESULT_MAPPING;
 
         // Get the level, or default to unknown.
         $status = $checkresult->get_status();
@@ -318,9 +321,18 @@ class checker {
         $result = $check->get_result();
 
         $override = \tool_heartbeat\object\override::get_active_override($ref);
-        if (isset($override)) {
-            return new result($override->get('override'), $result->get_summary(), $result->get_details());
+        if (!isset($override)) {
+            return $result;
         }
-        return $result;
+
+        // Mutes should only be able to lower the level.
+        $map = self::RESULT_MAPPING;
+        $status = $override->get('override');
+        if ($map[$status] > $map[$result->get_status()]) {
+            // Don't automatically resolve the override as some checks may fail sporadically.
+            return $result;
+        }
+
+        return new result($status, $result->get_summary(), $result->get_details());
     }
 }

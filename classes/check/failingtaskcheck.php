@@ -123,7 +123,7 @@ class failingtaskcheck extends check {
      * @return array of failing tasks
      */
     public static function get_failing_tasks(): array {
-        GLOBAL $DB;
+        global $DB;
         $tasks = [];
 
         // Instead of using task API here, we read directly from the database.
