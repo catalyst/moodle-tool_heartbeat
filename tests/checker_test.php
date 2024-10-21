@@ -110,7 +110,7 @@ class checker_test extends \advanced_testcase {
         $criticalmsg->level = resultmessage::LEVEL_CRITICAL;
         $criticalmsg->title = "test CRITICAL title";
 
-        // Pipes should be cleaned from output and replaced with [pipe]
+        // Pipes should be cleaned from output and replaced with [pipe].
         $criticalwithpipemsg = new resultmessage();
         $criticalwithpipemsg->level = resultmessage::LEVEL_CRITICAL;
         $criticalwithpipemsg->title = "test CRITICAL title |";

@@ -142,7 +142,7 @@ if ($hassiteconfig) {
             0
         ));
 
-        // Failed task settings
+        // Failed task settings.
         $settings->add(new admin_setting_heading('tool_heartbeat/failedtaskchecksettings',
             get_string('settings:failedtaskcheckheadings', 'tool_heartbeat'),
             ''
@@ -157,7 +157,7 @@ if ($hassiteconfig) {
             )
         );
 
-        // List of allowed tasks
+        // List of allowed tasks.
         $settings->add(
             new admin_setting_configtextarea(
                 'tool_heartbeat/failedtasks_allowlist',
