@@ -40,11 +40,19 @@ class failingtaskcheck extends check {
     /** @var \stdClass $task Record of task that is failing **/
     private $task;
 
+    /** @var string[] $allowlist List of classnames we are allowed to check  */
+    private $allowlist = [];
+
+    /** @var bool $allowlistchecking Should we validate if the task classname is in the passed in allow list configuration when checking if it failed */
+    private $allowlistchecking = false;
+
     /**
      * Constructor
      */
-    public function __construct($task = null) {
+    public function __construct($task = null, $allowlistchecking = false, $allowlist = []) {
         $this->task = $task;
+        $this->allowlist = $allowlist;
+        $this->allowlistchecking = $allowlistchecking;
 
     }
 
@@ -69,6 +77,11 @@ class failingtaskcheck extends check {
         if (!isset($this->task)) {
             $count = $DB->count_records_sql("SELECT COUNT(*) FROM {task_scheduled} WHERE faildelay = 0 AND disabled = 0");
             return new result(result::OK, get_string('checkfailingtaskok', 'tool_heartbeat', $count), '');
+        }
+
+        // If allow list behaviour is enabled, check if the task is in the allowed list we can check and report on.
+        if ($this->allowlistchecking && (!in_array($this->task->classname, $this->allowlist))) {
+            return new result(result::OK, get_string('taskfailureignored', 'tool_heartbeat'), '');
         }
 
         // Find the largest faildelay out of both adhoc and scheduled tasks.
@@ -117,22 +130,35 @@ class failingtaskcheck extends check {
         return trim(str_replace('\\', '_', $this->task->classname), '_');
     }
 
+    public static function parse_allowlist_config_setting() {
+        $list = get_config('tool_heartbeat', 'failedtasks_allowlist');
+        $split = explode(PHP_EOL, $list);
+        $final = [];
+        foreach ($split as $classname) {
+            $final[] = trim($classname);
+        }
+        return $final;
+    }
     /**
      * Gets an array of all failing tasks, stored as \stdClass.
      *
      * @return array of failing tasks
      */
     public static function get_failing_tasks(): array {
-        global $DB;
+        GLOBAL $DB;
         $tasks = [];
 
+        // Parse the allow list configuration to pass into each task.
+        $allowlist = self::parse_allowlist_config_setting();
+        // Is allow list checking turned on all.
+        $allowlistenabled = get_config('tool_heartbeat', 'failedtasks_enableallowlist');
         // Instead of using task API here, we read directly from the database.
         // This stops errors originating from broken tasks.
         $scheduledtasks = $DB->get_records_sql("SELECT * FROM {task_scheduled} WHERE faildelay > 0 AND disabled = 0");
 
         foreach ($scheduledtasks as $task) {
             $task->message = "SCHEDULED TASK: {$task->classname} Delay: {$task->faildelay}\n";
-            $tasks[] = new \tool_heartbeat\check\failingtaskcheck($task);
+            $tasks[] = new \tool_heartbeat\check\failingtaskcheck($task, $allowlistenabled, $allowlist);
         }
 
         // Instead of using task API here, we read directly from the database.
@@ -147,7 +173,7 @@ class failingtaskcheck extends check {
             // Only add duplicate message if there are more than 1.
             $duplicatemsg = $record->count > 1 ? " ({$record->count} duplicates!!!)" : '';
             $record->message = "ADHOC TASK: {$record->classname} Delay: {$record->faildelay} {$duplicatemsg}\n";
-            $tasks[] = new \tool_heartbeat\check\failingtaskcheck($record);
+            $tasks[] = new \tool_heartbeat\check\failingtaskcheck($record, $allowlistenabled, $allowlist);
         }
         return $tasks;
     }

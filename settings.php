@@ -141,5 +141,30 @@ if ($hassiteconfig) {
             // So its defaulted to off unless turned on for specific debugging.
             0
         ));
+
+        // Failed task settings
+        $settings->add(new admin_setting_heading('tool_heartbeat/failedtaskchecksettings',
+            get_string('settings:failedtaskcheckheadings', 'tool_heartbeat'),
+            ''
+        ));
+        // Enable allow list of failed tasks to report.
+        $settings->add(
+            new admin_setting_configcheckbox(
+                'tool_heartbeat/failedtasks_enableallowlist',
+                get_string('settings:failedtasks_enableallowlist:heading', 'tool_heartbeat'),
+                get_string('settings:failedtasks_enableallowlist:desc', 'tool_heartbeat'),
+                0
+            )
+        );
+
+        // List of allowed tasks
+        $settings->add(
+            new admin_setting_configtextarea(
+                'tool_heartbeat/failedtasks_allowlist',
+                get_string('settings:failedtasks_allowlist:heading', 'tool_heartbeat'),
+                get_string('settings:failedtasks_allowlist:desc', 'tool_heartbeat'),
+                ''
+            )
+        );
     }
 }

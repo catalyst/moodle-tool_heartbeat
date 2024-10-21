@@ -123,3 +123,11 @@ $string['privacy:metadata:tool_heartbeat_overrides:userid'] = 'User who created 
 $string['privacy:metadata:tool_heartbeat_overrides:usermodified'] = 'User who modified the override';
 $string['privacy:metadata:tool_heartbeat_overrides:timecreated'] = 'Timestamp when the override was created';
 $string['privacy:metadata:tool_heartbeat_overrides:timemodified'] = 'Timestamp when the override was modified';
+
+
+$string['taskfailureignored'] = 'Task {$a} fail delay was ignored due to the task not being in the configured allow list';
+$string['settings:failedtaskcheckheadings'] = 'Failing tasks check configuration';
+$string['settings:failedtasks_enableallowlist:heading'] = 'Enable allow list for failed tasks';
+$string['settings:failedtasks_enableallowlist:desc'] = 'Enable the behaviour of only reporting on failed tasks that are in the following allow list configuration';
+$string["settings:failedtasks_allowlist:heading"] = 'Allow list for reporting';
+$string["settings:failedtasks_allowlist:desc"] = "A list of task classnames that can be reported as failing, each classname must appear on a new line";
