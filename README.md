@@ -143,6 +143,24 @@ http://moodle.local/admin/settings.php?section=tool_heartbeat
 * By default in a new install this is set to 'error'. This is done intertionally so that you know your monitoring is wired up correctly end to end. You should see you monitoring raise an alert which tells you that it is a test and links to the admin setting to turn it into normal monitoring mode.
 * Optionaly lock down the endpoints by IP
 
+## Task fail delay maximum alerting level configuration
+This plugin allows configuring maximum permitted check level for faildelay checks for tasks.
+
+You can provide a default for all tasks, as well as per task configurations that have precedence over the task default.
+
+The configuration is stored in the site config.php under the config setting $CFG->tool_heartbeat_tasks
+
+This should be an array with a form like the following
+```
+$CFG->tool_heartbeat_tasks = [
+	'*' => [
+		'maxfaildelaylevel' => 'warning',
+	],
+	'\core\task\delete_unconfirmed_users_task' => [
+		'maxfaildelaylevel' => 'critical',
+	],
+];
+```
 
 # Testing
 

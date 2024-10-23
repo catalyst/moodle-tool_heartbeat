@@ -40,11 +40,15 @@ class failingtaskcheck extends check {
     /** @var \stdClass $task Record of task that is failing **/
     private $task;
 
+    /** @var \stdClass $config Configuration of task alerting defaults */
+    private $config;
+
     /**
      * Constructor
      */
-    public function __construct($task = null) {
+    public function __construct($task = null, $config = null) {
         $this->task = $task;
+        $this->config = $config;
 
     }
 
@@ -87,7 +91,64 @@ class failingtaskcheck extends check {
             $status = result::ERROR;
         }
 
+        // Cap the status to the maximum allowed by configuration.
+        $status = $this->get_highest_allowed_warning_level($status);
+
         return new result($status, $this->task->message, '');
+    }
+
+    /**
+     * Returns each moodle core result error status as a map of string => integer value, this is used for sorting
+     * alerts when determining the maximum allowed level.
+     *
+     * @return array{na: int, ok: int, info: int, unknown: int, warning: int, error: int, critical: int}
+     */
+    public static function get_integer_values_array() {
+        return array(
+            result::NA => 0,
+            result::OK => 1,
+            result::INFO => 2,
+            result::UNKNOWN => 3,
+            result::WARNING => 4,
+            result::ERROR => 5,
+            result::CRITICAL => 6,
+        );
+    }
+
+    /**
+     * Look at the task warning configuration and apply the global default, or if a specific task
+     * default is supplied in the configuration, use that, and then cap the status to either the passed
+     * in real status, or the maximum permitted in config if the real status exceeds it.
+     * @param string $status
+     * @return string Allowed status
+     */
+    public function get_highest_allowed_warning_level($status) {
+        // No configuration exists, short circuit.
+        if (!isset($this->config)) {
+            return $status;
+        }
+        // Before any configuration tests, the default max allowed is the same as the status reported.
+        $max = $status;
+        // If there's a global task default, apply that first.
+        if (isset($this->config['*']) && isset($this->config['*']['maxfaildelaylevel'])) {
+            $max = $this->config['*']['maxfaildelaylevel'];
+        }
+        // Now look for specific config for the task classname, this takes precedence.
+        if (isset($this->task) &&
+            isset($this->config[$this->task->classname])
+            && isset($this->config[$this->task->classname]['maxfaildelaylevel'])) {
+            $max = $this->config[$this->task->classname]['maxfaildelaylevel'];
+        }
+        // Get a map of result string to integers representing their "order level".
+        $map = self::get_integer_values_array();
+        // Get the order value of each status.
+        $maxint = $map[$max];
+        $realint = $map[$status];
+        // Determine the lowest ordered status of the two.
+        $finalint = min($maxint, $realint);
+        // Flip the array to be integer => string constant and return the allowed final status.
+        return array_flip($map)[$finalint];
+
     }
 
     /**
@@ -117,13 +178,15 @@ class failingtaskcheck extends check {
         return trim(str_replace('\\', '_', $this->task->classname), '_');
     }
 
+
+
     /**
      * Gets an array of all failing tasks, stored as \stdClass.
      *
      * @return array of failing tasks
      */
     public static function get_failing_tasks(): array {
-        global $DB;
+        GLOBAL $DB, $CFG;
         $tasks = [];
 
         // Instead of using task API here, we read directly from the database.
@@ -132,7 +195,7 @@ class failingtaskcheck extends check {
 
         foreach ($scheduledtasks as $task) {
             $task->message = "SCHEDULED TASK: {$task->classname} Delay: {$task->faildelay}\n";
-            $tasks[] = new \tool_heartbeat\check\failingtaskcheck($task);
+            $tasks[] = new \tool_heartbeat\check\failingtaskcheck($task, $CFG->tool_heartbeat_tasks);
         }
 
         // Instead of using task API here, we read directly from the database.
@@ -147,7 +210,7 @@ class failingtaskcheck extends check {
             // Only add duplicate message if there are more than 1.
             $duplicatemsg = $record->count > 1 ? " ({$record->count} duplicates!!!)" : '';
             $record->message = "ADHOC TASK: {$record->classname} Delay: {$record->faildelay} {$duplicatemsg}\n";
-            $tasks[] = new \tool_heartbeat\check\failingtaskcheck($record);
+            $tasks[] = new \tool_heartbeat\check\failingtaskcheck($record, $CFG->tool_heartbeat_tasks);
         }
         return $tasks;
     }
