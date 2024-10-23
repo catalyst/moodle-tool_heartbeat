@@ -178,8 +178,6 @@ class failingtaskcheck extends check {
         return trim(str_replace('\\', '_', $this->task->classname), '_');
     }
 
-
-
     /**
      * Gets an array of all failing tasks, stored as \stdClass.
      *
