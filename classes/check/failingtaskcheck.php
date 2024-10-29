@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace tool_heartbeat\check;
-
+use tool_heartbeat\checker;
 use core\check\check;
 use core\check\result;
 
@@ -97,23 +97,6 @@ class failingtaskcheck extends check {
         return new result($status, $this->task->message, '');
     }
 
-    /**
-     * Returns each moodle core result error status as a map of string => integer value, this is used for sorting
-     * alerts when determining the maximum allowed level.
-     *
-     * @return array{na: int, ok: int, info: int, unknown: int, warning: int, error: int, critical: int}
-     */
-    public static function get_integer_values_array() {
-        return array(
-            result::NA => 0,
-            result::OK => 1,
-            result::INFO => 2,
-            result::UNKNOWN => 3,
-            result::WARNING => 4,
-            result::ERROR => 5,
-            result::CRITICAL => 6,
-        );
-    }
 
     /**
      * Look at the task warning configuration and apply the global default, or if a specific task
@@ -140,7 +123,7 @@ class failingtaskcheck extends check {
             $max = $this->config[$this->task->classname]['maxfaildelaylevel'];
         }
         // Get a map of result string to integers representing their "order level".
-        $map = self::get_integer_values_array();
+        $map = checker::RESULT_MAPPING;
         // Get the order value of each status.
         $maxint = $map[$max];
         $realint = $map[$status];
@@ -184,7 +167,7 @@ class failingtaskcheck extends check {
      * @return array of failing tasks
      */
     public static function get_failing_tasks(): array {
-        GLOBAL $DB, $CFG;
+        global $DB, $CFG;
         $tasks = [];
 
         // Instead of using task API here, we read directly from the database.
