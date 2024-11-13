@@ -165,7 +165,7 @@ $CFG->tool_heartbeat_check_defaults = [
 ];
 ```
 
-Each item is tested via `preg_match` against the globally unique check reference string for the check, if it matches, the max warning level configuration is applied, this applies each item in the array from first to last, so if a check matches more than once, the value that is latest in the array is used, this allows setting more broad defaults and then increasing specififity for specific checks to allow them to override the broader defaults.
+Each item is tested via `preg_match` against the globally unique check reference string for the check, if it matches, the max warning level configuration is applied, this applies each item in the array from first to last, so if a check matches more than once, the value that is latest in the array is used, this allows setting more broad defaults and then increasing specificity for specific checks to allow them to override the broader defaults.
 
 
 
