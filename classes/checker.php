@@ -312,6 +312,53 @@ class checker {
     }
 
     /**
+     * Apply any configured changes to the result of the check based on it's ref string
+     *
+     * Right now the only configurable options are to reduce the maximum alert level of a check.
+     * @param string $ref The check ref value
+     * @param core\check\result $result The default result of the check
+     * @return core\check\result The result of the check after any configuration settings are applied
+     */
+    public static function apply_configuration_settings($ref, result $result): result {
+        global $CFG;
+        // No configuration exists, short circuit.
+        if (!isset($CFG->tool_heartbeat_check_defaults)
+            || !is_array($CFG->tool_heartbeat_check_defaults)
+        ) {
+            return $result;
+        }
+        $status = $result->get_status();
+        $max = false;
+        // The configuration is a list of potential regex strings => array of
+        // config, we check each regex string against the check ref.
+        // Note: We do not guard against multiple matches, the last in the array
+        // always applies.
+        $tests = array_keys($CFG->tool_heartbeat_check_defaults);
+        foreach ($tests as $test) {
+            $regex = '/'.$test.'/';
+            if (preg_match($regex, $ref)) {
+                // This key matched, get the maximum fail delay.
+                $max = $CFG->tool_heartbeat_check_defaults[$test]['maxwarninglevel'];
+            }
+        }
+        // None of the configuration options matched, just return the passed in
+        // result.
+        if ($max === false) {
+            return $result;
+        }
+        // Get a map of result string to integers representing their "order level".
+        $map = checker::RESULT_MAPPING;
+        // Get the order value of each status.
+        $maxint = $map[$max];
+        $realint = $map[$status];
+        // Determine the lowest ordered status of the two.
+        $finalint = min($maxint, $realint);
+        // Flip the array to be integer => string constant and return the allowed
+        // final status.
+        $status =  array_flip($map)[$finalint];
+        return new result($status, $result->get_summary(), $result->get_details());
+    }
+    /**
      * Gets a check result while applying specified overrides.
      * @param check $check
      * @return result with overrides
@@ -319,6 +366,9 @@ class checker {
     public static function get_overridden_result(check $check): result {
         $ref = $check->get_ref();
         $result = $check->get_result();
+
+        // Apply any configured global configuration options to the result.
+        $result = self::apply_configuration_settings($ref, $result);
 
         $override = \tool_heartbeat\object\override::get_active_override($ref);
         if (!isset($override)) {

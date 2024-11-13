@@ -91,47 +91,7 @@ class failingtaskcheck extends check {
             $status = result::ERROR;
         }
 
-        // Cap the status to the maximum allowed by configuration.
-        $status = $this->get_highest_allowed_warning_level($status);
-
         return new result($status, $this->task->message, '');
-    }
-
-
-    /**
-     * Look at the task warning configuration and apply the global default, or if a specific task
-     * default is supplied in the configuration, use that, and then cap the status to either the passed
-     * in real status, or the maximum permitted in config if the real status exceeds it.
-     * @param string $status
-     * @return string Allowed status
-     */
-    public function get_highest_allowed_warning_level($status) {
-        // No configuration exists, short circuit.
-        if (!isset($this->config)) {
-            return $status;
-        }
-        // Before any configuration tests, the default max allowed is the same as the status reported.
-        $max = $status;
-        // If there's a global task default, apply that first.
-        if (isset($this->config['*']) && isset($this->config['*']['maxfaildelaylevel'])) {
-            $max = $this->config['*']['maxfaildelaylevel'];
-        }
-        // Now look for specific config for the task classname, this takes precedence.
-        if (isset($this->task) &&
-            isset($this->config[$this->task->classname])
-            && isset($this->config[$this->task->classname]['maxfaildelaylevel'])) {
-            $max = $this->config[$this->task->classname]['maxfaildelaylevel'];
-        }
-        // Get a map of result string to integers representing their "order level".
-        $map = checker::RESULT_MAPPING;
-        // Get the order value of each status.
-        $maxint = $map[$max];
-        $realint = $map[$status];
-        // Determine the lowest ordered status of the two.
-        $finalint = min($maxint, $realint);
-        // Flip the array to be integer => string constant and return the allowed final status.
-        return array_flip($map)[$finalint];
-
     }
 
     /**
