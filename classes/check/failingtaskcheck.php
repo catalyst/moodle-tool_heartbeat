@@ -15,7 +15,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace tool_heartbeat\check;
-use tool_heartbeat\checker;
 use core\check\check;
 use core\check\result;
 
@@ -40,15 +39,12 @@ class failingtaskcheck extends check {
     /** @var \stdClass $task Record of task that is failing **/
     private $task;
 
-    /** @var \stdClass $config Configuration of task alerting defaults */
-    private $config;
 
     /**
      * Constructor
      */
-    public function __construct($task = null, $config = null) {
+    public function __construct($task = null) {
         $this->task = $task;
-        $this->config = $config;
 
     }
 
@@ -127,7 +123,7 @@ class failingtaskcheck extends check {
      * @return array of failing tasks
      */
     public static function get_failing_tasks(): array {
-        global $DB, $CFG;
+        global $DB,
         $tasks = [];
 
         // Instead of using task API here, we read directly from the database.
@@ -136,7 +132,7 @@ class failingtaskcheck extends check {
 
         foreach ($scheduledtasks as $task) {
             $task->message = "SCHEDULED TASK: {$task->classname} Delay: {$task->faildelay}\n";
-            $tasks[] = new \tool_heartbeat\check\failingtaskcheck($task, $CFG->tool_heartbeat_tasks);
+            $tasks[] = new \tool_heartbeat\check\failingtaskcheck($task);
         }
 
         // Instead of using task API here, we read directly from the database.
@@ -151,7 +147,7 @@ class failingtaskcheck extends check {
             // Only add duplicate message if there are more than 1.
             $duplicatemsg = $record->count > 1 ? " ({$record->count} duplicates!!!)" : '';
             $record->message = "ADHOC TASK: {$record->classname} Delay: {$record->faildelay} {$duplicatemsg}\n";
-            $tasks[] = new \tool_heartbeat\check\failingtaskcheck($record, $CFG->tool_heartbeat_tasks);
+            $tasks[] = new \tool_heartbeat\check\failingtaskcheck($record);
         }
         return $tasks;
     }
