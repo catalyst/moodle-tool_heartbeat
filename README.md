@@ -143,24 +143,31 @@ http://moodle.local/admin/settings.php?section=tool_heartbeat
 * By default in a new install this is set to 'error'. This is done intertionally so that you know your monitoring is wired up correctly end to end. You should see you monitoring raise an alert which tells you that it is a test and links to the admin setting to turn it into normal monitoring mode.
 * Optionaly lock down the endpoints by IP
 
-## Task fail delay maximum alerting level configuration
-This plugin allows configuring maximum permitted check level for faildelay checks for tasks.
+## Check maximum alerting level configuration
+This plugin allows configuring maximum permitted alerting level of tasks in the config.php
 
-You can provide a default for all tasks, as well as per task configurations that have precedence over the task default.
+This is supplied as list of regex tests and their associated configuration array.
 
-The configuration is stored in the site config.php under the config setting $CFG->tool_heartbeat_tasks
+The configuration is stored in the site config.php under the config setting $CFG->tool_heartbeat_check_defaults
 
 This should be an array with a form like the following
-```
-$CFG->tool_heartbeat_tasks = [
-	'*' => [
-		'maxfaildelaylevel' => 'warning',
-	],
-	'\core\task\delete_unconfirmed_users_task' => [
-		'maxfaildelaylevel' => 'critical',
-	],
+```php
+$CFG->tool_heartbeat_check_defaults = [
+    '.+_task_.+' => [
+        'maxwarninglevel' => 'info',
+    ],
+    'core_task_tag_cron_task' => [
+        'maxwarninglevel' => 'critical',
+    ],
+    'tool_task_.*' => [
+        'maxwarninglevel' => 'critical',
+    ],
 ];
 ```
+
+Each item is tested via `preg_match` against the globally unique check reference string for the check, if it matches, the max warning level configuration is applied, this applies each item in the array from first to last, so if a check matches more than once, the value that is latest in the array is used, this allows setting more broad defaults and then increasing specififity for specific checks to allow them to override the broader defaults.
+
+
 
 # Testing
 
