@@ -50,6 +50,17 @@ class checker {
         result::UNKNOWN => resultmessage::LEVEL_UNKNOWN,
     ];
 
+    /** @var array Map check result to nagios level **/
+    public const RESULT_ORDER = [
+        result::NA          => 0,
+        result::INFO        => 1,
+        result::OK          => 2,
+        result::WARNING     => 3,
+        result::UNKNOWN     => 4,
+        result::ERROR       => 5,
+        result::CRITICAL    => 6,
+    ];
+
     /**
      * Returns an array of check API messages.
      * If exceptions are thrown, they are caught and returned as result messages as well.
@@ -347,7 +358,7 @@ class checker {
             return $result;
         }
         // Get a map of result string to integers representing their "order level".
-        $map = checker::RESULT_MAPPING;
+        $map = checker::RESULT_ORDER;
         // Get the order value of each status.
         $maxint = $map[$max];
         $realint = $map[$status];
