@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace tool_heartbeat\check;
+
 use core\check\check;
 use core\check\result;
 
@@ -38,7 +39,6 @@ class failingtaskcheck extends check {
 
     /** @var \stdClass $task Record of task that is failing **/
     private $task;
-
 
     /**
      * Constructor
@@ -123,7 +123,7 @@ class failingtaskcheck extends check {
      * @return array of failing tasks
      */
     public static function get_failing_tasks(): array {
-        global $DB,
+        global $DB;
         $tasks = [];
 
         // Instead of using task API here, we read directly from the database.
