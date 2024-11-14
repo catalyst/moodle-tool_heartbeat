@@ -57,6 +57,8 @@ if ($isweb) {
 }
 
 use tool_heartbeat\checker;
+use tool_heartbeat\lib;
+
 global $PAGE;
 
 if (isset($CFG->mnet_dispatcher_mode) and $CFG->mnet_dispatcher_mode !== 'off') {
@@ -67,6 +69,8 @@ if (isset($CFG->mnet_dispatcher_mode) and $CFG->mnet_dispatcher_mode !== 'off') 
 // Start output buffering. This stops for e.g. debugging messages from breaking the output.
 // The checker class collects this, and if anything it output it shows a warning.
 ob_start();
+
+lib::process_error_log_ping();
 
 $messages = checker::get_check_messages();
 

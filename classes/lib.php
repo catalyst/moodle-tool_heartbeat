@@ -100,5 +100,33 @@ class lib {
         error_log("Heartbeat cache was checked: " . json_encode($details));
         // @codingStandardsIgnoreEnd
     }
+
+    /**
+     * Handles error logging pinging. This happens on a regular schedule e.g. every 30 mins.
+     * This is used in conjunction with external monitoring services to monitor if the error log is fresh
+     * (or alternatively if it is stale, because the logs are not coming through anymore).
+     */
+    public static function process_error_log_ping() {
+        $lastpinged = get_config('tool_heartbeat', 'errorloglastpinged') ?: 0;
+        $errorperiod = get_config('tool_heartbeat', 'errorlog');
+
+        // If zero/null - disabled - don't do anything.
+        if (empty($errorperiod)) {
+            return;
+        }
+
+        if (($lastpinged + $errorperiod) < time()) {
+            // Update the last pinged time.
+            set_config('errorloglastpinged', time(), 'tool_heartbeat');
+
+            // Log to error_log.
+            $now = userdate(time());
+            $period = format_time($errorperiod);
+
+            // @codingStandardsIgnoreStart
+            error_log("Heartbeat error log test $now, next test expected in $period");
+            // @codingStandardsIgnoreEnd
+        }
+    }
 }
 

@@ -47,4 +47,63 @@ class lib_test extends \advanced_testcase {
         set_config('allowedips_forced', '', 'tool_heartbeat');
         $this->assertEquals('', lib::get_allowed_ips());
     }
+
+    /**
+     * Provides values to test error log ping.
+     * @return array
+     */
+    public function process_error_log_ping_provider(): array {
+        return [
+            'no period set - disabled' => [
+                'errorloglastpinged' => null,
+                'errorlog' => null,
+                'expectedtimebefore' => null,
+            ],
+            'only period set' => [
+                'errorloglastpinged' => null,
+                'errorlog' => 1 * MINSECS,
+                // Update to latest time.
+                'expectedtimebefore' => time() + 10,
+            ],
+            'period has passed, time should change' => [
+                'errorloglastpinged' => 1,
+                'errorlog' => 1 * MINSECS,
+                // Update to latest time.
+                'expectedtimebefore' => time() + 10,
+            ],
+            'period not passed yet, time unchanged' => [
+                'errorloglastpinged' => time(),
+                'errorlog' => 1 * MINSECS,
+                // Remain unchanged, i.e. exactly equal.
+                'expectedtimebefore' => time(),
+            ],
+        ];
+    }
+
+    /**
+     * Tests process_error_log_ping function
+     *
+     * @param int|null $errorloglastpinged next error value to set
+     * @param int|null $errorlog error log value to set
+     * @param bool $expectrun
+     * @dataProvider process_error_log_ping_provider
+     */
+    public function test_process_error_log_ping(?int $errorloglastpinged, ?int $errorlog, ?int $expectedtimebefore) {
+        $this->resetAfterTest(true);
+        set_config('errorloglastpinged', $errorloglastpinged, 'tool_heartbeat');
+        set_config('errorlog', $errorlog, 'tool_heartbeat');
+        lib::process_error_log_ping();
+
+        $valueafter = get_config('tool_heartbeat', 'errorloglastpinged');
+
+        // Assert the time was not set at all.
+        if (is_null($expectedtimebefore)) {
+            $this->assertFalse($valueafter);
+        } else {
+            // New value should have set current time as the last pinged time.
+            // We use less than and add some buffer in the test cases to account
+            // for tests that might happen over a few seconds.
+            $this->assertLessThanOrEqual($expectedtimebefore, $valueafter);
+        }
+    }
 }
