@@ -13,12 +13,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Tool heartbeat
  *
  * @author     Brendan Heywood <brendan@catalyst-au.net>
  * @copyright  Catalyst IT 2023
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package tool_heartbeat
  */
 
 defined('MOODLE_INTERNAL') || die();

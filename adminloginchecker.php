@@ -37,11 +37,11 @@ defined('MOODLE_INTERNAL');
 define('NO_UPGRADE_CHECK', true);
 // @codingStandardsIgnoreEnd
 
-$options = array(
+$options = [
     'help' => false,
     'critthresh' => 60 * 60 * 24 * 3,
     'warnthresh' => 60 * 60 * 24 * 7,
-);
+];
 
 if (isset($argv)) {
     // If run from the CLI.
@@ -51,9 +51,9 @@ if (isset($argv)) {
     require_once($CFG->libdir . '/clilib.php');
 
     list($options, $unrecognized) = cli_get_params($options,
-    array(
+    [
         'h' => 'help',
-        )
+        ]
     );
 
     if ($unrecognized) {

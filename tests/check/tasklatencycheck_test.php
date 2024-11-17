@@ -71,7 +71,7 @@ class tasklatencycheck_test extends \advanced_testcase {
             // Now set a lock on the task. This should prevent critical.
             $CFG->lock_factory = \tool_lockstats\proxy_lock_factory::class;
             $DB->insert_record('tool_lockstats_locks', [
-                'resourcekey' => '\\logstore_standard\\task\\cleanup_task'
+                'resourcekey' => '\\logstore_standard\\task\\cleanup_task',
             ]);
             $result = $check->get_result();
             $this->assertEquals(result::OK, $result->get_status());
@@ -120,7 +120,7 @@ class tasklatencycheck_test extends \advanced_testcase {
             // Now set a lock on the task. This should prevent critical.
             $CFG->lock_factory = \tool_lockstats\proxy_lock_factory::class;
             $DB->insert_record('tool_lockstats_locks', [
-                'resourcekey' => '\\logstore_standard\\task\\cleanup_task'
+                'resourcekey' => '\\logstore_standard\\task\\cleanup_task',
             ]);
             $result = $check->get_result();
             $this->assertEquals(result::OK, $result->get_status());

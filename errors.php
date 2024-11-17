@@ -34,6 +34,7 @@ $PAGE->set_context($syscontext);
 echo $OUTPUT->header();
 echo $OUTPUT->heading('Tests for all errors in the whole stack');
 
+// @codingStandardsIgnoreStart
 ?>
 <h3>Moodle high level errors</h3>
 <p>These should all use the moodle theme</p>
@@ -74,6 +75,7 @@ echo $OUTPUT->heading('Tests for all errors in the whole stack');
 <li>A 502 Bad Gateway, proxy cannot connect at all (how to test?)</li>
 
 <?php
+// @codingStandardsIgnoreEnd
 
 echo $OUTPUT->footer();
 

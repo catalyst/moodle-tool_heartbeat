@@ -36,7 +36,7 @@ class cachecheck extends check {
      *
      * @return result
      */
-    public function get_result() : result {
+    public function get_result(): result {
         $results = $this->check('web');
         $results += $this->check('cron');
 

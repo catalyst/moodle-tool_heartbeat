@@ -41,7 +41,7 @@ $PAGE->set_url($url);
 $PAGE->set_context($syscontext);
 $PAGE->set_pagelayout('standard');
 $PAGE->set_cacheable(false);
-$url->params(array('stage' => 2));
+$url->params(['stage' => 2]);
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('testabort', 'tool_heartbeat'));
 
