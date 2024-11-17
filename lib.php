@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Callback point.
  *
@@ -85,7 +86,7 @@ function tool_heartbeat_security_checks() {
  * @param array $options More options
  * @return bool Returns false if we don't find a file.
  */
-function tool_heartbeat_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+function tool_heartbeat_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
     global $CFG;
 
     // README is just safe content we know exist. Used in the range request check.

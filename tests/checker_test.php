@@ -134,8 +134,8 @@ class checker_test extends \advanced_testcase {
             ],
             'pipe char in output is cleaned' => [
                 'messages' => [$criticalwithpipemsg],
-                'expectedsummary' => str_replace('|', '｜', $criticalwithpipemsg->title)
-            ]
+                'expectedsummary' => str_replace('|', '｜', $criticalwithpipemsg->title),
+            ],
         ];
     }
 

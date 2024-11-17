@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Auth method health check.
  *
@@ -56,7 +57,7 @@ class authcheck extends check {
      *
      * @return result
      */
-    public function get_result() : result {
+    public function get_result(): result {
         global $DB;
 
         // Value must be raw DB value. We will see it here before in settings cache.

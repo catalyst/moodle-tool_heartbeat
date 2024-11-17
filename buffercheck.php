@@ -73,7 +73,7 @@ if ($response !== false) {
 
 $files = [
     $CFG->dirroot . '/backup/backup.php',
-    $CFG->dirroot . '/backup/restore.php'
+    $CFG->dirroot . '/backup/restore.php',
 ];
 
 foreach ($files as $file) {

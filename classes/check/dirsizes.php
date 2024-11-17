@@ -41,7 +41,7 @@ class dirsizes extends check {
      *
      * @return result
      */
-    public function get_result() : result {
+    public function get_result(): result {
         global $CFG;
 
         $sizedataroot = get_directory_size($CFG->dataroot);

@@ -32,22 +32,22 @@ require(__DIR__ . '/../../../../config.php');
 require_once($CFG->libdir.'/clilib.php');
 
 list($options, $unrecognized) = cli_get_params(
-    array(
+    [
         'help'    => false,
         'size'    => 1024 * 10,
         'chunks'  => 100,
         'delay'   => 0,
         'wwwroot' => $CFG->wwwroot,
         'verbose' => 0,
-    ),
-    array(
+    ],
+    [
         'h'   => 'help',
         's'   => 'size',
         'c'   => 'chunks',
         'd'   => 'delay',
         'w'   => 'wwwroot',
         'v'   => 'verbose',
-    )
+    ]
 );
 
 if ($unrecognized) {

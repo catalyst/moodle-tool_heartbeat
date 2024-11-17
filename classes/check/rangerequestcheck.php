@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Range request performance check.
  *
@@ -47,7 +48,7 @@ class rangerequestcheck extends check {
      *
      * @return result
      */
-    public function get_result() : result {
+    public function get_result(): result {
 
         $url = new \moodle_url('/pluginfile.php/1/tool_heartbeat/test');
 

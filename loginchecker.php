@@ -37,12 +37,12 @@ defined('MOODLE_INTERNAL');
 define('NO_UPGRADE_CHECK', true);
 // @codingStandardsIgnoreEnd
 
-$options = array(
+$options = [
     'help' => false,
     'critthresh' => 500,
     'warnthresh' => 10,
     'logtime' => 5,
-);
+];
 
 if (isset($argv)) {
     // If run from the CLI.
@@ -52,9 +52,9 @@ if (isset($argv)) {
     require_once($CFG->libdir . '/clilib.php');
 
     list($options, $unrecognized) = cli_get_params($options,
-    array(
+    [
         'h' => 'help',
-        )
+        ]
     );
 
     if ($unrecognized) {
@@ -106,7 +106,7 @@ $sqlstring = "SELECT count(*) AS logincount
                WHERE target = 'user_login'
                  AND timecreated > :checktime";
 
-$tablequery = $DB->get_record_sql($sqlstring, array('checktime' => $checktime));
+$tablequery = $DB->get_record_sql($sqlstring, ['checktime' => $checktime]);
 
 $count = $tablequery->logincount;
 

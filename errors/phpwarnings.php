@@ -36,6 +36,8 @@ echo "This is an ok page which emits notices and warnings, and error logs";
 trigger_error("This is a notice", E_USER_NOTICE);
 trigger_error("This is a warning", E_USER_WARNING);
 
+// @codingStandardsIgnoreStart
 error_log("This is an error_log");
+// @codingStandardsIgnoreEnd
 file_put_contents("php://stderr", "This writing to php://stderr");
 

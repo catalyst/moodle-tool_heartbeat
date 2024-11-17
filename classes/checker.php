@@ -358,7 +358,7 @@ class checker {
             return $result;
         }
         // Get a map of result string to integers representing their "order level".
-        $map = checker::RESULT_ORDER;
+        $map = self::RESULT_ORDER;
         // Get the order value of each status.
         $maxint = $map[$max];
         $realint = $map[$status];
@@ -366,7 +366,7 @@ class checker {
         $finalint = min($maxint, $realint);
         // Flip the array to be integer => string constant and return the allowed
         // final status.
-        $status =  array_flip($map)[$finalint];
+        $status = array_flip($map)[$finalint];
         return new result($status, $result->get_summary(), $result->get_details());
     }
     /**

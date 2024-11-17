@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * DNS security check.
  *
@@ -40,7 +41,7 @@ class dnscheck extends check {
      *
      * @return result
      */
-    public function get_result() : result {
+    public function get_result(): result {
         global $DB, $CFG;
 
         $url = new \moodle_url($CFG->wwwroot);

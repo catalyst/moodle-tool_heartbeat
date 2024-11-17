@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Set a random integer in session and redirect to check if persists.
  *
@@ -35,10 +34,10 @@ $hostname = gethostname();
 
 $SESSION->testnumber = $testnumber;
 
-$params = array(
+$params = [
     'testnumber' => $testnumber,
     'reqtime' => $testtimemicro,
-    'host' => $hostname);
+    'host' => $hostname];
 $url = new moodle_url('/admin/tool/heartbeat/sessiontwo.php', $params);
 
 redirect($url);

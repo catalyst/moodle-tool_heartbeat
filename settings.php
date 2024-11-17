@@ -41,11 +41,11 @@ if ($hassiteconfig) {
 
     if (!during_initial_install()) {
 
-        $options = array(
+        $options = [
             '' => new lang_string('normal', 'tool_heartbeat'),
             'warn' => new lang_string('testwarning', 'tool_heartbeat'),
             'error' => new lang_string('testerror', 'tool_heartbeat'),
-        );
+        ];
         $settings->add(new admin_setting_configselect('tool_heartbeat/testing',
                         new lang_string('testing',        'tool_heartbeat'),
                         new lang_string('testingdesc',    'tool_heartbeat'),
@@ -94,7 +94,7 @@ if ($hassiteconfig) {
         $opts = [
             'critical' => 'CRITICAL',
             'criticalbusiness' => get_string('error_critical_business', 'tool_heartbeat'),
-            'warning' => 'WARNING'
+            'warning' => 'WARNING',
         ];
         $time = new \DateTime('now', core_date::get_server_timezone_object());
         $settings->add(new admin_setting_configselect('tool_heartbeat/errorcritical',
