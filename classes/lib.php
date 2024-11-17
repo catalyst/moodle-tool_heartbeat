@@ -105,8 +105,13 @@ class lib {
      * Handles error logging pinging. This happens on a regular schedule e.g. every 30 mins.
      * This is used in conjunction with external monitoring services to monitor if the error log is fresh
      * (or alternatively if it is stale, because the logs are not coming through anymore).
+     * @param int|null $time if null uses current time, else you can pass in a time here (usually for unit tests)
      */
-    public static function process_error_log_ping() {
+    public static function process_error_log_ping(?int $time = null) {
+        if (is_null($time)) {
+            $time = time();
+        }
+
         $lastpinged = get_config('tool_heartbeat', 'errorloglastpinged') ?: 0;
         $errorperiod = get_config('tool_heartbeat', 'errorlog');
 
@@ -115,17 +120,20 @@ class lib {
             return;
         }
 
-        if (($lastpinged + $errorperiod) < time()) {
+        if (empty($lastpinged) || ($lastpinged + $errorperiod) < $time) {
             // Update the last pinged time.
-            set_config('errorloglastpinged', time(), 'tool_heartbeat');
+            set_config('errorloglastpinged', $time, 'tool_heartbeat');
 
             // Log to error_log.
-            $now = userdate(time());
+            $now = userdate($time);
             $period = format_time($errorperiod);
 
-            // @codingStandardsIgnoreStart
-            error_log("Heartbeat error log test $now, next test expected in $period");
-            // @codingStandardsIgnoreEnd
+            // Don't error log during unit tests.
+            if (!PHPUNIT_TEST) {
+                // @codingStandardsIgnoreStart
+                error_log("Heartbeat error log test $now, next test expected in $period");
+                // @codingStandardsIgnoreEnd
+            }
         }
     }
 }
