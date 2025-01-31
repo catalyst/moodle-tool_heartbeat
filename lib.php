@@ -91,6 +91,6 @@ function tool_heartbeat_pluginfile($course, $cm, $context, $filearea, $args, $fo
 
     // README is just safe content we know exist. Used in the range request check.
     $file = "$CFG->dirroot/admin/tool/heartbeat/README.md";
-    readfile_accel($file, 'text/plain', true);
+    readfile_accel($file, 'text/markdown', true);
     die;
 }
