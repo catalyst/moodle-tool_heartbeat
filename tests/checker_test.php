@@ -48,27 +48,27 @@ class checker_test extends \advanced_testcase {
         return [
             'no messages' => [
                 'levels' => [],
-                'nagioslevel' => resultmessage::LEVEL_OK,
+                'expectedlevel' => resultmessage::LEVEL_OK,
             ],
             'one OK message' => [
                 'levels' => [resultmessage::LEVEL_OK],
-                'nagioslevel' => resultmessage::LEVEL_OK,
+                'expectedlevel' => resultmessage::LEVEL_OK,
             ],
             'one UNKNOWN message' => [
                 'levels' => [resultmessage::LEVEL_UNKNOWN],
-                'nagioslevel' => resultmessage::LEVEL_UNKNOWN,
+                'expectedlevel' => resultmessage::LEVEL_UNKNOWN,
             ],
             'one UNKNOWN and one OK' => [
                 'levels' => [resultmessage::LEVEL_UNKNOWN, resultmessage::LEVEL_OK],
-                'nagioslevel' => resultmessage::LEVEL_UNKNOWN,
+                'expectedlevel' => resultmessage::LEVEL_UNKNOWN,
             ],
             'one UNKNOWN and one WARNING' => [
                 'levels' => [resultmessage::LEVEL_UNKNOWN, resultmessage::LEVEL_WARN],
-                'nagioslevel' => resultmessage::LEVEL_WARN,
+                'expectedlevel' => resultmessage::LEVEL_WARN,
             ],
             'one UNKNOWN and on CRITICAL' => [
                 'levels' => [resultmessage::LEVEL_UNKNOWN, resultmessage::LEVEL_CRITICAL],
-                'nagioslevel' => resultmessage::LEVEL_CRITICAL,
+                'expectedlevel' => resultmessage::LEVEL_CRITICAL,
             ],
         ];
     }

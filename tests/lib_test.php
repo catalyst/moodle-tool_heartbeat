@@ -52,7 +52,7 @@ class lib_test extends \advanced_testcase {
      * Provides values to test error log ping.
      * @return array
      */
-    public function process_error_log_ping_provider(): array {
+    public static function process_error_log_ping_provider(): array {
         return [
             'no period set - disabled' => [
                 'errorloglastpinged' => null,
