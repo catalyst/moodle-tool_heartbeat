@@ -54,12 +54,14 @@ class status_table extends table {
             get_string('status'),
             get_string('check'),
             get_string('summary'),
+            get_string('action'),
             get_string('mute', 'tool_heartbeat'),
         ];
         $table->colclasses = [
             'rightalign status',
             'leftalign check',
             'leftalign summary',
+            'leftalign action',
             'leftalign mute',
         ];
         $table->id = $this->type . 'reporttable';
@@ -69,6 +71,7 @@ class status_table extends table {
         foreach ($checks as $check) {
             $ref = $check->get_ref();
             $result = checker::get_overridden_result($check);
+            $actionlink = $check->get_action_link();
             $reportlink = new \moodle_url('/report/status/index.php', ['detail' => $ref]);
 
             $row = [];
@@ -81,6 +84,11 @@ class status_table extends table {
                 . $output->action_link($reportlink, get_string('moreinfo'))
                 . html_writer::end_tag('small');
 
+            if ($actionlink) {
+                $row[] = $output->render($actionlink);
+            } else {
+                $row[] = '';
+            }
             $row[] = $this->get_override_html($output, $ref, $result);
             $table->data[] = $row;
         }
