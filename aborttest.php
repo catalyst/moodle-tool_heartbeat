@@ -26,13 +26,19 @@ define('NO_OUTPUT_BUFFERING', true);
 require(__DIR__ . '/../../../config.php');
 require_login();
 
-$stage       = optional_param('stage', 1,   PARAM_NUMBER);
+$stage       = optional_param('stage', 1,       PARAM_NUMBER);
 $ignoreabort = optional_param('ignoreabort', 0, PARAM_NUMBER);
+
+$usleep      = optional_param('usleep', 100000,  PARAM_NUMBER);
+$abort       = optional_param('abort',    5,    PARAM_NUMBER);
+$redirect    = optional_param('redirect', 1,    PARAM_NUMBER);
+$reload      = optional_param('reload',   1,    PARAM_NUMBER);
+$updates     = optional_param('updates',  100,  PARAM_NUMBER);
 
 if ($ignoreabort) {
     ignore_user_abort(true);
-    // Worst case it should die in 5 seconds.
-    set_time_limit(5);
+    // Worst case it should die in 5 (default) seconds.
+    set_time_limit($abort);
 }
 
 $syscontext = context_system::instance();
@@ -45,7 +51,13 @@ $url->params(['stage' => 2]);
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('testabort', 'tool_heartbeat'));
 
-echo get_string('testaborthelp', 'tool_heartbeat');
+echo get_string('testaborthelp', 'tool_heartbeat', [
+    'abort'     => $abort,
+    'redirect'  => $redirect,
+    'total'     => $updates * $usleep / 1000 / 1000,
+    'updates'   => $updates,
+    'usleep'    => sprintf('%f', $usleep / 1000000),
+]);
 echo "<h3>Stage: $stage</h3>";
 
 if ($stage == 2) {
@@ -65,13 +77,13 @@ if ($stage == 2) {
 
 if ($stage == 1) {
     echo <<<EOF
-<p>This should show a moving progress bar, but after 1 seconds the page should reload and it should NOT get to 100%.</p>
+<p>This should show a moving progress bar, but after $reload seconds the page should reload and it should NOT get to 100%.</p>
 
 <script>
 setTimeout(function(){
     window.stop();
     location.href = '{$url->out()}';
-},1000);
+},$reload * 1000);
 </script>
 EOF;
 
@@ -82,11 +94,11 @@ EOF;
 
     $SESSION->abortprogress = 0;
 
-    $totalseconds = 10;
     $progressbar->update_full(0, '0%');
-    for ($c = 1; $c <= 100; $c += .1) {
-        usleep(10000);
-        $progressbar->update_full($c, sprintf('%.1f%%', $c));
+    $start = microtime(true);
+    for ($c = 1; $c <= $updates; $c += .1) {
+        usleep($usleep);
+        $progressbar->update_full($c, sprintf('%.1f%% - %0.1f seconds', $c, microtime(true) - $start));
         $SESSION->abortprogress = $c;
         if (connection_status() != CONNECTION_NORMAL) {
             // @codingStandardsIgnoreStart
