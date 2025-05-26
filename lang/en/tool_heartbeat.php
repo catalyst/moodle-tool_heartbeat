@@ -32,10 +32,12 @@ $string['testabort'] = 'Test abort';
 $string['testaborthelp'] = '<p>This tests wether the whole stack is correctly passing a request cancel signal from the browser to php through whatever layers are in the middle, such as load balancers, cdn\'s, caches, php-fm etc.</p>
 <p>It works in 2 stages:<p>
 <ol>
-<li>Stage one takes 10 seconds and renders a progress bar</ii>
-<li>In javascript the progress bar page is aborted after 1 second</li>
+<li>Stage one renders a progress bar which updates every {$a->usleep} seconds</ii>
+<li>The progress bar updates {$a->updates} times for a total of {$a->total} seconds duration if not aborted</ii>
+<li>In javascript the progress bar page redirects which should abort the request after {$a->redirect} second(s)</li>
 <li>If the abort works fully the process is killed which unlocks the session and the page reloads quickly showing where the progress bar had gotten to.</li>
-<li>If the abort did not work it will continue as an orphaned process holding the session lock until it times out after 5 seconds</li>
+<li>If the abort did not work it will continue as an orphaned process holding the session lock until it times out after {$a->abort} seconds</li>
+<li>In most stacks the server side abort will not register until the server tries to send bytes (eg a progress bar update) and then detects it has been disconnected.
 </ol>
 ';
 $string['testerror'] = 'Fake a critical';
