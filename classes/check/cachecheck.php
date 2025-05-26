@@ -180,11 +180,6 @@ class cachecheck extends check {
             // This should help detect any cache replication delays.
             $readbackvalue = self::get_cache_ping_value($type);
 
-            // Checking if behat site is running.
-            if (!(defined('BEHAT_SITE_RUNNING') && BEHAT_SITE_RUNNING)) {
-                debugging("\nHEARTBEAT doing {$type} ping\n", DEBUG_DEVELOPER);
-            }
-
             if (get_config('tool_heartbeat', 'shouldlogcacheping')) {
                 lib::record_cache_pinged($currentcache, $currentdb, $time, $readbackvalue, $type);
             }
