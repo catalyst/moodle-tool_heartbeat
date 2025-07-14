@@ -155,6 +155,7 @@ This should be an array with a form like the following
 $CFG->tool_heartbeat_check_defaults = [
     '.+_task_.+' => [
         'maxwarninglevel' => 'info',
+        'comment' => 'This is downgraded for some xyz reason',
     ],
     'core_task_tag_cron_task' => [
         'maxwarninglevel' => 'critical',

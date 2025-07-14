@@ -331,7 +331,7 @@ class checker {
      * @return core\check\result The result of the check after any configuration settings are applied
      */
     public static function apply_configuration_settings($ref, result $result): result {
-        global $CFG;
+        global $CFG, $OUTPUT;
         // No configuration exists, short circuit.
         if (!isset($CFG->tool_heartbeat_check_defaults)
             || !is_array($CFG->tool_heartbeat_check_defaults)
@@ -340,6 +340,7 @@ class checker {
         }
         $status = $result->get_status();
         $max = false;
+        $comment = '';
         // The configuration is a list of potential regex strings => array of
         // config, we check each regex string against the check ref.
         // Note: We do not guard against multiple matches, the last in the array
@@ -350,6 +351,11 @@ class checker {
             if (preg_match($regex, $ref)) {
                 // This key matched, get the maximum fail delay.
                 $max = $CFG->tool_heartbeat_check_defaults[$test]['maxwarninglevel'];
+                $comment = get_string('overridden', 'tool_heartbeat', $OUTPUT->check_result($result));
+                if ($CFG->tool_heartbeat_check_defaults[$test]['comment']) {
+                    $comment .= '<br>' . $CFG->tool_heartbeat_check_defaults[$test]['comment'];
+                }
+                $comment = $OUTPUT->notification($comment, \core\output\notification::NOTIFY_INFO);
             }
         }
         // None of the configuration options matched, just return the passed in
@@ -367,7 +373,12 @@ class checker {
         // Flip the array to be integer => string constant and return the allowed
         // final status.
         $status = array_flip($map)[$finalint];
-        return new result($status, $result->get_summary(), $result->get_details());
+
+        return new result(
+            $status,
+            $result->get_summary() . $comment,
+            $result->get_details()
+        );
     }
     /**
      * Gets a check result while applying specified overrides.
