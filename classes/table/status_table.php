@@ -82,7 +82,8 @@ class status_table extends table {
                 . '<br>'
                 . html_writer::start_tag('small')
                 . $output->action_link($reportlink, get_string('moreinfo'))
-                . html_writer::end_tag('small');
+                . html_writer::end_tag('small')
+                . $this->get_override_status($output, $ref, $result);
 
             if ($actionlink) {
                 $row[] = $output->render($actionlink);
@@ -98,6 +99,34 @@ class status_table extends table {
     }
 
     /**
+     * Returns the extra html for the status column if overridden
+     *
+     * @param renderer $output
+     * @param string $ref
+     * @param result $result
+     * @return string html output
+     */
+    private function get_override_status($output, string $ref, result $result): string {
+        global $OUTPUT;
+
+        $override = \tool_heartbeat\object\override::get_active_override($ref);
+        $rowdata = '';
+
+        // If we have an existing override, display the comment.
+        if (isset($override)) {
+            $notes = $override->get('note');
+            $url = $override->get('url');
+
+            $mute = get_string('expiresat', 'tool_heartbeat') . ': ' . $override->get_time_until_mute_ends();
+            $mute .= format_text($notes);
+            $mute .= !empty($url) ? html_writer::link($url, $url) . '<br>' : '';
+            $rowdata .= $OUTPUT->notification($mute, \core\output\notification::NOTIFY_INFO);
+        }
+
+        return $rowdata;
+    }
+
+    /**
      * Returns the html output for the override column.
      *
      * @param renderer $output
@@ -106,6 +135,8 @@ class status_table extends table {
      * @return string html output
      */
     private function get_override_html($output, string $ref, result $result): string {
+        global $OUTPUT;
+
         $override = \tool_heartbeat\object\override::get_active_override($ref);
         $overridelink = new \moodle_url('/admin/tool/heartbeat/override.php', ['ref' => $ref]);
         $rowdata = '';
@@ -117,17 +148,9 @@ class status_table extends table {
                 'unmute' => true,
             ]);
 
-            $notes = $override->get('note');
-            $url = $override->get('url');
-
-            $rowdata .= get_string('expiresat', 'tool_heartbeat') . ': ' . $override->get_time_until_mute_ends();
-            $rowdata .= format_text($notes);
-            $rowdata .= !empty($url) ? html_writer::link($url, $url) . '<br>' : '';
-            $rowdata .= html_writer::start_tag('small');
             $rowdata .= $output->action_link($overridelink, get_string('edit'));
             $rowdata .= ' | ';
             $rowdata .= $output->action_link($dellink, get_string('unmute', 'tool_heartbeat'));
-            $rowdata .= html_writer::end_tag('small');
             return $rowdata;
         }
 

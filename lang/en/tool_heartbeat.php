@@ -95,6 +95,7 @@ $string['mute'] = 'Mute';
 $string['unmute'] = 'Unmute';
 $string['expiresat'] = 'Muted until';
 $string['override'] = 'Display status';
+$string['overridden'] = 'Status overridden, was {$a}';
 $string['addmute'] = 'Add mute';
 $string['editmute'] = 'Edit mute';
 $string['overriderestore'] = 'Fields have been pre-filled with information from a previous override.';
