@@ -103,7 +103,13 @@ function failed($reason) {
     exit;
 }
 
-$testfile = $CFG->dataroot . "/tool_heartbeat.test";
+$testdir = $CFG->dataroot . "/tool_heartbeat/";
+if(!is_dir($testdir)) {
+    mkdir($testdir);
+}
+
+$testfile = $testdir . "test";
+
 $size = file_put_contents($testfile, '1');
 if ($size !== 1) {
     failed('sitedata not writable');
