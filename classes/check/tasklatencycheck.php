@@ -133,12 +133,8 @@ class tasklatencycheck extends check {
             $table = new \xmldb_table('task_log');
             if ($dbman->table_exists($table)) {
                 // We can use task logs!
-                $sql = "SELECT (timeend - timestart) AS duration
-                          FROM {task_log}
-                         WHERE classname = ?
-                      ORDER BY timeend DESC
-                         LIMIT 1";
-                $record = $DB->get_record_sql($sql, [$taskclass]);
+                $records = $DB->get_records_select('task_log', 'classname = :classname', ['classname' => $taskclass], 'timeend', '(timeend-timestart) AS duration', 0, 1);
+                $record = current($records);
 
                 if ($record && $record->duration > $runtime * MINSECS) {
                     $status = result::CRITICAL;
