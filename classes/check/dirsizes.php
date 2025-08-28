@@ -44,7 +44,7 @@ class dirsizes extends check {
     public function get_result(): result {
         global $CFG;
 
-        $sizedataroot = get_directory_size($CFG->dataroot);
+        $sizedataroot = $this->dirsize_totara('dataroot');
         $summary = $sizedataroot;
         $details = "Shared paths:<br>";
         $details .= '$CFG->dataroot = ' . display_size($sizedataroot);
@@ -61,9 +61,9 @@ class dirsizes extends check {
         return new result(result::INFO, $summary, $details);
     }
     /**
-     * Get a paths sizet
+     * Get a path's size
      * @param string $cfg the path to check
-     * @return string size for a path as html
+     * @return string $size for a path as html
      */
     private function dirsize(string $cfg) {
         global $CFG;
@@ -74,6 +74,49 @@ class dirsizes extends check {
         $size = get_directory_size($path);
 
         return "<br>\$CFG->{$cfg} = " . display_size($size);
+    }
+
+    /**
+     * Get a path's size (compatible with Totara)
+     * @param string $cfg the path to check
+     * @return int $size size for a path as an integer
+     */
+    private function dirsize_totara(string $cfg): int {
+        global $CFG;
+        if (!property_exists($CFG, $cfg)) {
+            return 0;
+        }
+        $rootdir = $CFG->{$cfg};
+
+        if (!is_dir($rootdir)) {
+            // Must be a directory.
+            return 0;
+        }
+
+        if (!$dir = @opendir($rootdir)) {
+            // Can't open it for some reason.
+            return 0;
+        }
+
+        $size = 0;
+
+        while (false !== ($file = readdir($dir))) {
+            $firstchar = substr($file, 0, 1);
+            if ($firstchar == '.' or $file == 'CVS') {
+                continue;
+            }
+            $fullfile = $rootdir .'/'. $file;
+            
+            $filesize = filesize($fullfile);
+            if ($filesize === false) {
+                continue;
+            }   
+            
+            $size += $filesize;
+        }
+        closedir($dir);
+
+        return $size;
     }
 
 }
