@@ -17,10 +17,9 @@
 /**
  * Dir sizes performance check.
  *
- * @package    tool_heartbeat
- * @copyright  2023 Brendan Heywood <brendan@catalyst-au.net>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
+ * @package   tool_heartbeat
+ * @copyright 2023 Brendan Heywood <brendan@catalyst-au.net>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_heartbeat\check;
@@ -30,9 +29,9 @@ use core\check\result;
 /**
  * Dir sizes performance check.
  *
- * @copyright  2023
- * @author     Brendan Heywood <brendan@catalyst-au.net>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2023
+ * @author    Brendan Heywood <brendan@catalyst-au.net>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class dirsizes extends check {
 
@@ -44,11 +43,10 @@ class dirsizes extends check {
     public function get_result() : result {
         global $CFG;
 
-        $sizedataroot = get_directory_size($CFG->dataroot);
+        $sizedataroot = $this->dirsize('dataroot', true);
         $summary = $sizedataroot;
         $details = "Shared paths:<br>";
         $details .= '$CFG->dataroot = ' . display_size($sizedataroot);
-
         $details .= $this->dirsize('themedir');
         $details .= $this->dirsize('tempdir');
         $details .= $this->dirsize('cachedir');
@@ -61,19 +59,72 @@ class dirsizes extends check {
         return new result(result::INFO, $summary, $details);
     }
     /**
-     * Get a paths sizet
-     * @param string $cfg the path to check
-     * @return string size for a path as html
+     * Get a path's size
+     *
+     * @param  string $cfg the path to check
+     * @param  bool $rawsize return rawsize of directory
+     * @return string $size for a path as html
      */
-    private function dirsize(string $cfg) {
+    private function dirsize(string $cfg, bool $rawsize = false) {
         global $CFG;
         if (!property_exists($CFG, $cfg)) {
             return "<br>\$CFG->$cfg not in use";
         }
         $path = $CFG->{$cfg};
-        $size = get_directory_size($path);
+
+        // If Totara, use Totara-compatible function.
+        if (!empty($CFG->totara_version)) {
+            $size = $this->get_directory_size_totara($path);
+        } else {
+            $size = get_directory_size($path);
+        }
+
+        if ($rawsize) {
+            return $size;
+        }
 
         return "<br>\$CFG->{$cfg} = " . display_size($size);
     }
 
+    /**
+     * Recursively calculate the size of a directory (Totara-compatible).
+     *
+     * This replicates Moodle core's get_directory_size() logic,
+     * but avoids using it directly for Totara compatibility.
+     *
+     * @param  string $dir The directory path to measure
+     * @return int Total size in bytes
+     */
+    private function get_directory_size_totara(string $dir): int {
+        if (!is_dir($dir)) {
+            return 0;
+        }
+
+        $size = 0;
+        if (!$dh = @opendir($dir)) {
+            return 0;
+        }
+
+        while (false !== ($file = readdir($dh))) {
+            // Skip hidden files and CVS dirs.
+            if ($file[0] === '.' || $file === 'CVS') {
+                continue;
+            }
+
+            $fullfile = $dir . '/' . $file;
+
+            if (is_dir($fullfile)) {
+                // Recurse into subdirectory.
+                $size += $this->get_directory_size_totara($fullfile);
+            } else {
+                $filesize = filesize($fullfile);
+                if ($filesize !== false) {
+                    $size += $filesize;
+                }
+            }
+        }
+
+        closedir($dh);
+        return $size;
+    }
 }
