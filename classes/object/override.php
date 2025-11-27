@@ -43,9 +43,9 @@ class override extends Persistent {
      * Create an instance of this class with the default expires at.
      *
      * @param int $id If set, this is the id of an existing record, used to load the data.
-     * @param \stdClass $record If set will be passed to {@link self::from_record()}.
+     * @param ?\stdClass $record If set will be passed to {@link self::from_record()}.
      */
-    public function __construct(int $id = 0, \stdClass $record = null) {
+    public function __construct(int $id = 0, ?\stdClass $record = null) {
         $this->set_default_status();
         $this->set_default_expiry();
         parent::__construct($id, $record);
