@@ -38,5 +38,7 @@ trigger_error("This is a warning", E_USER_WARNING);
 
 // @codingStandardsIgnoreStart
 error_log("This is an error_log");
+error_log("This is another error_log");
+error_log("This is an error_log\n with multiple lines");
 // @codingStandardsIgnoreEnd
 file_put_contents("php://stderr", "This writing to php://stderr");
