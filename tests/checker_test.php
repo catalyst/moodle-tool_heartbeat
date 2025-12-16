@@ -24,11 +24,11 @@ namespace tool_heartbeat;
  * @copyright 2023, Catalyst IT
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class checker_test extends \advanced_testcase {
+final class checker_test extends \advanced_testcase {
     /**
      * Tests get_check_messages function
      */
-    public function test_get_check_messages() {
+    public function test_get_check_messages(): void {
         // Need to start output buffering, since get_check_messages closes it.
         ob_start();
 
@@ -81,7 +81,7 @@ class checker_test extends \advanced_testcase {
      */
     public function test_determine_nagios_level(array $levels, int $expectedlevel) {
         // Generate a series of dummy messages with the given levels.
-        $messages = array_map(function($level) {
+        $messages = array_map(function ($level) {
             $msg = new resultmessage();
             $msg->level = $level;
             return $msg;
@@ -145,7 +145,7 @@ class checker_test extends \advanced_testcase {
      * @param string $expectedsummary
      * @dataProvider create_summary_provider
      */
-    public function test_create_summary(array $messages, string $expectedsummary) {
+    public function test_create_summary(array $messages, string $expectedsummary): void {
         $summary = checker::create_summary($messages);
         $this->assertEquals($expectedsummary, $summary);
     }

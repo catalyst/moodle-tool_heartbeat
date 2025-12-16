@@ -29,4 +29,3 @@ require(__DIR__ . '/../../../../config.php');
 // This simulates a page just exploding for some reason.
 
 throw new Exception('Raw non moodle exception');
-

@@ -34,10 +34,7 @@ require(__DIR__ . '/../../../../config.php');
 $sleep = required_param('time', PARAM_INT);
 
 for ($c = 0; $c < $sleep; $c++) {
-
     sleep(1);
-
 }
 
 echo "Hello world, this should have died upstream and you should not see this";
-

@@ -48,12 +48,13 @@ if (isset($argv)) {
     // If run from the CLI.
     define('CLI_SCRIPT', true);
     require_once(__DIR__ . '/../../../config.php');
-    require_once(__DIR__.'/nagios.php');
+    require_once(__DIR__ . '/nagios.php');
     require_once($CFG->libdir . '/clilib.php');
 
-    list($options, $unrecognized) = cli_get_params($options,
-    [
-        'h' => 'help',
+    [$options, $unrecognized] = cli_get_params(
+        $options,
+        [
+            'h' => 'help',
         ]
     );
 
@@ -78,11 +79,10 @@ if (isset($argv)) {
 
         die;
     }
-
 } else {
     // If run from the web.
     require_once(__DIR__ . '/../../../config.php');
-    require_once(__DIR__.'/nagios.php');
+    require_once(__DIR__ . '/nagios.php');
     tool_heartbeat\lib::validate_ip_against_config();
 
     $options['critthresh'] = optional_param('critthresh', 500, PARAM_INT);
@@ -111,9 +111,9 @@ $tablequery = $DB->get_record_sql($sqlstring, ['checktime' => $checktime]);
 $count = $tablequery->logincount;
 
 if ($count > $options['critthresh']) {
-    send_critical("$count failed logins in the last ". $options['logtime'] ." minute(s).");
+    send_critical("$count failed logins in the last " . $options['logtime'] . " minute(s).");
 } else if ($count > $options['warnthresh']) {
-    send_warning("$count failed logins in the last ". $options['logtime'] ." minute(s).");
+    send_warning("$count failed logins in the last " . $options['logtime'] . " minute(s).");
 } else {
     send_good("Normal Login behaviour\n");
 }

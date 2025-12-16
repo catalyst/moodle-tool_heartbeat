@@ -30,7 +30,6 @@ use core\check\result;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class failingtaskcheck extends check {
-
     /** @var int $warnthreshold Threshold in minutes after which should warn about tasks failing **/
     public $warnthreshold = 60;
 
@@ -45,7 +44,6 @@ class failingtaskcheck extends check {
      */
     public function __construct($task = null) {
         $this->task = $task;
-
     }
 
     /**

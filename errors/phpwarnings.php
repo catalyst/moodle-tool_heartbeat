@@ -40,4 +40,3 @@ trigger_error("This is a warning", E_USER_WARNING);
 error_log("This is an error_log");
 // @codingStandardsIgnoreEnd
 file_put_contents("php://stderr", "This writing to php://stderr");
-

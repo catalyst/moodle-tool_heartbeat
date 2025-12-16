@@ -25,7 +25,6 @@ namespace tool_heartbeat\task;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cachecheck extends \core\task\scheduled_task {
-
     /**
      * Get task name
      */
@@ -41,7 +40,4 @@ class cachecheck extends \core\task\scheduled_task {
             \tool_heartbeat\check\cachecheck::ping('cron');
         }
     }
-
 }
-
-

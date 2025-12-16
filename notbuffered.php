@@ -51,5 +51,3 @@ for ($c = 1; $c <= 10; $c++) {
     // Sleep my pretty.
     usleep(20 * 1000);
 }
-
-

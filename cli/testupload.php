@@ -29,9 +29,9 @@ define('NO_UPGRADE_CHECK', true);
 define('CLI_SCRIPT', true);
 
 require(__DIR__ . '/../../../../config.php');
-require_once($CFG->libdir.'/clilib.php');
+require_once($CFG->libdir . '/clilib.php');
 
-list($options, $unrecognized) = cli_get_params(
+[$options, $unrecognized] = cli_get_params(
     [
         'help'    => false,
         'size'    => 1024 * 10,
@@ -81,7 +81,7 @@ $host = $parts['host'];
 $path = $parts['path'];
 $port = $parts['scheme'] == 'https' ? 443 : 80;
 if ($port == '443') {
-    $host = "ssl://".$host;
+    $host = "ssl://" . $host;
 }
 
 $sock = fsockopen($host, $port, $errno, $errstr, 30);
@@ -93,11 +93,11 @@ $chunks = $options['chunks'];
 $data = random_bytes($options['size']);
 $contentlength = $chunks * strlen($data);
 
-$request = "PUT $path HTTP/1.0\r\n".
-"Host: $host\r\n".
-"Content-type: text/plain\r\n".
-"Content-length: $contentlength\r\n".
-"Accept: */*\r\n".
+$request = "PUT $path HTTP/1.0\r\n" .
+"Host: $host\r\n" .
+"Content-type: text/plain\r\n" .
+"Content-length: $contentlength\r\n" .
+"Accept: */*\r\n" .
 "\r\n";
 
 fwrite($sock, $request);
@@ -114,7 +114,7 @@ for ($c = 0; $c < $chunks; $c++) {
     if ($options['verbose']) {
         print ".";
     }
-    usleep( $options['delay'] * 1000 );
+    usleep($options['delay'] * 1000);
 }
 
 // Read data back.
@@ -141,4 +141,3 @@ echo "\n";
 if ($options['verbose']) {
     echo "-- CLOSE ------------------------------------------------------------------\n";
 }
-

@@ -105,7 +105,7 @@ function ascii2cli($text, $animate = 0) {
     $red    = "\033[31m";
 
     $cycle  = $animate * 36 + 16; // Red spectrum.
-    $red    = "\033[38;5;$cycle".'m';
+    $red    = "\033[38;5;$cycle" . 'm';
 
     $reset  = "\033[0;0m";
 

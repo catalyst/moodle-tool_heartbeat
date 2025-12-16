@@ -117,7 +117,7 @@ if (file_exists($testfile)) {
 
 define('ABORT_AFTER_CONFIG_CANCEL', true);
 require($CFG->dirroot . '/lib/setup.php');
-require_once($CFG->libdir.'/filelib.php');
+require_once($CFG->libdir . '/filelib.php');
 
 // IP Locking, check for CLI, check for remote IP in validated list, if not, exit.
 if (!(isset($argv))) {
@@ -164,13 +164,11 @@ if ($sessionhandler && $savepath) {
         } else {
             failed('sessions memcached');
         }
-
     } catch (Exception $e) {
         failed('sessions memcached');
     } catch (Throwable $e) {
         failed('sessions memcached');
     }
-
 }
 
 // Optionally check database configuration and access (slower).
@@ -193,4 +191,3 @@ if ($fullcheck) {
 
 print "Server is ALIVE<br>\n";
 print $status;
-

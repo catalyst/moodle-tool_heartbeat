@@ -26,14 +26,13 @@ use core\check\result;
  * @copyright 2022, Catalyst IT
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tasklatencycheck_test extends \advanced_testcase {
-
+final class tasklatencycheck_test extends \advanced_testcase {
     /**
      * Test check for tasks start time delay.
      *
      * @covers \tool_heartbeat\task\tasklatencycheck::get_result
      */
-    public function test_start_time_drift() {
+    public function test_start_time_drift(): void {
         if (!class_exists('core\check\check')) {
             $this->markTestSkipped();
         }
@@ -47,8 +46,12 @@ class tasklatencycheck_test extends \advanced_testcase {
             $CFG->lock_factory = \tool_lockstats\proxy_lock_factory::class;
         }
 
-        $DB->set_field('task_scheduled', 'nextruntime', time() + 5 * MINSECS,
-            ['classname' => '\\logstore_standard\\task\\cleanup_task']);
+        $DB->set_field(
+            'task_scheduled',
+            'nextruntime',
+            time() + 5 * MINSECS,
+            ['classname' => '\\logstore_standard\\task\\cleanup_task']
+        );
 
         // Task is set to run in 5 mins, no issues here.
         $check = new \tool_heartbeat\check\tasklatencycheck();
@@ -56,14 +59,22 @@ class tasklatencycheck_test extends \advanced_testcase {
         $this->assertEquals(result::OK, $result->get_status());
 
         // Now lets test it in the, but within the window.
-        $DB->set_field('task_scheduled', 'nextruntime', time() + 3 * MINSECS,
-            ['classname' => '\\logstore_standard\\task\\cleanup_task']);
+        $DB->set_field(
+            'task_scheduled',
+            'nextruntime',
+            time() + 3 * MINSECS,
+            ['classname' => '\\logstore_standard\\task\\cleanup_task']
+        );
         $result = $check->get_result();
         $this->assertEquals(result::OK, $result->get_status());
 
         // Now past the window.
-        $DB->set_field('task_scheduled', 'nextruntime', time() - 6 * MINSECS,
-            ['classname' => '\\logstore_standard\\task\\cleanup_task']);
+        $DB->set_field(
+            'task_scheduled',
+            'nextruntime',
+            time() - 6 * MINSECS,
+            ['classname' => '\\logstore_standard\\task\\cleanup_task']
+        );
         $result = $check->get_result();
         $this->assertEquals(result::CRITICAL, $result->get_status());
 
@@ -83,7 +94,7 @@ class tasklatencycheck_test extends \advanced_testcase {
      *
      * @covers \tool_heartbeat\task\tasklatencycheck::get_result
      */
-    public function test_task_not_run() {
+    public function test_task_not_run(): void {
         if (!class_exists('core\check\check')) {
             $this->markTestSkipped();
         }
@@ -98,21 +109,33 @@ class tasklatencycheck_test extends \advanced_testcase {
         }
 
         // Last run 1 minute ago, within window.
-        $DB->set_field('task_scheduled', 'lastruntime', time() - 1 * MINSECS,
-            ['classname' => '\\logstore_standard\\task\\cleanup_task']);
+        $DB->set_field(
+            'task_scheduled',
+            'lastruntime',
+            time() - 1 * MINSECS,
+            ['classname' => '\\logstore_standard\\task\\cleanup_task']
+        );
         $check = new \tool_heartbeat\check\tasklatencycheck();
         $result = $check->get_result();
         $this->assertEquals(result::OK, $result->get_status());
 
         // In the future? This should never happen, but shouldn't make the check barf.
-        $DB->set_field('task_scheduled', 'lastruntime', time() + 5 * MINSECS,
-            ['classname' => '\\logstore_standard\\task\\cleanup_task']);
+        $DB->set_field(
+            'task_scheduled',
+            'lastruntime',
+            time() + 5 * MINSECS,
+            ['classname' => '\\logstore_standard\\task\\cleanup_task']
+        );
         $result = $check->get_result();
         $this->assertEquals(result::OK, $result->get_status());
 
         // Now outside of the delay latency.
-        $DB->set_field('task_scheduled', 'lastruntime', time() - 10 * MINSECS,
-            ['classname' => '\\logstore_standard\\task\\cleanup_task']);
+        $DB->set_field(
+            'task_scheduled',
+            'lastruntime',
+            time() - 10 * MINSECS,
+            ['classname' => '\\logstore_standard\\task\\cleanup_task']
+        );
         $result = $check->get_result();
         $this->assertEquals(result::CRITICAL, $result->get_status());
 
@@ -132,7 +155,7 @@ class tasklatencycheck_test extends \advanced_testcase {
      *
      * @covers \tool_heartbeat\task\tasklatencycheck::get_result
      */
-    public function test_task_run_duration() {
+    public function test_task_run_duration(): void {
         if (!class_exists('core\check\check')) {
             $this->markTestSkipped();
         }
@@ -175,7 +198,6 @@ class tasklatencycheck_test extends \advanced_testcase {
             $logrecord['timestart'] = time() - 15 * MINSECS;
             $logrecord['timeend'] = time() - 12 * MINSECS;
             $DB->insert_record('task_log', $logrecord);
-
         } else {
             $lockstatsrecord['duration'] = 180;
             $DB->insert_record('tool_lockstats_history', $lockstatsrecord);
@@ -191,7 +213,6 @@ class tasklatencycheck_test extends \advanced_testcase {
             $logrecord['timeend'] = time() - 15 * MINSECS;
             $DB->delete_records('task_log');
             $DB->insert_record('task_log', $logrecord);
-
         } else {
             $lockstatsrecord['duration'] = -180;
             $DB->delete_records('tool_lockstats_history');
@@ -208,7 +229,6 @@ class tasklatencycheck_test extends \advanced_testcase {
             $logrecord['timeend'] = time() - 5 * MINSECS;
             $DB->delete_records('task_log');
             $DB->insert_record('task_log', $logrecord);
-
         } else {
             $lockstatsrecord['duration'] = 600;
             $DB->delete_records('tool_lockstats_history');

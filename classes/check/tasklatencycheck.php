@@ -42,7 +42,6 @@ use core\check\result;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tasklatencycheck extends check {
-
     /**
      * Get the status of the monitored tasks.
      *
@@ -70,7 +69,7 @@ class tasklatencycheck extends check {
                 return new result(result::ERROR, get_string('taskconfigbad', 'tool_heartbeat', $configarr[0]));
             }
 
-            list($taskclass, $runtime, $startdelay, $completiondelay) = $configarr;
+            [$taskclass, $runtime, $startdelay, $completiondelay] = $configarr;
 
             $task = \core\task\manager::get_scheduled_task($taskclass);
 
@@ -170,5 +169,4 @@ class tasklatencycheck extends check {
 
         return new result($status, $messages);
     }
-
 }

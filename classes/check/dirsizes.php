@@ -34,7 +34,6 @@ use core\check\result;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class dirsizes extends check {
-
     /**
      * Get Result.
      *
