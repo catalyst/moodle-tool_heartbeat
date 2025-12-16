@@ -66,9 +66,11 @@ class checker {
      * If exceptions are thrown, they are caught and returned as result messages as well.
      * Note - OK results are not returned.
      *
+     * @param array $filters array of check ref strings to filter by
+     *
      * @return array array of resultmessage objects
      */
-    public static function get_check_messages(): array {
+    public static function get_check_messages(array $filters = []): array {
         // First try to get the checks, if this fails return a critical message (code is very broken).
         $checks = [];
 
@@ -86,10 +88,22 @@ class checker {
 
         foreach ($checks as $check) {
             try {
+                if (!empty($filters) && !isset($filters[$check->get_ref()])) {
+                    continue;
+                }
                 $messages[] = self::process_check_and_get_result($check);
             } catch (Throwable $e) {
                 $messages[] = self::exception_to_message("Error processing check " . $check->get_ref() . ": ", $e);
             }
+        }
+
+        // Nothing executed, return a warning message.
+        if (empty($messages) && !empty($filters)) {
+            $res = new resultmessage();
+            $res->level = resultmessage::LEVEL_WARN;
+            $res->title = "Invalid filter";
+            $res->message = "No checks were executed. Check the filter names.";
+            $messages[] = $res;
         }
 
         // Add any output buffer message.
