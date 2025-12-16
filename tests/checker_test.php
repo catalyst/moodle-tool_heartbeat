@@ -23,6 +23,7 @@ namespace tool_heartbeat;
  * @author    Matthew Hilton <matthewhilton@catalyst-au.net>
  * @copyright 2023, Catalyst IT
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \tool_heartbeat\checker
  */
 final class checker_test extends \advanced_testcase {
     /**
@@ -38,6 +39,32 @@ final class checker_test extends \advanced_testcase {
         // Just test that the check API is working, and this returns some checks (for example the ones included with this plugin).
         $checks = checker::get_check_messages();
         $this->assertNotEmpty($checks);
+    }
+
+    /**
+     * Tests get_check_messages function with filter
+     * @return void
+     */
+    public function test_get_check_messages_with_filter(): void {
+        // Check API modifies DB state.
+        $this->resetAfterTest(true);
+
+        // Filter which has a result.
+        ob_start();
+        $checks = checker::get_check_messages(['tool_task_cronrunning' => true]);
+        $this->assertNotEmpty($checks);
+
+        // Filter which doesn't have result.
+        ob_start();
+        $checks = checker::get_check_messages(['tool_task_adhocqueue' => true]);
+        $this->assertEmpty($checks);
+
+        // Filter by invalid value.
+        ob_start();
+        $checks = checker::get_check_messages(['tool_invalid_name' => true]);
+        $this->assertCount(1, $checks);
+        $check = reset($checks);
+        $this->assertEquals('Invalid filter', $check->title);
     }
 
     /**
