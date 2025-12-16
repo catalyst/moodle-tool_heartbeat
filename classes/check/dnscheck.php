@@ -35,7 +35,6 @@ use core\check\result;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class dnscheck extends check {
-
     /**
      * Get Result.
      *
@@ -69,7 +68,7 @@ class dnscheck extends check {
         // Is this site using A records?
         $result = dns_get_record($domain, DNS_A);  // This will silently follow cname's to IPs.
         if (!empty($result)) {
-            $ips = array_map(function($value) {
+            $ips = array_map(function ($value) {
                 return $value['ip'];
             }, $result);
             sort($ips);
@@ -80,23 +79,19 @@ class dnscheck extends check {
 
             // If the IP is public lets try to dig up some more info on who own's the IP space.
             if (ip_is_public($ip)) {
-
                 $curl = new \curl();
                 $whoishtml = $curl->get('https://who.is/whois-ip/ip-address/' . $ip);
 
                 if (preg_match('/OrgName\:(.*)OrgId/sim', $whoishtml, $match)) {
-
                     $nethandle = clean_param(trim($match[1]), PARAM_TEXT);
 
                     $summary = "A record to '$nethandle' IP's: $ips";
                 } else {
                     $summary = "A record to $ips";
-
                 }
             } else {
                 $summary = 'A record to private IP space';
             }
-
         } else {
             $summary = 'Unknown DNS setup';
             $details = "$domain is not a CNAME or A record?";
@@ -122,5 +117,4 @@ class dnscheck extends check {
         }
         return $domain;
     }
-
 }

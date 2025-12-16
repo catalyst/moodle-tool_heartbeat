@@ -27,7 +27,7 @@ use tool_heartbeat\table\status_table;
 define('NO_OUTPUT_BUFFERING', true);
 
 require('../../../config.php');
-require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->libdir . '/adminlib.php');
 
 admin_externalpage_setup('tool_heartbeat_status', '', null, '', ['pagelayout' => 'report']);
 

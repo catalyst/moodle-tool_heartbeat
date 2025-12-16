@@ -47,12 +47,13 @@ if (isset($argv)) {
     // If run from the CLI.
     define('CLI_SCRIPT', true);
     require_once(__DIR__ . '/../../../config.php');
-    require_once(__DIR__.'/nagios.php');
+    require_once(__DIR__ . '/nagios.php');
     require_once($CFG->libdir . '/clilib.php');
 
-    list($options, $unrecognized) = cli_get_params($options,
-    [
-        'h' => 'help',
+    [$options, $unrecognized] = cli_get_params(
+        $options,
+        [
+            'h' => 'help',
         ]
     );
 
@@ -76,14 +77,13 @@ if (isset($argv)) {
 
         die;
     }
-
 } else {
     // If run from the web.
     require_once(__DIR__ . '/../../../config.php');
-    require_once(__DIR__.'/nagios.php');
+    require_once(__DIR__ . '/nagios.php');
     tool_heartbeat\lib::validate_ip_against_config();
 
-    $options['critthresh'] = optional_param('critthresh', $options['critthresh'],  PARAM_INT);
+    $options['critthresh'] = optional_param('critthresh', $options['critthresh'], PARAM_INT);
     $options['warnthresh'] = optional_param('warnthresh', $options['warnthresh'], PARAM_INT);
 
     header("Content-Type: text/plain");

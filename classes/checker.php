@@ -96,7 +96,7 @@ class checker {
         $messages[] = self::get_ob_message();
 
         // Filter out any OK messages, we don't care about these.
-        $messages = array_filter($messages, function($m) {
+        $messages = array_filter($messages, function ($m) {
             return $m->level != resultmessage::LEVEL_OK;
         });
 
@@ -123,7 +123,7 @@ class checker {
         }
 
         // Process these using the HTML cleaning function.
-        list($title, $message) = self::process_title_and_message($res->title, $res->message, "");
+        [$title, $message] = self::process_title_and_message($res->title, $res->message, "");
         $res->title = $title;
         $res->message = $message;
 
@@ -161,8 +161,11 @@ class checker {
         $status = $checkresult->get_status();
         $res->level = isset($map[$status]) ? $map[$status] : resultmessage::LEVEL_UNKNOWN;
 
-        list($title, $message) = self::process_title_and_message($check->get_name(), $checkresult->get_summary(),
-            $checkresult->get_details());
+        [$title, $message] = self::process_title_and_message(
+            $check->get_name(),
+            $checkresult->get_summary(),
+            $checkresult->get_details()
+        );
         $res->title = $title;
         $res->message = $message;
 
@@ -186,7 +189,7 @@ class checker {
         $messagelines = array_merge($messagelines, explode("\n", $details));
 
         // Clean each one.
-        $messagelines = array_map(function($line) {
+        $messagelines = array_map(function ($line) {
             return self::clean_text($line);
         }, $messagelines);
 
@@ -244,7 +247,7 @@ class checker {
         $hasunknown = in_array(resultmessage::LEVEL_UNKNOWN, $levels);
 
         // Remove unknowns.
-        $levels = array_filter($levels, function($l) {
+        $levels = array_filter($levels, function ($l) {
             return $l != resultmessage::LEVEL_UNKNOWN;
         });
 
@@ -272,7 +275,7 @@ class checker {
     public static function create_summary(array $messages): string {
         // Filter out any OK messages.
         // Usually they are filtered out already, but in case they aren't.
-        $messages = array_filter($messages, function($m) {
+        $messages = array_filter($messages, function ($m) {
             return $m->level != resultmessage::LEVEL_OK;
         });
 
@@ -317,7 +320,7 @@ class checker {
      */
     public static function remove_supressed_checks(array $checks): array {
         // Remove any supressed checks from the list.
-        return array_filter($checks, function($check) {
+        return array_filter($checks, function ($check) {
             return !in_array(get_class($check), self::supressed_checks());
         });
     }
@@ -333,7 +336,8 @@ class checker {
     public static function apply_configuration_settings($ref, result $result): result {
         global $CFG, $OUTPUT;
         // No configuration exists, short circuit.
-        if (!isset($CFG->tool_heartbeat_check_defaults)
+        if (
+            !isset($CFG->tool_heartbeat_check_defaults)
             || !is_array($CFG->tool_heartbeat_check_defaults)
         ) {
             return $result;
@@ -347,7 +351,7 @@ class checker {
         // always applies.
         $tests = array_keys($CFG->tool_heartbeat_check_defaults);
         foreach ($tests as $test) {
-            $regex = '/'.$test.'/';
+            $regex = '/' . $test . '/';
             if (preg_match($regex, $ref)) {
                 // This key matched, get the maximum fail delay.
                 $max = $CFG->tool_heartbeat_check_defaults[$test]['maxwarninglevel'];

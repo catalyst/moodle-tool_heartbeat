@@ -46,4 +46,3 @@ class resultmessage {
     /** @var string $message Details of this message **/
     public $message = '';
 }
-

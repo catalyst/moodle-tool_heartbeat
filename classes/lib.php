@@ -50,14 +50,14 @@ class lib {
     public static function validate_ip_against_config() {
         $iplist = self::get_allowed_ips();
         // Require library for nagios responses.
-        require_once(__DIR__.'/../nagios.php');
+        require_once(__DIR__ . '/../nagios.php');
         // Validate remote IP against safe list.
         if (remoteip_in_list($iplist)) {
             return;
         } else if (trim($iplist) == '') {
             return;
         } else {
-            $msg = 'Failed IP check from '.getremoteaddr();
+            $msg = 'Failed IP check from ' . getremoteaddr();
             send_unknown($msg);
         }
     }
@@ -70,8 +70,13 @@ class lib {
      * @param int $readbackvalue the value read back from the cache immediately after it was set.
      * @param string $where cron or web
      */
-    public static function record_cache_pinged(int $previousincache, int $previousindb, int $newvalueset, int $readbackvalue,
-        string $where) {
+    public static function record_cache_pinged(
+        int $previousincache,
+        int $previousindb,
+        int $newvalueset,
+        int $readbackvalue,
+        string $where
+    ) {
         $details = [
                 'previousvalueindb' => $previousindb,
                 'previousvalueincache' => $previousincache,
@@ -137,4 +142,3 @@ class lib {
         }
     }
 }
-

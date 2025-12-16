@@ -49,9 +49,9 @@ $endtime = microtime(true);
 
 $duration = $endtime - $starttime; // In seconds.
 
-printf("Size = %.1fMB, Time = %.3fs,  %.1fMbps ",
+printf(
+    "Size = %.1fMB, Time = %.3fs,  %.1fMbps ",
     $totalbytes / 1024 / 1024,
     $duration,
     $totalbytes * 8 / $duration / 1000 / 1000
 );
-

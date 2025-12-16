@@ -39,4 +39,3 @@ header('Expires: Tue, 04 Sep 2012 05:32:29 GMT');
 
 $check = new \tool_heartbeat\check\rangerequestcheck();
 send_check($check);
-

@@ -33,7 +33,6 @@ use core\persistent;
  * Represents a heartbeat override.
  */
 class override extends Persistent {
-
     /**
      * Table name for the persistent.
      */

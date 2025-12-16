@@ -28,7 +28,7 @@ use tool_heartbeat\object\override;
 define('NO_OUTPUT_BUFFERING', true);
 
 require('../../../config.php');
-require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->libdir . '/adminlib.php');
 
 admin_externalpage_setup('tool_heartbeat_status');
 
@@ -77,7 +77,6 @@ $form = new override_form($PAGE->url->out(false), $customdata);
 if ($form->is_cancelled()) {
     redirect($statuspage);
 } else if ($data = $form->get_data()) {
-
     try {
         if (empty($data->id)) {
             // If there is no ID we need to create a new persistent.

@@ -146,6 +146,4 @@ function send_check(\core\check\check $check): void {
         send_warning($result->get_summary(), $result->get_details());
     }
     send_critical($result->get_summary(), $result->get_details());
-
 }
-

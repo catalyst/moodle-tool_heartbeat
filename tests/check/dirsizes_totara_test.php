@@ -29,7 +29,6 @@ use tool_heartbeat\check\dirsizes;
  * @coversDefaultClass \tool_heartbeat\check\dirsizes
  */
 final class dirsizes_totara_test extends \advanced_testcase {
-
     protected function setUp(): void {
         parent::setUp();
         $this->resetAfterTest(true);
@@ -91,4 +90,3 @@ final class dirsizes_totara_test extends \advanced_testcase {
         return $method->invokeArgs($object, $args);
     }
 }
-

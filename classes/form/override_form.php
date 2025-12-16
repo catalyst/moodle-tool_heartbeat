@@ -36,7 +36,6 @@ use tool_heartbeat\object\override;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class override_form extends persistent {
-
     /** @var string Persistent class name. */
     protected static $persistentclass = 'tool_heartbeat\\object\\override';
 

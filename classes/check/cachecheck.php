@@ -30,7 +30,6 @@ use tool_heartbeat\lib;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cachecheck extends check {
-
     /**
      * Get Result.
      *
@@ -40,7 +39,7 @@ class cachecheck extends check {
         $results = $this->check('web');
         $results += $this->check('cron');
 
-        list($status, $summary) = $this->build_result($results);
+        [$status, $summary] = $this->build_result($results);
 
         $details = '';
 

@@ -26,14 +26,14 @@ define('NO_OUTPUT_BUFFERING', true);
 require(__DIR__ . '/../../../config.php');
 require_login();
 
-$stage       = optional_param('stage', 1,       PARAM_NUMBER);
+$stage       = optional_param('stage', 1, PARAM_NUMBER);
 $ignoreabort = optional_param('ignoreabort', 0, PARAM_NUMBER);
 
-$usleep      = optional_param('usleep', 100000,  PARAM_NUMBER);
-$abort       = optional_param('abort',    5,    PARAM_NUMBER);
-$redirect    = optional_param('redirect', 1,    PARAM_NUMBER);
-$reload      = optional_param('reload',   1,    PARAM_NUMBER);
-$updates     = optional_param('updates',  100,  PARAM_NUMBER);
+$usleep      = optional_param('usleep', 100000, PARAM_NUMBER);
+$abort       = optional_param('abort', 5, PARAM_NUMBER);
+$redirect    = optional_param('redirect', 1, PARAM_NUMBER);
+$reload      = optional_param('reload', 1, PARAM_NUMBER);
+$updates     = optional_param('updates', 100, PARAM_NUMBER);
 
 if ($ignoreabort) {
     ignore_user_abort(true);
@@ -108,4 +108,3 @@ EOF;
     }
     $SESSION->abortprogress = 100;
 }
-

@@ -87,7 +87,7 @@ foreach ($files as $file) {
     }
 }
 
-$file = $CFG->libdir.'/setuplib.php';
+$file = $CFG->libdir . '/setuplib.php';
 $contents = file_get_contents($file);
 $lines = explode("\n", $contents);
 if (in_array("    header('X-Accel-Buffering: no');", $lines)) {
@@ -141,4 +141,3 @@ if ($pass) {
     echo $output;
     exit(1);
 }
-

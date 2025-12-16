@@ -25,7 +25,6 @@ namespace tool_heartbeat;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class hook_callbacks {
-
     /**
      * Runs before HTTP headers. Used to ping the cachecheck.
      *
