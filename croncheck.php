@@ -116,5 +116,9 @@ $level = checker::determine_nagios_level($messages);
 $prefix = checker::NAGIOS_PREFIXES[$level];
 $now = userdate(time());
 
-printf("{$prefix}: $msg\n\n(Checked {$now})\n");
+echo "{$prefix}: $msg\n\n";
+if ($filterids) {
+    echo "Filtered to subset of checks: " . join(', ', array_keys($filterids)) . " \n";
+}
+echo "(Checked {$now})\n";
 exit($level);
