@@ -41,7 +41,11 @@ final class dirsizes_totara_test extends \advanced_testcase {
      * @covers ::get_directory_size_totara
      */
     public function test_dirsize_totara_counts_files(): void {
+        if (!class_exists('\core\check\check')) {
+            $this->markTestSkipped();
+        }
         global $CFG;
+
         $dir = make_request_directory('tool_heartbeat_test1');
         $CFG->tempdir = $dir;
 
@@ -60,6 +64,9 @@ final class dirsizes_totara_test extends \advanced_testcase {
      * @covers ::get_directory_size_totara
      */
     public function test_dirsize_totara_counts_nested_files(): void {
+        if (!class_exists('\core\check\check')) {
+            $this->markTestSkipped();
+        }
         global $CFG;
 
         $dir = make_request_directory('tool_heartbeat_test2');
