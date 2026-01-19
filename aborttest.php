@@ -64,9 +64,15 @@ if ($stage == 2) {
     $progress = $SESSION->abortprogress;
 
     if ($progress > 0 && $progress < 100) {
-        echo $OUTPUT->notification("Yay! the request was correctly aborted at {$progress}%", \core\output\notification::NOTIFY_SUCCESS);
+        echo $OUTPUT->notification(
+            "Yay! the request was correctly aborted at {$progress}%",
+            \core\output\notification::NOTIFY_SUCCESS
+        );
     } else {
-        echo $OUTPUT->notification("Doh! the request was not aborted: {$progress}%", \core\output\notification::NOTIFY_ERROR);
+        echo $OUTPUT->notification(
+            "Doh! the request was not aborted: {$progress}%",
+            \core\output\notification::NOTIFY_ERROR
+        );
     }
 
     echo "<p><a class='btn btn-primary' href='aborttest.php'>Start again</a></p>";

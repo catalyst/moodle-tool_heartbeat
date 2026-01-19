@@ -77,6 +77,13 @@ $string['overridden'] = 'Status overridden, was {$a}';
 $string['override'] = 'Display status';
 $string['overriderestore'] = 'Fields have been pre-filled with information from a previous override.';
 $string['pluginname'] = 'Heartbeat';
+$string['privacy:metadata:tool_heartbeat_overrides'] = 'Heartbeat Overrides';
+$string['privacy:metadata:tool_heartbeat_overrides:note'] = 'Override note added by user';
+$string['privacy:metadata:tool_heartbeat_overrides:timecreated'] = 'Timestamp when the override was created';
+$string['privacy:metadata:tool_heartbeat_overrides:timemodified'] = 'Timestamp when the override was modified';
+$string['privacy:metadata:tool_heartbeat_overrides:url'] = 'Override URL added by user';
+$string['privacy:metadata:tool_heartbeat_overrides:userid'] = 'User who created the override';
+$string['privacy:metadata:tool_heartbeat_overrides:usermodified'] = 'User who modified the override';
 $string['progress'] = 'Progress bar test';
 $string['progresshelp'] = 'This tests that all the various output buffers in the entire stack are corrent including but not limited to php, ob, gzip/deflat, varnish, nginx etc';
 $string['setinitialauthstate'] = 'Initial auth state for heartbeat auth check set.';
@@ -114,15 +121,3 @@ $string['testing'] = 'Test heartbeat';
 $string['testingdesc'] = 'You can use this to temporarily fake a warn or error condition to test that your monitoring is correctly working end to end.';
 $string['testwarning'] = 'Fake a warning';
 $string['unmute'] = 'Unmute';
-
-
-/*
- * Privacy provider (GDPR)
- */
-$string['privacy:metadata:tool_heartbeat_overrides'] = 'Heartbeat Overrides';
-$string['privacy:metadata:tool_heartbeat_overrides:note'] = 'Override note added by user';
-$string['privacy:metadata:tool_heartbeat_overrides:url'] = 'Override URL added by user';
-$string['privacy:metadata:tool_heartbeat_overrides:userid'] = 'User who created the override';
-$string['privacy:metadata:tool_heartbeat_overrides:usermodified'] = 'User who modified the override';
-$string['privacy:metadata:tool_heartbeat_overrides:timecreated'] = 'Timestamp when the override was created';
-$string['privacy:metadata:tool_heartbeat_overrides:timemodified'] = 'Timestamp when the override was modified';
