@@ -92,7 +92,7 @@ $PAGE->set_context(\context_system::instance());
 $msg = array_map(function($message) {
     global $OUTPUT;
 
-    $spacer = " ";
+    $spacer = '    ';
 
     // Add the spacer to the start of each message line.
     $indentedlines = explode("\n", $message->message);
