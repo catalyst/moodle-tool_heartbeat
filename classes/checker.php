@@ -193,7 +193,13 @@ class checker {
      * @param string $details
      * @return array array of [$title, $message]
      */
-    private static function process_title_and_message(string $title, string $summary, string $details): array {
+    public static function process_title_and_message(string $title, string $summary, string $details): array {
+
+        // Convert rich html to text first.
+        $details = html_to_text($details);
+        // Condense repeated new lines.
+        $details = preg_replace("/\\n+/", "\n", $details);
+
         // Strip tags from summary and details.
         $summary = self::clean_text($summary);
         $details = self::clean_text($details);

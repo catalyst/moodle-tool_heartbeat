@@ -106,7 +106,7 @@ final class checker_test extends \advanced_testcase {
      * @param int $expectedlevel
      * @dataProvider determine_nagios_level_provider
      */
-    public function test_determine_nagios_level(array $levels, int $expectedlevel) {
+    public function test_determine_nagios_level(array $levels, int $expectedlevel): void {
         // Generate a series of dummy messages with the given levels.
         $messages = array_map(function ($level) {
             $msg = new resultmessage();
@@ -137,7 +137,7 @@ final class checker_test extends \advanced_testcase {
         $criticalmsg->level = resultmessage::LEVEL_CRITICAL;
         $criticalmsg->title = "test CRITICAL title";
 
-        // Pipes should be cleaned from output and replaced with [pipe]
+        // Pipes should be cleaned from output and replaced with [pipe].
         $criticalwithpipemsg = new resultmessage();
         $criticalwithpipemsg->level = resultmessage::LEVEL_CRITICAL;
         $criticalwithpipemsg->title = "test CRITICAL title |";
@@ -175,5 +175,47 @@ final class checker_test extends \advanced_testcase {
     public function test_create_summary(array $messages, string $expectedsummary): void {
         $summary = checker::create_summary($messages);
         $this->assertEquals($expectedsummary, $summary);
+    }
+
+
+    /**
+     * Provides values to test_create_summary test
+     * @return array
+     */
+    public static function process_title_and_message_provider(): array {
+        return [
+            'no html just \ n' => [
+                'html' => "hello\nworld\n",
+                'text' => "hello world",
+            ],
+            'paragraphs' => [
+                'html' => "<p>hello</p><p>world</p>",
+                'text' => "hello\nworld",
+            ],
+            'sinple br' => [
+                'html' => "hello<br>world<br>",
+                'text' => "hello\nworld",
+            ],
+            'sinple br /' => [
+                'html' => "hello<br />world<br />",
+                'text' => "hello\nworld",
+            ],
+            'sinple br/' => [
+                'html' => "hello<br/>world<br/>",
+                'text' => "hello\nworld",
+            ],
+        ];
+    }
+
+    /**
+     * Tests the html to text
+     *
+     * @param array $detailshtml
+     * @param string $expecteddetailstext
+     * @dataProvider process_title_and_message_provider
+     */
+    public function test_process_title_and_message(string $html, string $text): void {
+        [$title, $actual] = checker::process_title_and_message('title', 'message', $html);
+        $this->assertEquals($text, $actual);
     }
 }
