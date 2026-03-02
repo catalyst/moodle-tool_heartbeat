@@ -151,6 +151,11 @@ class checker {
      * @return resultmessage
      */
     private static function exception_to_message(string $prefix, Throwable $e): resultmessage {
+        // Errors can be swallowed, make sure phpunit can see them.
+        if (defined('PHPUNIT_TEST') && PHPUNIT_TEST) {
+            throw $e;
+        }
+
         $res = new resultmessage();
         $res->level = resultmessage::LEVEL_WARN;
         $res->title = $prefix . $e->getMessage();
