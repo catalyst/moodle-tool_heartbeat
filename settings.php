@@ -24,9 +24,18 @@
  */
 defined('MOODLE_INTERNAL') || die;
 
+use core\setting\part\page;
+use core\setting\type\select;
+use core\setting\type\list_ipaddresses;
+use core\setting\type\duration;
+use core\setting\type\list_ipmixedhost;
+use core\setting\type\text;
+use core\setting\type\checkbox;
+use core\setting\type\textarea;
+
 if ($hassiteconfig) {
 
-    $settings = new admin_settingpage('tool_heartbeat', get_string('pluginname', 'tool_heartbeat'));
+    $settings = new page('tool_heartbeat', get_string('pluginname', 'tool_heartbeat'));
 
     $ADMIN->add('tools', $settings);
     if (!during_initial_install()) {
@@ -36,7 +45,7 @@ if ($hassiteconfig) {
             'warn' => new lang_string('testwarning', 'tool_heartbeat'),
             'error' => new lang_string('testerror', 'tool_heartbeat'),
         );
-        $settings->add(new admin_setting_configselect('tool_heartbeat/testing',
+        $settings->add(new select('tool_heartbeat/testing',
                         new lang_string('testing',        'tool_heartbeat'),
                         new lang_string('testingdesc',    'tool_heartbeat'),
                         'error',
@@ -59,13 +68,13 @@ if ($hassiteconfig) {
         $description .= html_writer::tag('p', get_string('ips_combine', 'tool_heartbeat'));
 
         // IP entry box for blocking.
-        $iplist = new admin_setting_configiplist('tool_heartbeat/allowedips',
+        $iplist = new list_ipaddresses('tool_heartbeat/allowedips',
                     new lang_string('allowedipstitle', 'tool_heartbeat'),
                     (new lang_string('allowedipsdescription', 'tool_heartbeat').$description),
                     ''  );
         $settings->add($iplist);
 
-        $iplist = new admin_setting_configiplist(
+        $iplist = new list_ipmixedhost(
             'tool_heartbeat/allowedips_forced',
             get_string('builtinallowediplist', 'tool_heartbeat'),
             get_string('builtinallowediplist_desc', 'tool_heartbeat'),
@@ -73,11 +82,11 @@ if ($hassiteconfig) {
         );
         $settings->add($iplist);
 
-        $settings->add(new admin_setting_configduration('tool_heartbeat/errorlog',
+        $settings->add(new duration('tool_heartbeat/errorlog',
                 get_string('errorlog', 'tool_heartbeat'),
                 get_string('errorlogdesc', 'tool_heartbeat'), 30 * MINSECS, MINSECS));
 
-        $settings->add(new admin_setting_configtext('tool_heartbeat/configuredauths',
+        $settings->add(new text('tool_heartbeat/configuredauths',
                 get_string('configuredauths', 'tool_heartbeat'),
                 get_string('configuredauthsdesc', 'tool_heartbeat'), '', PARAM_TEXT));
 
@@ -87,29 +96,23 @@ if ($hassiteconfig) {
             'warning' => 'WARNING'
         ];
         $time = new \DateTime('now', core_date::get_server_timezone_object());
-        $settings->add(new admin_setting_configselect('tool_heartbeat/errorcritical',
+        $settings->add(new select('tool_heartbeat/errorcritical',
                 get_string('errorascritical', 'tool_heartbeat'),
                 get_string('errorascritical_desc', 'tool_heartbeat', $time->format('e P')), 'warning', $opts));
 
         $example = '\logstore_standard\task\cleanup_task, 5, 5, 5';
-        $settings->add(new admin_setting_configtextarea('tool_heartbeat/tasklatencymonitoring',
+        $settings->add(new textarea('tool_heartbeat/tasklatencymonitoring',
                 get_string('tasklatencymonitoring', 'tool_heartbeat'),
                 get_string('tasklatencymonitoring_desc', 'tool_heartbeat', $example), '', PARAM_TEXT));
 
-        // Cache consistency check settings.
-        $settings->add(new admin_setting_heading('tool_heartbeat/cachechecksettings',
-            get_string('settings:cachecheckheading', 'tool_heartbeat'),
-            ''
-        ));
-
-        $settings->add(new admin_setting_configcheckbox('tool_heartbeat/shouldlogcacheping',
+        $settings->add(new checkbox('tool_heartbeat/shouldlogcacheping',
             get_string('settings:shouldlogcacheping:heading', 'tool_heartbeat'),
             get_string('settings:shouldlogcacheping:desc', 'tool_heartbeat'),
             // Since pinging only happens usually once every 24 hrs, we default this on as it is quite lightweight.
             1
         ));
 
-        $settings->add(new admin_setting_configcheckbox('tool_heartbeat/shouldlogcachecheck',
+        $settings->add(new checkbox('tool_heartbeat/shouldlogcachecheck',
             get_string('settings:shouldlogcachecheck:heading', 'tool_heartbeat'),
             get_string('settings:shouldlogcachecheck:desc', 'tool_heartbeat'),
             // This happens every time the check api cachecheck is called, which is a lot more often than pinging.
