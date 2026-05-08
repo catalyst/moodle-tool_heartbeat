@@ -24,7 +24,7 @@ namespace tool_heartbeat;
  * @copyright 2022, Catalyst IT
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class lib_test extends \advanced_testcase {
+class lib_test extends \externallib_advanced_testcase {
     /**
      * Test lib::test_get_allowed_ips()
      */
