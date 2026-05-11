@@ -26,6 +26,7 @@ https://tracker.moodle.org/browse/MDL-47271
 | ------------------ | ----------------- | ----------- |
 | master             | Moodle 2.7 - 4.1  | Php 5.4.4+  |
 | MOODLE_39_STABLE   | Moodle 3.9 +      | Php 7.2+    |
+| TOTARA_20          | Totara 20+        | Php 8.2+    |
 
 The master branch retains very deep support for old Totara's and Moodle's back to Moodle 2.7.
 
