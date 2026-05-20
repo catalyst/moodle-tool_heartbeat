@@ -130,7 +130,7 @@ if ($response !== false) {
     }
 }
 
-curl_close($curl);
+curl_reset($curl);
 
 if ($pass) {
     echo "OK: All tests passed\n";

@@ -65,7 +65,7 @@ class rangerequestcheck extends check {
             }
         }
 
-        curl_close($curl);
+        curl_reset($curl);
 
         return new result(result::ERROR, get_string('checkrangerequestbad', 'tool_heartbeat', [
             'url'   => $url->out(),
