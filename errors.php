@@ -74,6 +74,9 @@ echo $OUTPUT->heading('Tests for all errors in the whole stack');
     <a href='errors/moodlesleep.php?time=300'>errors/moodlesleep.php?time=300</a></li>
 <li>A 502 Bad Gateway, proxy cannot connect at all (how to test?)</li>
 
+<h3>Error logging</h3>
+<li>A bunch of different ways to all emit an error to log files or syslog <a href="errors/error_log.php">error_log.php</a></li>
+
 <?php
 // @codingStandardsIgnoreEnd
 
