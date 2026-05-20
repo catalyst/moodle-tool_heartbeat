@@ -30,7 +30,7 @@ use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
-use tool_heartbeat\object\override;
+use tool_heartbeat\local\override;
 
 /**
  * Privacy provider.

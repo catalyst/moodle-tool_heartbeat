@@ -421,7 +421,7 @@ class checker {
         // Apply any configured global configuration options to the result.
         $result = self::apply_configuration_settings($ref, $result);
 
-        $override = \tool_heartbeat\object\override::get_active_override($ref);
+        $override = \tool_heartbeat\local\override::get_active_override($ref);
         if (!isset($override)) {
             return $result;
         }
