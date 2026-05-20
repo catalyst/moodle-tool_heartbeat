@@ -19,6 +19,7 @@ namespace tool_heartbeat\check;
 use action_link;
 use core\check\check;
 use core\check\result;
+use core_plugin_manager;
 use moodle_url;
 
 /**
@@ -43,6 +44,7 @@ class scheduledqueue extends check {
      */
     public function get_result(): result {
         $now = time();
+        $pluginmanager = core_plugin_manager::instance();
 
         // Use the task manager API so that $CFG->scheduled_tasks config overrides
         // (which can force-disable or force-enable tasks) are respected.
@@ -53,6 +55,14 @@ class scheduledqueue extends check {
             if ($task->get_disabled()) {
                 continue;
             }
+
+            // Mirror core task dispatch behaviour: if the component plugin is
+            // disabled, skip this task unless it is explicitly allowed to run.
+            $plugininfo = $pluginmanager->get_plugin_info($task->get_component());
+            if ($plugininfo && $plugininfo->is_enabled() === false && !$task->get_run_if_component_disabled()) {
+                continue;
+            }
+
             $age = $now - $task->get_next_run_time();
             if ($age > 0) {
                 $overdue[] = (object)[
