@@ -24,7 +24,7 @@
  *
  */
 
-namespace tool_heartbeat\object;
+namespace tool_heartbeat\local;
 
 use core\check\result;
 use core\persistent;

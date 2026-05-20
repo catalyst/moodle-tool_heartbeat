@@ -123,7 +123,7 @@ if ($hassiteconfig) {
             WEEKSECS
         ));
 
-        $statuslist = tool_heartbeat\object\override::get_status_list();
+        $statuslist = tool_heartbeat\local\override::get_status_list();
         reset($statuslist);
         $settings->add(new admin_setting_configselect(
             'tool_heartbeat/mutedefaultstatus',

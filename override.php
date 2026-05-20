@@ -23,7 +23,7 @@
  */
 
 use tool_heartbeat\form\override_form;
-use tool_heartbeat\object\override;
+use tool_heartbeat\local\override;
 
 define('NO_OUTPUT_BUFFERING', true);
 

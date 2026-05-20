@@ -108,7 +108,7 @@ class status_table extends table {
     private function get_override_status($output, string $ref, result $result): string {
         global $OUTPUT;
 
-        $override = \tool_heartbeat\object\override::get_active_override($ref);
+        $override = \tool_heartbeat\local\override::get_active_override($ref);
         $rowdata = '';
 
         // If we have an existing override, display the comment.
@@ -136,7 +136,7 @@ class status_table extends table {
     private function get_override_html($output, string $ref, result $result): string {
         global $OUTPUT;
 
-        $override = \tool_heartbeat\object\override::get_active_override($ref);
+        $override = \tool_heartbeat\local\override::get_active_override($ref);
         $overridelink = new \moodle_url('/admin/tool/heartbeat/override.php', ['ref' => $ref]);
         $rowdata = '';
 

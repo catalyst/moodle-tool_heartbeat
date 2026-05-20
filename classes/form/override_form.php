@@ -26,7 +26,7 @@
 namespace tool_heartbeat\form;
 
 use core\form\persistent;
-use tool_heartbeat\object\override;
+use tool_heartbeat\local\override;
 
 /**
  * Override form
@@ -37,7 +37,7 @@ use tool_heartbeat\object\override;
  */
 class override_form extends persistent {
     /** @var string Persistent class name. */
-    protected static $persistentclass = 'tool_heartbeat\\object\\override';
+    protected static $persistentclass = 'tool_heartbeat\\local\\override';
 
     /**
      * Define the form.
