@@ -29,7 +29,13 @@ use tool_heartbeat\check\scheduledqueue;
  */
 final class scheduledqueue_test extends \advanced_testcase {
     /** A real scheduled task classname guaranteed to exist. */
-    private const TASK = '\\logstore_standard\\task\\cleanup_task';
+    private const TASK = '\\core\\task\\session_cleanup_task';
+
+    /** Another real core scheduled task for tests requiring multiple tasks. */
+    private const SECOND_TASK = '\\core\\task\\backup_cleanup_task';
+
+    /** A scheduled task belonging to a component disabled in PHPUnit by default. */
+    private const DISABLED_COMPONENT_TASK = '\\logstore_standard\\task\\cleanup_task';
 
     /**
      * Set up: reset DB and push all scheduled tasks into the future so they
@@ -54,8 +60,16 @@ final class scheduledqueue_test extends \advanced_testcase {
      * Helper: set nextruntime for the test task relative to now.
      */
     private function set_nextruntime(int $offsetsecs): void {
+        $this->set_task_nextruntime(self::TASK, $offsetsecs);
+    }
+
+    /**
+     * Helper: set nextruntime for a task relative to now.
+     */
+    private function set_task_nextruntime(string $classname, int $offsetsecs): void {
         global $DB;
-        $DB->set_field('task_scheduled', 'nextruntime', time() + $offsetsecs, ['classname' => self::TASK]);
+        $DB->set_field('task_scheduled', 'disabled', 0, ['classname' => $classname]);
+        $DB->set_field('task_scheduled', 'nextruntime', time() + $offsetsecs, ['classname' => $classname]);
     }
 
     /**
@@ -119,16 +133,30 @@ final class scheduledqueue_test extends \advanced_testcase {
     }
 
     /**
+     * Tasks belonging to disabled components must be ignored.
+     */
+    public function test_disabled_component_task_is_ignored(): void {
+        global $DB;
+
+        // PHPUnit disables logstores by default, but set this explicitly so the
+        // test covers the component-disabled behaviour.
+        set_config('enabled_stores', '', 'tool_log');
+
+        $DB->set_field('task_scheduled', 'nextruntime', time() - DAYSECS, ['classname' => self::DISABLED_COMPONENT_TASK]);
+        $DB->set_field('task_scheduled', 'disabled', 0, ['classname' => self::DISABLED_COMPONENT_TASK]);
+
+        $check = new scheduledqueue();
+        $result = $check->get_result();
+        $this->assertEquals(result::OK, $result->get_status());
+    }
+
+    /**
      * The summary string mentions the count and the exceeded threshold, not the exact age.
      */
     public function test_summary_includes_count_and_threshold(): void {
-        global $DB;
-
         // Make two tasks overdue past the warning threshold (2 min).
-        $tasks = $DB->get_records_select('task_scheduled', 'disabled = 0', [], 'classname', 'id, classname', 0, 2);
-        foreach ($tasks as $task) {
-            $DB->set_field('task_scheduled', 'nextruntime', time() - 3 * MINSECS, ['id' => $task->id]);
-        }
+        $this->set_task_nextruntime(self::TASK, -3 * MINSECS);
+        $this->set_task_nextruntime(self::SECOND_TASK, -3 * MINSECS);
 
         $check = new scheduledqueue();
         $result = $check->get_result();
@@ -143,11 +171,9 @@ final class scheduledqueue_test extends \advanced_testcase {
      * When there are multiple overdue tasks, the details list each one.
      */
     public function test_details_lists_each_overdue_task(): void {
-        global $DB;
-
-        $tasks = $DB->get_records_select('task_scheduled', 'disabled = 0', [], 'classname', 'id, classname', 0, 2);
+        $tasks = [self::TASK, self::SECOND_TASK];
         foreach ($tasks as $task) {
-            $DB->set_field('task_scheduled', 'nextruntime', time() - 3 * MINSECS, ['id' => $task->id]);
+            $this->set_task_nextruntime($task, -3 * MINSECS);
         }
 
         $check = new scheduledqueue();
@@ -155,7 +181,7 @@ final class scheduledqueue_test extends \advanced_testcase {
 
         $details = $result->get_details();
         foreach ($tasks as $task) {
-            $this->assertStringContainsString(ltrim($task->classname, '\\'), $details);
+            $this->assertStringContainsString(ltrim($task, '\\'), $details);
         }
     }
 
@@ -164,22 +190,10 @@ final class scheduledqueue_test extends \advanced_testcase {
      * WARNING-level overdue tasks should still produce a WARNING overall.
      */
     public function test_worst_task_drives_status(): void {
-        global $DB;
-
-        $tasks = array_values($DB->get_records_select(
-            'task_scheduled',
-            'disabled = 0',
-            [],
-            'classname',
-            'id, classname',
-            0,
-            2
-        ));
-
         // First task: just past warn threshold.
-        $DB->set_field('task_scheduled', 'nextruntime', time() - 3 * MINSECS, ['id' => $tasks[0]->id]);
+        $this->set_task_nextruntime(self::TASK, -3 * MINSECS);
         // Second task: within warn threshold (INFO level only).
-        $DB->set_field('task_scheduled', 'nextruntime', time() - MINSECS, ['id' => $tasks[1]->id]);
+        $this->set_task_nextruntime(self::SECOND_TASK, -MINSECS);
 
         $check = new scheduledqueue();
         $result = $check->get_result();
