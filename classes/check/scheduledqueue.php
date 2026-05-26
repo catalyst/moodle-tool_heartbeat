@@ -50,9 +50,10 @@ class scheduledqueue extends check {
 
         $overdue = [];
         foreach ($alltasks as $task) {
-            if ($task->get_disabled()) {
+            if (!$task->is_enabled()) {
                 continue;
             }
+
             $age = $now - $task->get_next_run_time();
             if ($age > 0) {
                 $overdue[] = (object)[
