@@ -36,10 +36,10 @@ echo $OUTPUT->heading("Error logs");
 echo "<p>This will emit a whole bunch of errors to the error log in a couple ways.</p>";
 
 // phpcs:disable moodle.PHP.ForbiddenFunctions.FoundWithAlternative
-error_log('1/6 error using error_log()');
-error_log('2/6 error using error_log()');
-error_log('3/6 error using error_log(..., 4) to SAPI', 4);
-error_log('4/6 error using error_log(..., 4) to SAPI', 4);
+error_log('1/6 error using error_log()'); // phpcs:ignore moodle.PHP.ForbiddenFunctions.FoundWithAlternative
+error_log('2/6 error using error_log()'); // phpcs:ignore moodle.PHP.ForbiddenFunctions.FoundWithAlternative
+error_log('3/6 error using error_log(..., 4) to SAPI', 4); // phpcs:ignore moodle.PHP.ForbiddenFunctions.FoundWithAlternative
+error_log('4/6 error using error_log(..., 4) to SAPI', 4); // phpcs:ignore moodle.PHP.ForbiddenFunctions.FoundWithAlternative
 // phpcs:enable moodle.PHP.ForbiddenFunctions.FoundWithAlternative
 file_put_contents('php://stderr', "5/6 using file_put_contents to stderr\n", FILE_APPEND);
 file_put_contents('php://stderr', "6/6 using file_put_contents to stderr\n", FILE_APPEND);
