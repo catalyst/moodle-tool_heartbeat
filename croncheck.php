@@ -41,7 +41,50 @@ if ($iscli) {
 }
 
 $dirroot = __DIR__ . '/../../../';
+
+if (substr($_SERVER['SCRIPT_FILENAME'], -42) == '/public/admin/tool/heartbeat/croncheck.php') {
+    // We are in Moodle 5.2 under the public/ sub path.
+    $dirroot = __DIR__ . '/../../../../';
+}
+
+/**
+ * Checks if the command line maintenance mode has been enabled. Skip the config bootstrapping.
+ *
+ * @param string $configfile The relative path for config.php
+ * @return bool True if climaintenance.html is found.
+ */
+function check_climaintenance($configfile) {
+    $content = file_get_contents($configfile);
+
+    // Set comments to be on newlines, replace '//' with '\n//', where // does not start with a : colon.
+    $content = preg_replace("#[^!:]//#", "\n//", $content);
+    $content = preg_replace("/;/", ";\n", $content);         // Split up statements, replace ';' with ';\n'.
+    $content = preg_replace("/^[\s]+/m", "", $content);      // Removes all initial whitespace and newlines.
+
+    $re = '/^\$CFG->dataroot\s+=\s+["\'](.*?)["\'];/m';  // Lines starting with $CFG->dataroot.
+    preg_match($re, $content, $matches);
+    if (!empty($matches)) {
+        $climaintenance = $matches[count($matches) - 1] . '/climaintenance.html';
+
+        if (file_exists($climaintenance)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+if (check_climaintenance($dirroot . 'config.php') === true) {
+    print "CRITICAL: Moodle is in hard cli maintenance mode\n";
+    exit;
+}
+
 require_once($dirroot . 'config.php');
+
+if (!empty($CFG->maintenance_enabled)) {
+    print "CRITICAL: Moodle is in soft maintenance mode\n";
+    exit;
+}
 
 $filterids = [];
 if ($isweb) {
