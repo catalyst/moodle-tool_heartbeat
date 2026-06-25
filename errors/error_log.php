@@ -26,6 +26,9 @@
 require(__DIR__ . '/../../../../config.php');
 // @codingStandardsIgnoreEnd
 
+require_login();
+require_capability('moodle/site:config', context_system::instance());
+
 $syscontext = context_system::instance();
 $PAGE->set_url('/admin/tool/heartbeat/errors.php');
 $PAGE->set_context($syscontext);
