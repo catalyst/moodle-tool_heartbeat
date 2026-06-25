@@ -31,7 +31,9 @@
 // @codingStandardsIgnoreStart
 require(__DIR__ . '/../../../config.php');
 // @codingStandardsIgnoreEnd
-tool_heartbeat\lib::validate_ip_against_config();
+
+require_login();
+require_capability('moodle/site:config', \core\context\system::instance());
 
 // @codingStandardsIgnoreStart
 // Ignore Statement to skip codechecker needing require config.php first.
