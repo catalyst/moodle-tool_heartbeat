@@ -143,7 +143,7 @@ class cachecheck extends check {
     /**
      * Returns the database stored ping value
      * @param string $type web or cron
-     * @param int value
+     * @return int value
      */
     private static function get_db_ping_value(string $type) {
         global $DB;

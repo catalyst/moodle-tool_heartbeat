@@ -210,8 +210,8 @@ final class checker_test extends \advanced_testcase {
     /**
      * Tests the html to text
      *
-     * @param array $detailshtml
-     * @param string $expecteddetailstext
+     * @param string $html Input HTML string.
+     * @param string $text Expected plain text output.
      * @dataProvider process_title_and_message_provider
      */
     public function test_process_title_and_message(string $html, string $text): void {

@@ -103,7 +103,8 @@ class dnscheck extends check {
     /**
      * Find the top level domain
      *
-     * @return domain
+     * @param string $domain The domain to find the base of.
+     * @return string domain
      */
     public function get_base_domain($domain) {
         $parts = explode('.', $domain);
