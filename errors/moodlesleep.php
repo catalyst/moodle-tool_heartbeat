@@ -32,6 +32,7 @@ require(__DIR__ . '/../../../../config.php');
 \core\session\manager::write_close();
 
 $sleep = required_param('time', PARAM_INT);
+$sleep = min($sleep, 3600); // Cap at 1 hour to prevent DoS via unbounded sleep.
 
 for ($c = 0; $c < $sleep; $c++) {
     sleep(1);
