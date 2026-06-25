@@ -58,6 +58,8 @@ final class scheduledqueue_test extends \advanced_testcase {
 
     /**
      * Helper: set nextruntime for the test task relative to now.
+     *
+     * @param int $offsetsecs Offset in seconds from now.
      */
     private function set_nextruntime(int $offsetsecs): void {
         $this->set_task_nextruntime(self::TASK, $offsetsecs);
@@ -65,6 +67,9 @@ final class scheduledqueue_test extends \advanced_testcase {
 
     /**
      * Helper: set nextruntime for a task relative to now.
+     *
+     * @param string $classname The task classname.
+     * @param int $offsetsecs Offset in seconds from now.
      */
     private function set_task_nextruntime(string $classname, int $offsetsecs): void {
         global $DB;

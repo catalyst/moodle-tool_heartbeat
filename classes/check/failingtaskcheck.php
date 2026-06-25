@@ -41,6 +41,8 @@ class failingtaskcheck extends check {
 
     /**
      * Constructor
+     *
+     * @param \stdClass|null $task Record of task that is failing.
      */
     public function __construct($task = null) {
         $this->task = $task;
