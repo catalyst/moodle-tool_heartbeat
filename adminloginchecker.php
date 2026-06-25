@@ -81,7 +81,8 @@ if (isset($argv)) {
     // If run from the web.
     require_once(__DIR__ . '/../../../config.php');
     require_once(__DIR__ . '/nagios.php');
-    tool_heartbeat\lib::validate_ip_against_config();
+    require_login();
+    require_capability('moodle/site:config', \core\context\system::instance());
 
     $options['critthresh'] = optional_param('critthresh', $options['critthresh'], PARAM_INT);
     $options['warnthresh'] = optional_param('warnthresh', $options['warnthresh'], PARAM_INT);
