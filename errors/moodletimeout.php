@@ -28,6 +28,9 @@ define('NO_OUTPUT_BUFFERING', true);
 require(__DIR__ . '/../../../../config.php');
 // @codingStandardsIgnoreEnd
 
+require_login();
+require_capability('moodle/site:config', context_system::instance());
+
 set_time_limit(1);
 
 $max = 1000 * 1000 * 1000; // We should max out before 1 billion cycles.

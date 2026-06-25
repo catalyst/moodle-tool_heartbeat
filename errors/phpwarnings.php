@@ -28,6 +28,9 @@ define('NO_OUTPUT_BUFFERING', true);
 require(__DIR__ . '/../../../../config.php');
 // @codingStandardsIgnoreEnd
 
+require_login();
+require_capability('moodle/site:config', context_system::instance());
+
 // So we don't brick our session.
 \core\session\manager::write_close();
 

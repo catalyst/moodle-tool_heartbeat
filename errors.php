@@ -26,7 +26,8 @@
 require_once('../../../config.php');
 // @codingStandardsIgnoreEnd
 
-tool_heartbeat\lib::validate_ip_against_config();
+require_login();
+require_capability('moodle/site:config', context_system::instance());
 
 $syscontext = context_system::instance();
 $PAGE->set_url('/admin/tool/heartbeat/errors.php');

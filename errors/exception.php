@@ -26,6 +26,9 @@
 require(__DIR__ . '/../../../../config.php');
 // @codingStandardsIgnoreEnd
 
+require_login();
+require_capability('moodle/site:config', context_system::instance());
+
 // This simulates a page just exploding for some reason.
 
 throw new Exception('Raw non moodle exception');

@@ -26,6 +26,9 @@
 require(__DIR__ . '/../../../../config.php');
 // @codingStandardsIgnoreEnd
 
+require_login();
+require_capability('moodle/site:config', context_system::instance());
+
 $code = required_param('code', PARAM_INT);
 
 header("HTTP/1.0 $code Moodle custom error");
