@@ -171,8 +171,8 @@ class tasklatencycheck_test extends \externallib_advanced_testcase {
         // Test a good duration.
         // We need to set different field based on whether lockstats or logs for all these tests.
         if ($logs) {
-            $logrecord['timestart'] = time() - 15 * MINSECS;
-            $logrecord['timeend'] = time() - 12 * MINSECS;
+            $logrecord['starttime'] = time() - 15 * MINSECS;
+            $logrecord['endtime'] = time() - 12 * MINSECS;
             $DB->insert_record('task_log', $logrecord);
 
         } else {
@@ -186,8 +186,8 @@ class tasklatencycheck_test extends \externallib_advanced_testcase {
 
         // Now test a negative duration. Can never happen, but the check shouldn't barf.
         if ($logs) {
-            $logrecord['timestart'] = time() - 12 * MINSECS;
-            $logrecord['timeend'] = time() - 15 * MINSECS;
+            $logrecord['starttime'] = time() - 12 * MINSECS;
+            $logrecord['endtime'] = time() - 15 * MINSECS;
             $DB->delete_records('task_log');
             $DB->insert_record('task_log', $logrecord);
 
@@ -203,8 +203,8 @@ class tasklatencycheck_test extends \externallib_advanced_testcase {
 
         // Now test a duration longer than the configured duration.
         if ($logs) {
-            $logrecord['timestart'] = time() - 15 * MINSECS;
-            $logrecord['timeend'] = time() - 5 * MINSECS;
+            $logrecord['starttime'] = time() - 15 * MINSECS;
+            $logrecord['endtime'] = time() - 5 * MINSECS;
             $DB->delete_records('task_log');
             $DB->insert_record('task_log', $logrecord);
 
