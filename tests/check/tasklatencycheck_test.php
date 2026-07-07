@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace tool_heartbeat;
-
 use core\check\result;
 
 /**
@@ -26,7 +24,7 @@ use core\check\result;
  * @copyright 2022, Catalyst IT
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tasklatencycheck_test extends \externallib_advanced_testcase {
+class tasklatencycheck_test extends \core_phpunit\testcase {
     /**
      * Test check for tasks start time delay.
      *
