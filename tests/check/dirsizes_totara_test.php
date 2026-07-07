@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace tool_heartbeat\check;
-
 use tool_heartbeat\check\dirsizes;
 
 /**
@@ -28,7 +26,7 @@ use tool_heartbeat\check\dirsizes;
  *
  * @coversDefaultClass \tool_heartbeat\check\dirsizes
  */
-final class dirsizes_totara_test extends \externallib_advanced_testcase {
+class dirsizes_totara_test extends \core_phpunit\testcase {
     protected function setUp(): void {
         parent::setUp();
         $this->resetAfterTest(true);

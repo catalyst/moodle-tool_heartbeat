@@ -132,10 +132,10 @@ class tasklatencycheck extends check {
             $table = new \xmldb_table('task_log');
             if ($dbman->table_exists($table)) {
                 // We can use task logs!
-                $sql = "SELECT (timeend - timestart) AS duration
+                $sql = "SELECT (endtime - starttime) AS duration
                           FROM {task_log}
                          WHERE classname = ?
-                      ORDER BY timeend DESC
+                      ORDER BY endtime DESC
                          LIMIT 1";
                 $record = $DB->get_record_sql($sql, [$taskclass]);
 
