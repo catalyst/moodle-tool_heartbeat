@@ -35,7 +35,12 @@
  */
 // @codingStandardsIgnoreStart
 // Ignore required to skip codechecker error for no config.php load in class.
-require_once(__DIR__ . '/../../../config.php');
+$dirroot = __DIR__ . '/../../../';
+if (substr($_SERVER['SCRIPT_FILENAME'], -42) == '/public/admin/tool/heartbeat/croncheck.php') {
+    // We are in Moodle 5.2 under the public/ sub path.
+    $dirroot = __DIR__ . '/../../../../';
+}
+require_once($dirroot . 'config.php');
 // @codingStandardsIgnoreEnd
 $format = '%b %d %H:%M:%S';
 $now = userdate(time(), $format);
