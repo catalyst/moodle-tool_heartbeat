@@ -48,6 +48,7 @@ $override = override::get_active_override($ref);
 
 // Handle unmute.
 if (!empty($unmute) && !empty($override) && $unmute) {
+    require_sesskey();
     try {
         $override->resolve();
         \core\notification::success(get_string('changessaved'));
@@ -77,6 +78,7 @@ $form = new override_form($PAGE->url->out(false), $customdata);
 if ($form->is_cancelled()) {
     redirect($statuspage);
 } else if ($data = $form->get_data()) {
+    require_sesskey();
     try {
         if (empty($data->id)) {
             // If there is no ID we need to create a new persistent.
