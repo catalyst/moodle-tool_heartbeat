@@ -134,22 +134,19 @@ class status_table extends table {
      * @return string html output
      */
     private function get_override_html($output, string $ref, result $result): string {
-        global $OUTPUT;
-
         $override = \tool_heartbeat\local\override::get_active_override($ref);
         $overridelink = new \moodle_url('/admin/tool/heartbeat/override.php', ['ref' => $ref]);
         $rowdata = '';
 
         // If we have an existing override, display a link to edit and delete.
         if (isset($override)) {
-            $dellink = new \moodle_url('/admin/tool/heartbeat/override.php', [
-                'ref' => $ref,
-                'unmute' => true,
-            ]);
-
             $rowdata .= $output->action_link($overridelink, get_string('edit'));
             $rowdata .= ' | ';
-            $rowdata .= $output->action_link($dellink, get_string('unmute', 'tool_heartbeat'));
+            $rowdata .= $output->render_from_template('tool_heartbeat/unmutebutton', [
+                'action' => '/admin/tool/heartbeat/override.php',
+                'sesskey' => sesskey(),
+                'ref' => $ref,
+            ]);
             return $rowdata;
         }
 
