@@ -34,6 +34,9 @@ final class scheduledqueue_test extends \advanced_testcase {
     /** Another real core scheduled task for tests requiring multiple tasks. */
     private const SECOND_TASK = '\\core\\task\\backup_cleanup_task';
 
+    /** A third real core scheduled task for tests requiring multiple tasks. */
+    private const THIRD_TASK = '\\core\\task\\badges_cron_task';
+
     /** A scheduled task belonging to a component disabled in PHPUnit by default. */
     private const DISABLED_COMPONENT_TASK = '\\logstore_standard\\task\\cleanup_task';
 
@@ -203,6 +206,57 @@ final class scheduledqueue_test extends \advanced_testcase {
         $check = new scheduledqueue();
         $result = $check->get_result();
         $this->assertEquals(result::WARNING, $result->get_status());
+    }
+
+    /**
+     * Regression test: trivially overdue tasks (normal cron jitter, under the
+     * warn threshold) must not be lumped in with a genuinely stuck task. The
+     * count and details should only reflect tasks past the warn threshold, and
+     * the summary's age must belong to the worst offender, not be misapplied
+     * to the whole count.
+     */
+    public function test_trivially_overdue_tasks_do_not_inflate_count(): void {
+        // One task genuinely stuck well past the error threshold (5 min).
+        $this->set_task_nextruntime(self::TASK, -10 * MINSECS);
+
+        // Two tasks only trivially overdue (normal cron cadence), well under
+        // the 2 minute warn threshold.
+        $this->set_task_nextruntime(self::SECOND_TASK, -5);
+        $this->set_task_nextruntime(self::THIRD_TASK, -10);
+
+        $check = new scheduledqueue();
+        $result = $check->get_result();
+
+        $this->assertEquals(result::ERROR, $result->get_status());
+
+        // Only the one genuinely stuck task should be counted...
+        $summary = $result->get_summary();
+        $this->assertStringContainsString('1', $summary);
+
+        // ...and appear in the details...
+        $details = $result->get_details();
+        $this->assertStringContainsString(ltrim(self::TASK, '\\'), $details);
+
+        // ...while the trivially overdue tasks must not appear at all.
+        $this->assertStringNotContainsString(ltrim(self::SECOND_TASK, '\\'), $details);
+        $this->assertStringNotContainsString(ltrim(self::THIRD_TASK, '\\'), $details);
+    }
+
+    /**
+     * Regression test: when every overdue task is only trivially overdue
+     * (normal cron jitter) the overall result must stay INFO, even if many
+     * tasks are affected simultaneously.
+     */
+    public function test_many_trivially_overdue_tasks_stay_info(): void {
+        $this->set_task_nextruntime(self::TASK, -5);
+        $this->set_task_nextruntime(self::SECOND_TASK, -10);
+        $this->set_task_nextruntime(self::THIRD_TASK, -15);
+
+        $check = new scheduledqueue();
+        $result = $check->get_result();
+
+        $this->assertEquals(result::INFO, $result->get_status());
+        $this->assertStringContainsString('3', $result->get_summary());
     }
 
     /**
