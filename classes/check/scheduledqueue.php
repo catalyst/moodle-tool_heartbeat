@@ -74,25 +74,28 @@ class scheduledqueue extends check {
             return new result($status, $summary, $details);
         }
 
-        $count = count($overdue);
-        $oldest = reset($overdue);
-        $maxage = (int) $oldest->age;
-
         $warnthreshold = (int) (get_config('tool_heartbeat', 'scheduledqueuewarn') ?: 10 * MINSECS);
         $errorthreshold = (int) (get_config('tool_heartbeat', 'scheduledqueueerror') ?: HOURSECS);
 
-        if ($maxage > $warnthreshold) {
-            $status = result::WARNING;
+        // Tasks overdue by only a trivial amount (less than the warn threshold) are just
+        // normal cron cadence noise - they will clear on the next cron run and should not
+        // be counted as, or reported alongside, genuinely stuck tasks.
+        $significant = array_values(array_filter($overdue, fn($task) => $task->age > $warnthreshold));
+
+        if (empty($significant)) {
+            // Tasks are overdue but within the normal cron timing window — just informational.
+            $summary = get_string('scheduledqueuepending', 'tool_heartbeat', count($overdue));
+            return new result(result::INFO, $summary, $details);
         }
+
+        $count = count($significant);
+        $oldest = reset($significant);
+        $maxage = (int) $oldest->age;
+
+        $status = result::WARNING;
 
         if ($maxage > $errorthreshold) {
             $status = result::ERROR;
-        }
-
-        if ($status === result::OK) {
-            // Tasks are overdue but within the normal cron timing window — just informational.
-            $summary = get_string('scheduledqueuepending', 'tool_heartbeat', $count);
-            return new result(result::INFO, $summary, $details);
         }
 
         $summary = get_string('scheduledqueueoverdue', 'tool_heartbeat', [
@@ -101,7 +104,7 @@ class scheduledqueue extends check {
             'threshold' => '> ' . format_time($maxage > $errorthreshold ? $errorthreshold : $warnthreshold),
         ]);
 
-        foreach ($overdue as $task) {
+        foreach ($significant as $task) {
             $details .= get_string('scheduledqueuetaskdetail', 'tool_heartbeat', [
                 'classname' => $task->classname,
                 'age'       => format_time((int) $task->age),
