@@ -143,7 +143,7 @@ class status_table extends table {
             $rowdata .= $output->action_link($overridelink, get_string('edit'));
             $rowdata .= ' | ';
             $rowdata .= $output->render_from_template('tool_heartbeat/unmutebutton', [
-                'action' => '/admin/tool/heartbeat/override.php',
+                'action' => (new \moodle_url('/admin/tool/heartbeat/override.php'))->out(),
                 'sesskey' => sesskey(),
                 'ref' => $ref,
             ]);
