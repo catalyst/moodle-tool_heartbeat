@@ -16,6 +16,11 @@
 
 namespace tool_heartbeat;
 
+defined('MOODLE_INTERNAL') || die();
+
+// Required for externallib_advanced_testcase class; cannot use $CFG->dirroot here in phpunit.
+require_once __DIR__ . "/../../../../webservice/tests/helpers.php";
+
 /**
  * Test class for tool_heartbeat\lib
  *
