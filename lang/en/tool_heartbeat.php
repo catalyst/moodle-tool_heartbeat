@@ -91,6 +91,7 @@ $string['scheduledqueueok'] = 'All scheduled tasks are on time.';
 $string['scheduledqueueoverdue'] = '{$a->count} scheduled task(s) are overdue by {$a->age} ({$a->threshold}).';
 $string['scheduledqueuepending'] = '{$a} scheduled task(s) are overdue but within the acceptable cron timing window.';
 $string['scheduledqueuetaskdetail'] = '{$a->classname} overdue by {$a->age}';
+$string['scheduledqueuetaskmore'] = '... and {$a} more overdue task(s) not shown.';
 $string['setinitialauthstate'] = 'Initial auth state for heartbeat auth check set.';
 $string['settings:cachecheckheading'] = 'Cache consistency check';
 $string['settings:mutedefault'] = 'Default mute duration';

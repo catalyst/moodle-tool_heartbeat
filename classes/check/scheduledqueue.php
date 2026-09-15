@@ -104,11 +104,20 @@ class scheduledqueue extends check {
             'threshold' => '> ' . format_time($maxage > $errorthreshold ? $errorthreshold : $warnthreshold),
         ]);
 
-        foreach ($significant as $task) {
+        // Cap the detail list to the 10 worst tasks - if cron has been down for a while
+        // there could be hundreds of overdue tasks and listing them all isn't useful.
+        $maxlisted = 10;
+        $listed = array_slice($significant, 0, $maxlisted);
+
+        foreach ($listed as $task) {
             $details .= get_string('scheduledqueuetaskdetail', 'tool_heartbeat', [
                 'classname' => $task->classname,
                 'age'       => format_time((int) $task->age),
             ]) . '<br>';
+        }
+
+        if ($count > $maxlisted) {
+            $details .= get_string('scheduledqueuetaskmore', 'tool_heartbeat', $count - $maxlisted);
         }
 
         return new result($status, $summary, $details);
