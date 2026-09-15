@@ -260,6 +260,36 @@ final class scheduledqueue_test extends \advanced_testcase {
     }
 
     /**
+     * If there are more than 10 overdue tasks, only list the top 10 worst and
+     * append a note about how many more were skipped.
+     */
+    public function test_details_capped_to_worst_ten(): void {
+        global $DB;
+
+        // Push every enabled task well past the error threshold, staggering
+        // the ages slightly so ordering is deterministic (oldest first).
+        $tasks = $DB->get_records_select('task_scheduled', 'disabled = 0');
+        $this->assertGreaterThan(10, count($tasks), 'Test requires more than 10 core scheduled tasks.');
+
+        $offset = 0;
+        foreach ($tasks as $task) {
+            $DB->set_field('task_scheduled', 'nextruntime', time() - 10 * MINSECS - $offset, ['id' => $task->id]);
+            $offset++;
+        }
+
+        $check = new scheduledqueue();
+        $result = $check->get_result();
+        $this->assertEquals(result::ERROR, $result->get_status());
+
+        $details = $result->get_details();
+        $lines = array_values(array_filter(explode('<br>', $details)));
+
+        // At most 10 task detail lines plus the "more" note.
+        $this->assertLessThanOrEqual(11, count($lines));
+        $this->assertStringContainsString('more', end($lines));
+    }
+
+    /**
      * Verify thresholds are read from plugin config, not hardcoded.
      */
     public function test_custom_thresholds_are_respected(): void {
