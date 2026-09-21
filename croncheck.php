@@ -51,7 +51,7 @@ if (substr($_SERVER['SCRIPT_FILENAME'], -42) == '/public/admin/tool/heartbeat/cr
  * Checks if the command line maintenance mode has been enabled. Skip the config bootstrapping.
  *
  * @param string $configfile The relative path for config.php
- * @return bool True if climaintenance.html is found.
+ * @return string|bool The path to climaintenance.html if found, otherwise false.
  */
 function check_climaintenance($configfile) {
     $content = file_get_contents($configfile);
@@ -67,22 +67,60 @@ function check_climaintenance($configfile) {
         $climaintenance = $matches[count($matches) - 1] . '/climaintenance.html';
 
         if (file_exists($climaintenance)) {
-            return true;
+            return $climaintenance;
         }
     }
 
     return false;
 }
 
-if (check_climaintenance($dirroot . 'config.php') === true) {
+$climaintenancefile = check_climaintenance($dirroot . 'config.php');
+if ($climaintenancefile !== false) {
+    if ($isweb) {
+        header('Content-Type: text/plain');
+    }
     print "CRITICAL: Moodle is in hard cli maintenance mode\n";
+
+    // Moodle libraries aren't loaded yet at this point, so use plain PHP to work out when
+    // maintenance mode was enabled, based on when climaintenance.html was created/modified.
+    $mtime = filemtime($climaintenancefile);
+    if ($mtime !== false) {
+        print "    In maintenance mode since " . date('c', $mtime) . "\n";
+    }
+
+    // Moodle libraries aren't loaded yet at this point, so use plain PHP to strip the HTML.
+    $html = file_get_contents($climaintenancefile);
+    // strip_tags() does not remove the contents of style/script/title tags, so remove those blocks first.
+    $html = preg_replace('#<(style|script|title)\b[^>]*>.*?</\1>#is', '', $html);
+    $plaintext = html_entity_decode(strip_tags($html));
+
+    // Collapse whitespace: trim each line and drop blank lines left over from stripped block-level tags.
+    $lines = array_filter(array_map('trim', explode("\n", $plaintext)), function($line) {
+        return $line !== '';
+    });
+    $plaintext = implode("\n", $lines);
+
+    if ($plaintext !== '') {
+        print preg_replace('/^/m', '    ', $plaintext) . "\n";
+    }
     exit;
 }
 
 require_once($dirroot . 'config.php');
 
+if ($isweb) {
+    // Moodle's bootstrap (lib/setup.php) sets Content-type: text/html for non-CLI requests, so this
+    // must be re-set to plain text after config.php is included, and before any output/exit.
+    header('Content-Type: text/plain');
+}
+
 if (!empty($CFG->maintenance_enabled)) {
     print "CRITICAL: Moodle is in soft maintenance mode\n";
+    print "    " . $CFG->wwwroot . "/admin/settings.php?section=maintenancemode\n";
+    if (!empty($CFG->maintenance_message)) {
+        $indented = preg_replace('/^/m', '    ', html_to_text($CFG->maintenance_message));
+        print $indented . "\n";
+    }
     exit;
 }
 
@@ -101,8 +139,6 @@ if ($isweb) {
             }
         }
     }
-
-    header("Content-Type: text/plain");
 
     // Ensure its not cached.
     header('Pragma: no-cache');
