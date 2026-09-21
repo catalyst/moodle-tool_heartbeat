@@ -92,6 +92,11 @@ if ($isweb) {
 
 if (!empty($CFG->maintenance_enabled)) {
     print "CRITICAL: Moodle is in soft maintenance mode\n";
+    print "    " . $CFG->wwwroot . "/admin/settings.php?section=maintenancemode\n";
+    if (!empty($CFG->maintenance_message)) {
+        $indented = preg_replace('/^/m', '    ', html_to_text($CFG->maintenance_message));
+        print $indented . "\n";
+    }
     exit;
 }
 
