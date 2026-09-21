@@ -75,11 +75,20 @@ function check_climaintenance($configfile) {
 }
 
 if (check_climaintenance($dirroot . 'config.php') === true) {
+    if ($isweb) {
+        header('Content-Type: text/plain');
+    }
     print "CRITICAL: Moodle is in hard cli maintenance mode\n";
     exit;
 }
 
 require_once($dirroot . 'config.php');
+
+if ($isweb) {
+    // Moodle's bootstrap (lib/setup.php) sets Content-type: text/html for non-CLI requests, so this
+    // must be re-set to plain text after config.php is included, and before any output/exit.
+    header('Content-Type: text/plain');
+}
 
 if (!empty($CFG->maintenance_enabled)) {
     print "CRITICAL: Moodle is in soft maintenance mode\n";
@@ -101,8 +110,6 @@ if ($isweb) {
             }
         }
     }
-
-    header("Content-Type: text/plain");
 
     // Ensure its not cached.
     header('Pragma: no-cache');
