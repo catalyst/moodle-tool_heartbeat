@@ -115,14 +115,42 @@ class status_table extends table {
         if (isset($override)) {
             $notes = $override->get('note');
             $url = $override->get('url');
+            $userid = $override->get('userid');
 
-            $mute = get_string('expiresat', 'tool_heartbeat') . ': ' . $override->get_time_until_mute_ends();
+            $muteduntil = (object) [
+                'user' => $this->get_mute_user_fullname($userid),
+                'until' => $override->get_time_until_mute_ends(),
+            ];
+            $mute = get_string('mutedbyuntil', 'tool_heartbeat', $muteduntil) . '<br>';
             $mute .= format_text($notes);
             $mute .= !empty($url) ? html_writer::link($url, $url) . '<br>' : '';
-            $rowdata .= $OUTPUT->notification($mute, \core\output\notification::NOTIFY_INFO);
+            $notification = new \core\output\notification($mute, \core\output\notification::NOTIFY_INFO);
+            $notification->set_show_closebutton(false);
+            $rowdata .= $OUTPUT->render($notification);
         }
 
         return $rowdata;
+    }
+
+    /**
+     * Returns the full name of the user who added the mute, for display purposes.
+     *
+     * @param int $userid
+     * @return string
+     */
+    private function get_mute_user_fullname(int $userid): string {
+        global $DB;
+
+        if (empty($userid)) {
+            return get_string('unknown', 'moodle');
+        }
+
+        $user = $DB->get_record('user', ['id' => $userid]);
+        if (empty($user)) {
+            return get_string('unknown', 'moodle');
+        }
+
+        return fullname($user);
     }
 
     /**

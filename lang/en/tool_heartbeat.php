@@ -71,6 +71,7 @@ $string['latencydelayedstart'] = 'Task {$a->task} start is delayed past configur
 $string['latencynotrun'] = 'Task {$a->task} has not run within the configured latency threshold: {$a->mins}.';
 $string['latencyruntime'] = 'Task {$a->task} was last run with a runtime longer than the configured threshold: {$a->mins}.';
 $string['mute'] = 'Mute';
+$string['mutedbyuntil'] = 'Muted by {$a->user} until: {$a->until}';
 $string['muteurlregex'] = 'The URL must match the format defined in settings: {$a}';
 $string['normal'] = 'Normal monitoring';
 $string['noterequired'] = 'Please add some notes';
