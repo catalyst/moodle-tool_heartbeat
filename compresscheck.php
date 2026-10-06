@@ -34,6 +34,8 @@ $PAGE->set_context($syscontext);
 $PAGE->set_cacheable(false);
 
 $ttfb = optional_param('ttfb', 1, PARAM_INT);
+// Max ttfb is 10 seconds in case of a ddos vector.
+$ttfb = max(0, min($ttfb, 10));
 // Default fixed size is 50KB.
 $fixedsize = optional_param('fixedsize', 51200, PARAM_INT);
 
