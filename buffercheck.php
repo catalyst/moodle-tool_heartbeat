@@ -79,22 +79,24 @@ $files = [
 foreach ($files as $file) {
     $contents = file_get_contents($file);
     $lines = explode("\n", $contents);
+    $shortfile = str_replace($CFG->dirroot, '', $file);
     if (in_array("define('NO_OUTPUT_BUFFERING', true);", $lines)) {
-        $output .= "OK: NO_OUTPUT_BUFFERING exists in $file\n";
+        $output .= "OK: NO_OUTPUT_BUFFERING exists in $shortfile\n";
     } else {
         $pass = false;
-        $output .= "WARNING: NO_OUTPUT_BUFFERING is missing in $file\n";
+        $output .= "WARNING: NO_OUTPUT_BUFFERING is missing in $shortfile\n";
     }
 }
 
 $file = $CFG->libdir . '/setuplib.php';
 $contents = file_get_contents($file);
 $lines = explode("\n", $contents);
+$shortfile = str_replace($CFG->dirroot, '', $file);
 if (in_array("    header('X-Accel-Buffering: no');", $lines)) {
-    $output .= "OK: X-Accel-Buffering: exists in $file\n";
+    $output .= "OK: X-Accel-Buffering: exists in $shortfile\n";
 } else {
     $pass = false;
-    $output .= "WARNING: X-Accel-Buffering: is missing in $file\n";
+    $output .= "WARNING: X-Accel-Buffering: is missing in $shortfile\n";
 }
 
 $url = new moodle_url('/admin/tool/heartbeat/progress.php');
