@@ -80,7 +80,7 @@ class dnscheck extends check {
             // If the IP is public lets try to dig up some more info on who own's the IP space.
             if (ip_is_public($ip)) {
                 $curl = new \curl();
-                $whoishtml = $curl->get('https://who.is/whois-ip/ip-address/' . $ip);
+                $whoishtml = $curl->get('https://who.is/whois-ip/ip-address/' . $ip, [], ['CURLOPT_SSL_VERIFYPEER' => 1]);
 
                 if (preg_match('/OrgName\:(.*)OrgId/sim', $whoishtml, $match)) {
                     $nethandle = clean_param(trim($match[1]), PARAM_TEXT);
