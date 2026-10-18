@@ -156,10 +156,13 @@ class checker {
             throw $e;
         }
 
+        // Keep the stack trace out of the response, it is still written to the error log.
+        error_log((string) $e); // phpcs:ignore moodle.PHP.ForbiddenFunctions.FoundWithAlternative
+
         $res = new resultmessage();
         $res->level = resultmessage::LEVEL_WARN;
         $res->title = $prefix . $e->getMessage();
-        $res->message = (string) $e;
+        $res->message = get_class($e) . ': ' . $e->getMessage();
         return $res;
     }
 
