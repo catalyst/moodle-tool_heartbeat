@@ -58,7 +58,8 @@ class lib {
             return;
         } else {
             $msg = 'Failed IP check from ' . getremoteaddr();
-            send_unknown($msg);
+            $settingsurl = new \moodle_url('/admin/settings.php', ['section' => 'tool_heartbeat']);
+            send_unknown($msg, $settingsurl->out(false) . "\n");
         }
     }
 

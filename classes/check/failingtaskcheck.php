@@ -55,6 +55,9 @@ class failingtaskcheck extends check {
      */
     public function get_action_link(): ?\action_link {
         $url = new \moodle_url('/admin/tasklogs.php');
+        if (isset($this->task->classname)) {
+            $url->param('filter', $this->task->classname);
+        }
         return new \action_link($url, get_string('tasklogs', 'tool_task'));
     }
 
