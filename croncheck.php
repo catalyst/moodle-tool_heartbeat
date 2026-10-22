@@ -116,7 +116,7 @@ if ($isweb) {
 
 if (!empty($CFG->maintenance_enabled)) {
     print "CRITICAL: Moodle is in soft maintenance mode\n";
-    print "    " . $CFG->wwwroot . "/admin/settings.php?section=maintenancemode\n";
+    print $CFG->wwwroot . "/admin/settings.php?section=maintenancemode\n";
     if (!empty($CFG->maintenance_message)) {
         $indented = preg_replace('/^/m', '    ', html_to_text($CFG->maintenance_message));
         print $indented . "\n";
@@ -199,5 +199,15 @@ echo "{$prefix}: $msg\n\n";
 if ($filterids) {
     echo "Filtered to subset of checks: " . join(', ', array_keys($filterids)) . " \n";
 }
+// Link to the single failing check's details page, otherwise to the status page.
+$statusurl = (new \moodle_url('/admin/tool/heartbeat/status.php'))->out(false);
+$linkurl = $statusurl;
+if (count($messages) === 1) {
+    $onlymessage = reset($messages);
+    if (!empty($onlymessage->detailurl)) {
+        $linkurl = $onlymessage->detailurl;
+    }
+}
+echo "{$linkurl}\n";
 echo "(Checked {$now})\n";
 exit($level);

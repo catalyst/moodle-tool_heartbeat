@@ -45,4 +45,7 @@ class resultmessage {
 
     /** @var string $message Details of this message **/
     public $message = '';
+
+    /** @var string $detailurl Optional URL of the details page for this message **/
+    public $detailurl = '';
 }

@@ -188,6 +188,8 @@ class checker {
         $res->title = $title;
         $res->message = $message;
 
+        $res->detailurl = (new \moodle_url('/report/status/index.php', ['detail' => $check->get_ref()]))->out(false);
+
         return $res;
     }
 
