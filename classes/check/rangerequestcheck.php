@@ -54,8 +54,10 @@ class rangerequestcheck extends check {
      * @return \moodle_url[]
      */
     protected function get_urls(): array {
+        // The system context id is not always 1 on every site.
+        $contextid = \context_system::instance()->id;
         return [
-            new \moodle_url('/pluginfile.php/1/tool_heartbeat/test'),
+            new \moodle_url("/pluginfile.php/$contextid/tool_heartbeat/test"),
         ];
     }
 
