@@ -42,35 +42,103 @@ use core\check\result;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rangerequestcheck extends check {
+    /** @var string Range header value requested. */
+    const RANGE = '0-9';
+
+    /** @var int Number of body bytes expected back. */
+    const EXPECTED_BYTES = 10;
+
+    /**
+     * URLs to test for range request support. Add more here.
+     *
+     * @return \moodle_url[]
+     */
+    protected function get_urls(): array {
+        return [
+            new \moodle_url('/pluginfile.php/1/tool_heartbeat/test'),
+        ];
+    }
+
     /**
      * Range request check provider.
      *
      * @return result
      */
     public function get_result(): result {
+        $failures = [];
+        $table = new \html_table();
+        $table->head = ['URL', 'Sent', 'Expected HTTP code', 'Expected body', 'Got'];
+        $table->attributes['class'] = 'generaltable';
 
-        $url = new \moodle_url('/pluginfile.php/1/tool_heartbeat/test');
-
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RANGE, '0-9');
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
-        $response = curl_exec($curl);
-        $info = curl_getinfo($curl);
-
-        if ($response !== false) {
-            if ($info['http_code'] === 206 && $info['size_download'] == 10) {
-                return new result(result::OK, get_string('checkrangerequestok', 'tool_heartbeat'));
+        foreach ($this->get_urls() as $url) {
+            [$info, $row] = $this->check_url($url);
+            $table->data[] = $row;
+            if (!$info['ok']) {
+                $failures[] = $info;
             }
         }
 
-        curl_reset($curl);
+        $details = \html_writer::table($table);
 
+        if (!$failures) {
+            return new result(result::OK, get_string('checkrangerequestok', 'tool_heartbeat'), $details);
+        }
+
+        $first = $failures[0];
         return new result(result::ERROR, get_string('checkrangerequestbad', 'tool_heartbeat', [
-            'url'   => $url->out(),
+            'url'   => $first['url'],
+            'code'  => $first['code'],
+            'bytes' => $first['bytes'],
+        ]), $details);
+    }
+
+    /**
+     * Send a range request to one URL.
+     *
+     * @param \moodle_url $url
+     * @return array [summary info array with ok/url/code/bytes, table row cells]
+     */
+    protected function check_url(\moodle_url $url): array {
+        global $CFG;
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url->out(false));
+        curl_setopt($curl, CURLOPT_RANGE, self::RANGE);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HEADER, true);
+        // Dev boxes commonly have insecure certs; certificate problems are covered by other checks.
+        if ($CFG->debug >= DEBUG_DEVELOPER) {
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+        }
+
+        $response = curl_exec($curl);
+        $info = curl_getinfo($curl);
+        $error = curl_error($curl);
+        curl_close($curl);
+
+        $ok = $response !== false && $info['http_code'] === 206 && $info['size_download'] == self::EXPECTED_BYTES;
+
+        $got = '';
+        if (!$ok) {
+            $headers = $response !== false ? trim(substr($response, 0, $info['header_size'])) : '';
+            $got = \html_writer::tag('pre', s($error !== '' ? $error : $headers) .
+                "\nBody bytes: " . s($info['size_download']));
+        }
+
+        $row = [
+            \html_writer::link($url, s($url->out_as_local_url(false))),
+            'Range: bytes=' . self::RANGE,
+            '206',
+            self::EXPECTED_BYTES . ' bytes',
+            $got,
+        ];
+
+        return [[
+            'ok'    => $ok,
+            'url'   => $url->out(false),
             'code'  => $info['http_code'],
             'bytes' => $info['size_download'],
-        ]));
+        ], $row];
     }
 }
